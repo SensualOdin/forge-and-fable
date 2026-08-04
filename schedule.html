@@ -51,6 +51,7 @@
       <a href="index.html">Home</a>
       <a href="index.html#roster">The Guild</a>
       <a href="schedule.html" class="current" aria-current="page">Schedule</a>
+      <a href="hearth.html">The Hearth</a>
       <a class="nav-live none" id="navLive" href="live.html"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
   </div>
@@ -67,6 +68,11 @@
       <span class="pulse-dot" aria-hidden="true"></span>
       <span id="todayLine" aria-live="polite">Loading the week…</span>
     </div>
+    <div class="status-row" role="group" aria-label="Schedule display options">
+      <button class="chip" id="modeTheirs" aria-pressed="true">Their Time</button>
+      <button class="chip" id="modeYours" aria-pressed="false">Your Time</button>
+      <button class="refresh-btn" id="icsBtn" title="Download a calendar file that repeats weekly">⬇ Add to Your Calendar</button>
+    </div>
   </div>
 </section>
 
@@ -79,7 +85,7 @@
         <tbody id="schedBody"></tbody>
       </table>
     </div>
-    <p class="sched-footnote">Times are each streamer's local timezone (shown next to their name). An asterisk marks a timezone that's approximate. Schedules shift — the <a href="live.html">Live page</a> always knows who's actually on the air.</p>
+    <p class="sched-footnote" id="schedFootnote">Times are each streamer's local timezone (shown next to their name). An asterisk marks a timezone that's approximate. Schedules shift — the <a href="live.html">Live page</a> always knows who's actually on the air.</p>
   </div>
 </section>
 
@@ -93,6 +99,7 @@
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
+<script src="js/ff-time.js"></script>
 <script>
 (function(){
   'use strict';
@@ -129,9 +136,10 @@
       ? '<td class="note-cell" colspan="7">' + esc(s.note) + '</td>'
       : DAYS.map((d, i) => {
           const v = s[d];
-          return '<td class="' + (i === todayIdx ? 'today ' : '') + (v ? '' : 'empty') + '">' + (v ? esc(v) : '—') + '</td>';
+          return '<td class="' + (i === todayIdx ? 'today ' : '') + (v ? '' : 'empty') + '"' +
+            (v ? ' data-src="' + esc(v) + '" data-day="' + i + '"' : '') + '>' + (v ? esc(v) : '—') + '</td>';
         }).join('');
-    return '<tr data-channel="' + esc(m.channel || '') + '">' + member + cells + '</tr>';
+    return '<tr data-channel="' + esc(m.channel || '') + '" data-tz="' + esc(s.tz || '') + '">' + member + cells + '</tr>';
   }
   document.getElementById('schedBody').innerHTML = scheduled.map(rowHTML).join('');
 
@@ -140,6 +148,47 @@
   const todayCount = scheduled.filter(m => m.schedule[todayKey]).length;
   document.getElementById('todayLine').textContent =
     'It’s ' + DAY_LABELS[todayIdx] + ' — ' + todayCount + ' member' + (todayCount === 1 ? '' : 's') + ' scheduled at the anvil';
+
+  /* ---------- their-time / your-time toggle ---------- */
+  const btnTheirs = document.getElementById('modeTheirs');
+  const btnYours = document.getElementById('modeYours');
+  const footnote = document.getElementById('schedFootnote');
+  const FOOT_THEIRS = footnote.innerHTML;
+  const FOOT_YOURS = 'All times converted to <strong>your</strong> clock (' +
+    esc(Intl.DateTimeFormat().resolvedOptions().timeZone) + '). (+1d) means it lands on the next day for you. ' +
+    'Schedules shift — the <a href="live.html">Live page</a> always knows who\'s actually on the air.';
+
+  function applyMode(mode){
+    document.querySelectorAll('#schedBody td[data-src]').forEach(td => {
+      const src = td.dataset.src;
+      if (mode === 'yours'){
+        const tz = td.closest('tr').dataset.tz;
+        td.textContent = FFTime.cellToLocal(src, parseInt(td.dataset.day, 10), tz) || src;
+      } else {
+        td.textContent = src;
+      }
+    });
+    btnTheirs.setAttribute('aria-pressed', String(mode === 'theirs'));
+    btnYours.setAttribute('aria-pressed', String(mode === 'yours'));
+    footnote.innerHTML = mode === 'yours' ? FOOT_YOURS : FOOT_THEIRS;
+    try { localStorage.setItem('ff:timemode', mode); } catch(e){}
+  }
+  btnTheirs.addEventListener('click', () => applyMode('theirs'));
+  btnYours.addEventListener('click', () => applyMode('yours'));
+  let saved = 'theirs';
+  try { saved = localStorage.getItem('ff:timemode') || 'theirs'; } catch(e){}
+  if (saved === 'yours') applyMode('yours');
+
+  /* ---------- calendar export ---------- */
+  document.getElementById('icsBtn').addEventListener('click', () => {
+    const ics = FFTime.icsForTeam(scheduled, 'https://forge-and-fable-two.vercel.app/');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'forge-and-fable-schedule.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  });
 
   /* ---------- live marks ---------- */
   FF.onLiveUpdate(state => {

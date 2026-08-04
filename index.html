@@ -68,6 +68,7 @@
       <a href="#tale">The Tale</a>
       <a href="#roster">The Guild</a>
       <a href="schedule.html">Schedule</a>
+      <a href="hearth.html">The Hearth</a>
       <a class="nav-live none" id="navLive" href="live.html"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
   </div>
@@ -84,6 +85,7 @@
       <span class="eyebrow">Where the Iron Is Struck</span>
       <h1 class="hero-title">Every Stream<br>Is a Strike<br>on the Anvil</h1>
       <p class="hero-sub">A community of creators, hammering out something worth watching, one broadcast at a time.</p>
+      <a class="next-strike" id="nextStrike" href="schedule.html" hidden></a>
     </div>
   </div>
   <div class="seam" aria-hidden="true"></div>
@@ -133,6 +135,16 @@
   </div>
 </section>
 
+<section class="spotlight" aria-label="Member spotlight">
+  <div class="wrap">
+    <div class="section-label reveal">
+      <span class="eyebrow">Tale of the Day</span>
+      <h2>From the Guild's Pages</h2>
+    </div>
+    <div class="spotlight-card reveal d1" id="spotCard"></div>
+  </div>
+</section>
+
 <section class="roster" id="roster">
   <div class="wrap">
     <div class="roster-head reveal">
@@ -171,6 +183,7 @@
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
+<script src="js/ff-time.js"></script>
 <script>
 (function(){
   'use strict';
@@ -342,6 +355,46 @@
       ? n + ' guild member' + (n === 1 ? ' is' : 's are') + ' at the anvil right now.'
       : 'Someone in the guild is usually at the anvil. See who’s broadcasting right now.';
   }
+
+  /* ---------- next strike countdown (hero) ---------- */
+  (function(){
+    const el = document.getElementById('nextStrike');
+    function tick(){
+      const next = FFTime.nextStrike(D.members);
+      if (!next){ el.hidden = true; return; }
+      const ms = next.time.getTime() - Date.now();
+      const h = Math.floor(ms / 3600000), min = Math.floor((ms % 3600000) / 60000);
+      const rel = h >= 24 ? Math.floor(h / 24) + 'd ' + (h % 24) + 'h'
+        : h > 0 ? h + 'h ' + min + 'm' : min + 'm';
+      const when = next.time.toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+      el.innerHTML = '<span class="ns-label">Next strike</span> ' + esc(next.member.name) +
+        ' <span class="ns-dim">·</span> ' + esc(when) + ' your time <span class="ns-dim">·</span> in ' + rel;
+      el.hidden = false;
+    }
+    tick();
+    setInterval(tick, 60000);
+  })();
+
+  /* ---------- tale of the day (deterministic daily rotation) ---------- */
+  (function(){
+    const card = document.getElementById('spotCard');
+    const idx = Math.floor(Date.now() / 86400000) % D.members.length;
+    const m = D.members[idx];
+    const title = (D.titles && D.titles[m.name]) || 'Forger';
+    const avatar = FF.avatarFor(m);
+    card.innerHTML =
+      (avatar ? '<img class="spot-avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel || '') + '" alt="" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
+      '<div class="spot-body">' +
+        '<div class="spot-name">' + esc(m.name) + ' <span class="spot-title">' + esc(title) + '</span></div>' +
+        '<div class="spot-country">' + esc(m.country || '') + '</div>' +
+        '<p class="spot-about">' + esc(m.about) + '</p>' +
+        '<div class="spot-links">' +
+          (m.channel ? '<a class="live-link" href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">Twitch</a>' : '') +
+          (m.youtube ? '<a class="live-link" href="' + esc(m.youtube) + '" target="_blank" rel="noopener">YouTube</a>' : '') +
+          (m.tiktok ? '<a class="live-link" href="' + esc(m.tiktok) + '" target="_blank" rel="noopener">TikTok</a>' : '') +
+        '</div>' +
+      '</div>';
+  })();
 
   // headline stays true to the roster no matter how many members are added
   (function(){

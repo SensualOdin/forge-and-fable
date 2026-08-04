@@ -51,6 +51,7 @@
       <a href="index.html">Home</a>
       <a href="index.html#roster">The Guild</a>
       <a href="schedule.html">Schedule</a>
+      <a href="hearth.html">The Hearth</a>
       <a class="nav-live none" id="navLive" href="#liveGrid" aria-current="page"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
   </div>
@@ -83,6 +84,7 @@
     <div class="section-label">
       <span class="eyebrow">Live Now</span>
       <h2>On the Air</h2>
+      <a class="hall-btn" id="hallBtn" href="hall.html" hidden>⚔ Enter the Great Hall — watch all <span id="hallN">2</span> at once</a>
     </div>
     <div class="live-grid" id="liveGrid"></div>
     <div class="empty-forge" id="emptyForge" hidden>
@@ -151,6 +153,7 @@
       '</div>' +
       '<div class="live-meta">' +
         (avatar ? '<img class="live-avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel) + '" alt="" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
+        (s.game ? '<img class="boxart" src="https://static-cdn.jtvnw.net/ttv-boxart/' + encodeURIComponent(s.game) + '-52x72.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
         '<div class="live-info">' +
           '<div class="live-name">' + esc(m.name) + '</div>' +
           (s.title ? '<div class="live-title">' + esc(s.title) + '</div>' : '') +
@@ -218,6 +221,11 @@
           info.innerHTML = '<div class="live-name">' + esc(m.name) + '</div>' +
             (s.title ? '<div class="live-title">' + esc(s.title) + '</div>' : '') +
             (s.game ? '<div class="live-game">' + esc(s.game) + '</div>' : '');
+          // box art often arrives after the card mounts (game name lags the live check)
+          if (s.game && !existing.querySelector('.boxart')){
+            info.insertAdjacentHTML('beforebegin',
+              '<img class="boxart" src="https://static-cdn.jtvnw.net/ttv-boxart/' + encodeURIComponent(s.game) + '-52x72.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">');
+          }
         }
       }
     });
@@ -225,6 +233,9 @@
     const n = liveChannels.length;
     emptyForge.hidden = n > 0 || state.checking;
     liveGrid.style.display = n > 0 ? 'grid' : 'none';
+    const hallBtn = document.getElementById('hallBtn');
+    hallBtn.hidden = n < 2;
+    document.getElementById('hallN').textContent = n;
 
     const offline = withChannel.filter(m => !(state.statuses[m.channel] && state.statuses[m.channel].live))
       .concat(D.members.filter(m => !m.channel));

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Great Hall — Forge &amp; Fable</title>
+<meta name="description" content="Watch every live Forge & Fable guild member at once — a multistream view with chat.">
+<meta name="theme-color" content="#0f0c09">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ff.css">
+</head>
+<body class="hall-body">
+
+<header class="site">
+  <div class="nav">
+    <a class="brand" href="index.html" aria-label="Forge and Fable home">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 42c7-4 14-4 22-1 8-3 15-3 22 1v14c-7-4-14-4-22-1-8-3-15-3-22 1z" fill="#ece0c3" stroke="#c9a35c" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M32 41v14" stroke="#b9a377" stroke-width="1.4"/>
+        <path d="M54 8 38 27" stroke="#c9a35c" stroke-width="3" stroke-linecap="round"/>
+        <path d="M33 22l9-9 8 8-9 9z" fill="#d8531f" stroke="#ff8c42" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M32 30l1.7 4.6L38 36l-4.3 1.4L32 42l-1.7-4.6L26 36l4.3-1.4z" fill="#ff8c42"/>
+      </svg>
+      <span class="brand-text">FORGE <span>&amp;</span> FABLE</span>
+    </a>
+    <nav class="links" aria-label="Main">
+      <a href="live.html">← Back to Live</a>
+    </nav>
+  </div>
+</header>
+
+<main class="hall-main" id="main">
+  <div class="hall-status" id="hallStatus">Summoning the guild…</div>
+  <div class="hall-layout" id="hallLayout" hidden>
+    <div class="hall-grid" id="hallGrid"></div>
+    <aside class="hall-chat" id="hallChatPane">
+      <div class="hall-chat-tabs" id="chatTabs" role="tablist" aria-label="Chat channel"></div>
+      <div class="hall-chat-frame" id="chatFrame"></div>
+    </aside>
+  </div>
+</main>
+
+<script src="data/roster.js"></script>
+<script src="js/ff-core.js"></script>
+<script>
+(function(){
+  'use strict';
+  const D = window.FF_DATA, esc = FF.esc;
+  const HOSTNAME = window.location.hostname || 'localhost';
+  const grid = document.getElementById('hallGrid');
+  const tabs = document.getElementById('chatTabs');
+  const chatFrame = document.getElementById('chatFrame');
+  const layout = document.getElementById('hallLayout');
+  const status = document.getElementById('hallStatus');
+  const byChannel = Object.fromEntries(D.members.filter(m => m.channel).map(m => [m.channel, m]));
+
+  const mounted = {};
+  let activeChat = null;
+
+  function mountChat(ch){
+    activeChat = ch;
+    chatFrame.innerHTML = '<iframe src="https://www.twitch.tv/embed/' + encodeURIComponent(ch) +
+      '/chat?darkpopout&parent=' + encodeURIComponent(HOSTNAME) + '" title="' + esc(ch) + ' chat"></iframe>';
+    tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.ch === ch)));
+  }
+
+  function sync(state){
+    const live = Object.keys(byChannel).filter(ch => state.statuses[ch] && state.statuses[ch].live);
+
+    Object.keys(mounted).forEach(ch => {
+      if (!live.includes(ch)){
+        document.getElementById('hall-' + ch)?.remove();
+        tabs.querySelector('button[data-ch="' + ch + '"]')?.remove();
+        delete mounted[ch];
+        if (activeChat === ch && live.length) mountChat(live[0]);
+      }
+    });
+
+    live.forEach(ch => {
+      if (mounted[ch]) return;
+      mounted[ch] = true;
+      const m = byChannel[ch];
+      grid.insertAdjacentHTML('beforeend',
+        '<div class="hall-tile" id="hall-' + esc(ch) + '">' +
+          '<iframe src="https://player.twitch.tv/?channel=' + encodeURIComponent(ch) +
+            '&parent=' + encodeURIComponent(HOSTNAME) + '&muted=true&autoplay=true" allowfullscreen title="' + esc(m.name) + '"></iframe>' +
+          '<div class="hall-tag">' + esc(m.name) + '</div>' +
+        '</div>');
+      tabs.insertAdjacentHTML('beforeend',
+        '<button role="tab" data-ch="' + esc(ch) + '" aria-selected="false">' + esc(m.name) + '</button>');
+      if (!activeChat) mountChat(ch);
+    });
+
+    grid.dataset.count = live.length;
+    if (!state.checking){
+      if (live.length === 0){
+        layout.hidden = true;
+        status.hidden = false;
+        status.innerHTML = 'The hall is empty — no one is live right now. <a href="live.html">Back to the Live page</a>.';
+      } else {
+        layout.hidden = false;
+        status.hidden = true;
+      }
+    }
+  }
+
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('button[data-ch]');
+    if (b) mountChat(b.dataset.ch);
+  });
+
+  FF.onLiveUpdate(sync);
+  FF.startPolling();
+})();
+</script>
+
+</body>
+</html>
