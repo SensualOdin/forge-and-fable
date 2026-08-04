@@ -155,18 +155,15 @@
     });
   }
 
-  // Nav "N live" ember — appears on every page once someone is live.
+  // Nav "N live" ember — always visible (it's the nav's link to the live
+  // page); glows green when anyone is live, goes quiet at zero.
   function initNavLiveBadge() {
     const badge = document.getElementById('navLive');
     if (!badge) return;
     state.listeners.push(() => {
       const n = Object.values(state.statuses).filter(s => s.live).length;
-      if (n > 0) {
-        badge.hidden = false;
-        badge.querySelector('.n').textContent = n;
-      } else {
-        badge.hidden = true;
-      }
+      badge.querySelector('.n').textContent = n;
+      badge.classList.toggle('none', n === 0);
     });
   }
 
