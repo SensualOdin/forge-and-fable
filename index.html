@@ -137,7 +137,7 @@
   <div class="wrap">
     <div class="roster-head reveal">
       <span class="eyebrow">The Guild Roster</span>
-      <h2>Twenty-Five Chapters, One Team</h2>
+      <h2 id="rosterTitle">Twenty-Five Chapters, One Team</h2>
       <p>Search by name or game, or filter by the kind of world they build in. Anyone streaming right now carries a live mark.</p>
     </div>
     <div class="controls reveal d1">
@@ -234,13 +234,12 @@
   /* ---------- stats band, computed from the roster ---------- */
   (function(){
     const countries = new Set(D.members.map(m => (m.country.split('—')[0].split('(')[0]).trim()));
-    const charity = D.members.filter(m => m.cats.includes('charity')).length;
     const worlds = new Set(D.members.flatMap(m => m.cats)).size;
     const stats = [
       { n: D.members.length, l: 'Guild Members' },
       { n: countries.size,   l: 'Countries' },
       { n: worlds,           l: 'Kinds of Worlds' },
-      { n: charity,          l: 'Charity Streamers' }
+      { n: '∞',              l: 'Limitless Stories' }
     ];
     document.getElementById('statsRow').innerHTML = stats.map((s, i) =>
       '<div class="stat reveal d' + i + '"><div class="num" data-count="' + s.n + '">0</div><div class="lbl">' + esc(s.l) + '</div></div>'
@@ -334,6 +333,16 @@
       ? n + ' guild member' + (n === 1 ? ' is' : 's are') + ' at the anvil right now.'
       : 'Someone in the guild is usually at the anvil. See who’s broadcasting right now.';
   }
+
+  // headline stays true to the roster no matter how many members are added
+  (function(){
+    const ONES = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve',
+      'Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+    const TENS = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+    const wordify = n => n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : '');
+    const n = D.members.length;
+    if (n > 0 && n < 100) document.getElementById('rosterTitle').textContent = wordify(n) + ' Chapters, One Team';
+  })();
 
   buildChips();
   searchInput.addEventListener('input', render);
