@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge &amp; Fable — A Twitch Stream Team of 25 Creators</title>
+<meta name="description" content="Forge & Fable is a Twitch stream team of 25 creators across Canada, the USA, and the UK — survival crafters, RPG loremasters, horror streamers, charity broadcasters, and cozy-game chefs, all sharing one hearth.">
+<meta name="theme-color" content="#0f0c09">
+
+<!-- Open Graph / social cards: this is what Discord, X, and Slack render -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Forge &amp; Fable">
+<meta property="og:title" content="Forge &amp; Fable — Twitch Stream Team">
+<meta property="og:description" content="25 creators, one guild. Survival crafters, loremasters, nightwalkers, and beacon-bearers — meet the team and catch who's live.">
+<meta property="og:image" content="https://forge-and-fable-two.vercel.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Forge &amp; Fable — Twitch Stream Team">
+<meta name="twitter:description" content="25 creators, one guild. Meet the team and catch who's live.">
+<meta name="twitter:image" content="https://forge-and-fable-two.vercel.app/assets/og-image.jpg">
+<link rel="canonical" href="https://forge-and-fable-two.vercel.app/">
+
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ff.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Forge & Fable",
+  "description": "A Twitch stream team of 25 creators — survival crafters, RPG loremasters, horror streamers, and charity broadcasters.",
+  "foundingDate": "2025",
+  "logo": "assets/apple-touch-icon.png"
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="nav">
+    <a class="brand" href="index.html" aria-label="Forge and Fable home">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- open book -->
+        <path d="M10 42c7-4 14-4 22-1 8-3 15-3 22 1v14c-7-4-14-4-22-1-8-3-15-3-22 1z" fill="#ece0c3" stroke="#c9a35c" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M32 41v14" stroke="#b9a377" stroke-width="1.4"/>
+        <!-- hammer handle -->
+        <path d="M54 8 38 27" stroke="#c9a35c" stroke-width="3" stroke-linecap="round"/>
+        <!-- hammer head -->
+        <path d="M33 22l9-9 8 8-9 9z" fill="#d8531f" stroke="#ff8c42" stroke-width="1.4" stroke-linejoin="round"/>
+        <!-- impact spark -->
+        <path d="M32 30l1.7 4.6L38 36l-4.3 1.4L32 42l-1.7-4.6L26 36l4.3-1.4z" fill="#ff8c42"/>
+      </svg>
+      <span class="brand-text">FORGE <span>&amp;</span> FABLE</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="navLinks" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="links" id="navLinks" aria-label="Main">
+      <a href="index.html" class="current" aria-current="page">Home</a>
+      <a href="#tale">The Tale</a>
+      <a href="#roster">The Guild</a>
+      <a href="live.html">Live</a>
+      <a class="nav-live" id="navLive" href="live.html" hidden><span class="n">0</span>&nbsp;Live Now</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="hero-forge">
+    <div class="grain"></div>
+    <div class="hammered" style="position:absolute; inset:0;"></div>
+    <canvas id="emberCanvas" aria-hidden="true"></canvas>
+    <div class="hero-copy reveal">
+      <span class="eyebrow">Where the Iron Is Struck</span>
+      <h1 class="hero-title">Every Stream<br>Is a Strike<br>on the Anvil</h1>
+      <p class="hero-sub">A community of creators, hammering out something worth watching, one broadcast at a time.</p>
+    </div>
+  </div>
+  <div class="seam" aria-hidden="true"></div>
+  <div class="seam-cta">
+    <a href="#roster" class="seal-btn">Meet<br>the Guild</a>
+    <span class="seam-caption">✦ read on ✦</span>
+  </div>
+  <div class="hero-fable">
+    <div class="grain"></div>
+    <div class="hero-copy reveal d1">
+      <span class="eyebrow" style="color:#a5772f;">And Every Story Its Page</span>
+      <h1 class="hero-title">Every World<br>We Play in<br>Becomes a Fable</h1>
+      <p class="hero-sub">Streamers, moderators, and friends — all writing their own chapter, together.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band" aria-label="Guild at a glance">
+  <div class="wrap">
+    <div class="stats-row" id="statsRow"></div>
+  </div>
+</section>
+
+<section class="tale" id="tale">
+  <div class="wrap">
+    <div class="tale-head reveal">
+      <h2>Once every craftsperson worked alone. Forge &amp; Fable was built so no one has to.</h2>
+      <p>Part guild hall, part story circle — this team is where survival crafters, RPG loremasters, horror screamers and cozy-game chefs share a hearth. Below are the two ideas we build every stream around.</p>
+    </div>
+    <div class="tale-grid">
+      <div class="tale-col reveal d1">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21l7-7M13 3l8 8-4 4-8-8z" stroke="#d8531f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          The Forge
+        </h3>
+        <p>The craft. The grind. The late-night stream when the mic finally sounds right. Members here show up for each other, raid trains, co-op chaos, and the unglamorous work of building a channel from nothing — together it gets hammered into something real.</p>
+      </div>
+      <div class="tale-divider" aria-hidden="true"></div>
+      <div class="tale-col reveal d2">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h9a3 3 0 013 3v13a3 3 0 00-3-3H4V4zM20 4h-4v13h4V4z" stroke="#a5772f" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          The Fable
+        </h3>
+        <p>The worlds we vanish into and the ones we tell about ourselves. Every member below wrote their own introduction — dogs and kids, deployments and diagnoses, first consoles and favourite classes. Read a few. You'll want to stay for the streams.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="roster" id="roster">
+  <div class="wrap">
+    <div class="roster-head reveal">
+      <span class="eyebrow">The Guild Roster</span>
+      <h2>Twenty-Five Chapters, One Team</h2>
+      <p>Search by name or game, or filter by the kind of world they build in. Anyone streaming right now carries a live mark.</p>
+    </div>
+    <div class="controls reveal d1">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ece0c3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <label class="sr-only" for="search">Search the roster</label>
+        <input id="search" type="search" placeholder="Search the roster…" autocomplete="off">
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+    </div>
+    <div class="count-line" id="countLine" aria-live="polite"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="grain"></div>
+  <h2>The Forge Never Sleeps</h2>
+  <p id="ctaCopy">Someone in the guild is usually at the anvil. See who's broadcasting right now.</p>
+  <a class="cta-btn" href="live.html">See Who's Live <span aria-hidden="true">→</span></a>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="brand-text">FORGE &amp; FABLE</div>
+  <p>A stream team for people who build things — worlds, communities, and each other.</p>
+  <div class="foot-quote">“A little kindness goes a long way.”</div>
+  <div class="foot-fine">Est. 2025 &nbsp;·&nbsp; Guild roster lives in <span style="letter-spacing:0; text-transform:none;">data/roster.js</span> &nbsp;·&nbsp; Live status via Twitch</div>
+</footer>
+
+<script src="data/roster.js"></script>
+<script src="js/ff-core.js"></script>
+<script>
+(function(){
+  'use strict';
+  const D = window.FF_DATA, esc = FF.esc;
+
+  /* ---------- ember particle canvas (hero) ---------- */
+  (function(){
+    if (FF.reduced) return;
+    const canvas = document.getElementById('emberCanvas');
+    const host = canvas.parentElement;
+    const ctx = canvas.getContext('2d');
+    let W, H, embers = [];
+    function size(){
+      W = canvas.width = host.clientWidth;
+      H = canvas.height = host.clientHeight;
+    }
+    function spawn(e){
+      e.x = Math.random() * W;
+      e.y = H + 10 + Math.random() * 40;
+      e.r = 0.8 + Math.random() * 2.4;
+      e.vy = 0.35 + Math.random() * 0.9;
+      e.drift = (Math.random() - 0.5) * 0.5;
+      e.phase = Math.random() * Math.PI * 2;
+      e.life = 1;
+      return e;
+    }
+    function boot(){
+      size();
+      embers = Array.from({length: 42}, () => {
+        const e = spawn({});
+        e.y = Math.random() * H; // pre-scatter on first frame
+        return e;
+      });
+    }
+    let last = performance.now();
+    function frame(t){
+      const dt = Math.min(32, t - last) / 16.7; last = t;
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      for (const e of embers){
+        e.y -= e.vy * dt;
+        e.x += (e.drift + Math.sin(t / 900 + e.phase) * 0.3) * dt;
+        const heat = Math.max(0, e.y / H);           // hotter near the floor
+        const flicker = 0.55 + 0.45 * Math.sin(t / 120 + e.phase * 7);
+        const alpha = Math.min(1, heat + 0.15) * flicker;
+        const g = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.r * 3.2);
+        g.addColorStop(0, 'rgba(255,190,120,' + (alpha * 0.9).toFixed(3) + ')');
+        g.addColorStop(0.4, 'rgba(216,83,31,' + (alpha * 0.55).toFixed(3) + ')');
+        g.addColorStop(1, 'rgba(216,83,31,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(e.x, e.y, e.r * 3.2, 0, Math.PI * 2); ctx.fill();
+        if (e.y < -12) spawn(e);
+      }
+      requestAnimationFrame(frame);
+    }
+    boot();
+    window.addEventListener('resize', boot);
+    requestAnimationFrame(frame);
+  })();
+
+  /* ---------- stats band, computed from the roster ---------- */
+  (function(){
+    const countries = new Set(D.members.map(m => (m.country.split('—')[0].split('(')[0]).trim()));
+    const charity = D.members.filter(m => m.cats.includes('charity')).length;
+    const worlds = new Set(D.members.flatMap(m => m.cats)).size;
+    const stats = [
+      { n: D.members.length, l: 'Guild Members' },
+      { n: countries.size,   l: 'Countries' },
+      { n: worlds,           l: 'Kinds of Worlds' },
+      { n: charity,          l: 'Charity Streamers' }
+    ];
+    document.getElementById('statsRow').innerHTML = stats.map((s, i) =>
+      '<div class="stat reveal d' + i + '"><div class="num" data-count="' + s.n + '">0</div><div class="lbl">' + esc(s.l) + '</div></div>'
+    ).join('');
+  })();
+
+  /* ---------- roster render ---------- */
+  const grid = document.getElementById('grid');
+  const chipsEl = document.getElementById('chips');
+  const countLine = document.getElementById('countLine');
+  const searchInput = document.getElementById('search');
+  let activeCat = 'all';
+
+  const ICONS = {
+    twitch: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 2L2.5 6v14h5V22h3l2.5-2.5H17L21.5 15V2H4z" fill="#a794e6"/><rect x="12.5" y="6.5" width="1.6" height="5.5" fill="#171310"/><rect x="16.5" y="6.5" width="1.6" height="5.5" fill="#171310"/></svg>',
+    youtube: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#ff5c5c"/><path d="M10 9l6 3-6 3V9z" fill="#171310"/></svg>'
+  };
+
+  function socialLinksHTML(m){
+    const links = [];
+    if (m.channel) links.push('<a href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener" aria-label="' + esc(m.name) + ' on Twitch">' + ICONS.twitch + '</a>');
+    if (m.youtube) links.push('<a href="' + esc(m.youtube) + '" target="_blank" rel="noopener" aria-label="' + esc(m.name) + ' on YouTube">' + ICONS.youtube + '</a>');
+    return links.length ? '<span class="social-links">' + links.join('') + '</span>' : '';
+  }
+
+  function cardHTML(m){
+    const sigil = D.sigils[m.cats[0]] || 'Wanderer';
+    const avatar = FF.avatarFor(m);
+    const nameInner = m.channel
+      ? '<a href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">' + esc(m.name) + '</a>'
+      : esc(m.name);
+    return '<article class="card" data-channel="' + esc(m.channel || '') + '">' +
+      '<div class="card-band">' +
+        '<div class="band-left"><span class="sigil">' + esc(sigil) + '</span>' + socialLinksHTML(m) + '</div>' +
+        (m.team ? '<span class="team-seal">' + esc(m.team) + '</span>' : '') +
+        '<div class="card-rivets" aria-hidden="true"></div>' +
+      '</div>' +
+      '<span class="card-live-badge">Live</span>' +
+      '<div class="card-body">' +
+        '<div class="avatar-row">' +
+          (avatar ? '<img class="avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
+          '<h3 class="card-name">' + nameInner + '</h3>' +
+        '</div>' +
+        '<div class="card-country">' + esc(m.country) + ' ' + esc(m.flag || '') + '</div>' +
+        '<div class="card-now"></div>' +
+        '<p class="card-about">' + esc(m.about) + '</p>' +
+        '<div class="card-games">' + m.games.map(g => '<span class="tag">' + esc(g) + '</span>').join('') + '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function buildChips(){
+    const mk = (key, label, pressed) =>
+      '<button class="chip" data-cat="' + key + '" aria-pressed="' + pressed + '">' + esc(label) + '</button>';
+    chipsEl.innerHTML = mk('all', 'All', 'true') +
+      Object.entries(D.cats).map(([k, l]) => mk(k, l, 'false')).join('');
+    chipsEl.addEventListener('click', e => {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      activeCat = btn.dataset.cat;
+      chipsEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === btn)));
+      render();
+    });
+  }
+
+  function render(){
+    const q = searchInput.value.trim().toLowerCase();
+    const filtered = D.members.filter(m => {
+      if (activeCat !== 'all' && !m.cats.includes(activeCat)) return false;
+      if (!q) return true;
+      return (m.name + ' ' + m.country + ' ' + m.games.join(' ') + ' ' + m.about).toLowerCase().includes(q);
+    });
+    grid.innerHTML = filtered.length
+      ? filtered.map(cardHTML).join('')
+      : '<div class="empty-note">No one in the guild matches that search yet.</div>';
+    countLine.textContent = filtered.length + ' of ' + D.members.length + ' guild members shown';
+    applyLiveMarks();
+  }
+
+  /* ---------- live marks on cards ---------- */
+  function applyLiveMarks(){
+    document.querySelectorAll('.card[data-channel]').forEach(card => {
+      const ch = card.dataset.channel;
+      const s = ch && FF.state.statuses[ch];
+      card.classList.toggle('is-live', !!(s && s.live));
+      const now = card.querySelector('.card-now');
+      if (now) now.textContent = (s && s.live && s.game) ? '⚒ Now forging: ' + s.game : (s && s.live ? '⚒ Live on Twitch now' : '');
+    });
+    const n = Object.values(FF.state.statuses).filter(s => s.live).length;
+    document.getElementById('ctaCopy').textContent = n > 0
+      ? n + ' guild member' + (n === 1 ? ' is' : 's are') + ' at the anvil right now.'
+      : 'Someone in the guild is usually at the anvil. See who’s broadcasting right now.';
+  }
+
+  buildChips();
+  searchInput.addEventListener('input', render);
+  render();
+  FF.onLiveUpdate(applyLiveMarks);
+  FF.startPolling();
+})();
+</script>
+
+</body>
+</html>

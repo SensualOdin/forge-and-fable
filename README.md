@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forge & Fable — Stream Team Site
 
-## Getting Started
+Two-page site for the Forge & Fable Twitch stream team: a home page with the
+full guild roster, and a live page that shows who is broadcasting right now.
 
-First, run the development server:
+## Run it locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+node server.js
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:8137. Serving over HTTP (instead of double-clicking
+the HTML file) makes the embedded Twitch players work — Twitch accepts
+`localhost` as a parent domain. Opening `index.html` directly from disk still
+works: live detection keeps running and live channels show preview cards
+instead of players.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project layout
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Path | What it is |
+| --- | --- |
+| `index.html` | Home: hero, guild stats, the tale, searchable roster |
+| `live.html` | Live page: real-time who's-live grid with players |
+| `data/roster.js` | **Single source of truth** for all members — edit here only |
+| `js/ff-core.js` | Live-status engine, avatar cache, shared UI behavior |
+| `css/ff.css` | The design system (one stylesheet for every page) |
+| `functions/api/live.js` | Optional serverless Twitch Helix endpoint |
+| `assets/` | Favicon, social-card image, apple touch icon |
 
-## Learn More
+## How live detection works
 
-To learn more about Next.js, take a look at the following resources:
+1. The front end first tries `GET /api/live?channels=...` on its own origin —
+   one batched, authenticated Twitch **Helix** call handled by
+   `functions/api/live.js` (cached 60s, so the whole site costs ~1 API call
+   per minute no matter how many visitors).
+2. If that endpoint doesn't exist (local dev, plain static hosting), it falls
+   back to [DecAPI](https://decapi.me) — a public, CORS-enabled Twitch proxy
+   that needs no key. Checks are chunked politely and only live channels get
+   the extra title/game/viewer lookups.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Either way: **no hidden iframes, no fake refresh buttons.** The refresh button
+re-runs a real check; "last checked" is stamped only when a check completes.
+Status re-polls every 3 minutes while the tab is visible.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Avatars are also refreshed from the live API and cached in `localStorage` for
+24h, so the hardcoded fallback URLs in `roster.js` can go stale harmlessly.
 
-## Deploy on Vercel
+## Editing the roster
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Everything about a member lives in one object in `data/roster.js`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```js
+{name:'WillyLo', channel:'willylo', team:'F&F', country:'Canada', flag:'🇨🇦',
+ cats:['rpg','survival'], games:['RPGs','Survival Crafting'],
+ about:'Streaming 5+ years…', img:'(fallback avatar url)',
+ youtube:'https://…' }
+```
+
+- `channel: null` = member without a Twitch channel (shown on the roster,
+  skipped by the live checker).
+- Categories/sigils are defined at the top of the same file.
+- Both pages, the stats band, the filters, and the live checker all derive
+  from this list — nothing is duplicated anywhere.
+
+## Deploying (recommended: Cloudflare Pages)
+
+1. Push this folder to a Git repo and connect it to Cloudflare Pages
+   (framework preset: none, build command: none, output dir: `/`).
+2. The `functions/` directory is picked up automatically. Add environment
+   variables `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`
+   (create an app at https://dev.twitch.tv/console/apps).
+3. After deploy, update the `og:image` / canonical URLs in both HTML heads to
+   absolute URLs on your domain (social scrapers need absolute paths).
+
+Netlify works too — move the handler logic into `netlify/functions/live.js`
+(same fetch calls, Netlify's handler signature). Any plain static host (GitHub
+Pages, etc.) also works — the site just uses the DecAPI fallback there.
