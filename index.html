@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forge &amp; Fable — A Twitch Stream Team of 25 Creators</title>
-<meta name="description" content="Forge & Fable is a Twitch stream team of 25 creators across Canada, the USA, and the UK — survival crafters, RPG loremasters, horror streamers, charity broadcasters, and cozy-game chefs, all sharing one hearth.">
+<title>Forge &amp; Fable — Twitch Stream Team &amp; Creator Guild</title>
+<meta name="description" content="Forge & Fable is a Twitch stream team of creators across Canada, the USA, and the UK — survival crafters, RPG loremasters, horror streamers, charity broadcasters, and cozy-game chefs, all sharing one hearth.">
 <meta name="theme-color" content="#0f0c09">
 
 <!-- Open Graph / social cards: this is what Discord, X, and Slack render -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Forge &amp; Fable">
 <meta property="og:title" content="Forge &amp; Fable — Twitch Stream Team">
-<meta property="og:description" content="25 creators, one guild. Survival crafters, loremasters, nightwalkers, and beacon-bearers — meet the team and catch who's live.">
+<meta property="og:description" content="Many chapters, one guild. Survival crafters, loremasters, nightwalkers, and beacon-bearers — meet the team and catch who's live.">
 <meta property="og:image" content="https://forge-and-fable-two.vercel.app/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Forge &amp; Fable — Twitch Stream Team">
-<meta name="twitter:description" content="25 creators, one guild. Meet the team and catch who's live.">
+<meta name="twitter:description" content="Many chapters, one guild. Meet the team and catch who's live.">
 <meta name="twitter:image" content="https://forge-and-fable-two.vercel.app/assets/og-image.jpg">
 <link rel="canonical" href="https://forge-and-fable-two.vercel.app/">
 
@@ -34,7 +34,7 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Forge & Fable",
-  "description": "A Twitch stream team of 25 creators — survival crafters, RPG loremasters, horror streamers, and charity broadcasters.",
+  "description": "A Twitch stream team of creators — survival crafters, RPG loremasters, horror streamers, and charity broadcasters.",
   "foundingDate": "2025",
   "logo": "assets/apple-touch-icon.png"
 }
@@ -138,7 +138,7 @@
     <div class="roster-head reveal">
       <span class="eyebrow">The Guild Roster</span>
       <h2 id="rosterTitle">Twenty-Five Chapters, One Team</h2>
-      <p>Search by name or game, or filter by the kind of world they build in. Anyone streaming right now carries a live mark.</p>
+      <p>Search by name or game, or filter by where they stream. Anyone broadcasting right now carries a live mark.</p>
     </div>
     <div class="controls reveal d1">
       <div class="search-box">
@@ -146,7 +146,7 @@
         <label class="sr-only" for="search">Search the roster</label>
         <input id="search" type="search" placeholder="Search the roster…" autocomplete="off">
       </div>
-      <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+      <div class="chips" id="chips" role="group" aria-label="Filter by platform"></div>
     </div>
     <div class="count-line" id="countLine" aria-live="polite"></div>
     <div class="grid" id="grid"></div>
@@ -233,7 +233,9 @@
 
   /* ---------- stats band, computed from the roster ---------- */
   (function(){
-    const countries = new Set(D.members.map(m => (m.country.split('—')[0].split('(')[0]).trim()));
+    const countries = new Set(D.members
+      .filter(m => m.country && !/coming soon/i.test(m.country))
+      .map(m => m.country.split(' - ')[0].split('—')[0].split('(')[0].trim()));
     const worlds = new Set(D.members.flatMap(m => m.cats)).size;
     const stats = [
       { n: D.members.length, l: 'Guild Members' },
@@ -255,18 +257,22 @@
 
   const ICONS = {
     twitch: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 2L2.5 6v14h5V22h3l2.5-2.5H17L21.5 15V2H4z" fill="#a794e6"/><rect x="12.5" y="6.5" width="1.6" height="5.5" fill="#171310"/><rect x="16.5" y="6.5" width="1.6" height="5.5" fill="#171310"/></svg>',
-    youtube: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#ff5c5c"/><path d="M10 9l6 3-6 3V9z" fill="#171310"/></svg>'
+    youtube: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#ff5c5c"/><path d="M10 9l6 3-6 3V9z" fill="#171310"/></svg>',
+    kick: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" fill="#53fc18"/><path d="M7 6h3v4l4-4h4l-5 5 5 6h-4l-4-5v5H7V6z" fill="#171310"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 2h3a5 5 0 004 4v3a8 8 0 01-4-1.1V15a6 6 0 11-6-6c.3 0 .7 0 1 .07v3.2a3 3 0 102 2.83V2z" fill="#ee1d52"/></svg>'
   };
 
   function socialLinksHTML(m){
     const links = [];
     if (m.channel) links.push('<a href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener" aria-label="' + esc(m.name) + ' on Twitch">' + ICONS.twitch + '</a>');
     if (m.youtube) links.push('<a href="' + esc(m.youtube) + '" target="_blank" rel="noopener" aria-label="' + esc(m.name) + ' on YouTube">' + ICONS.youtube + '</a>');
+    if (m.kick) links.push('<a href="' + esc(m.kick) + '" target="_blank" rel="noopener" aria-label="' + esc(m.name) + ' on Kick">' + ICONS.kick + '</a>');
+    if (m.tiktok) links.push('<a href="' + esc(m.tiktok) + '" target="_blank" rel="noopener" aria-label="' + esc(m.name) + ' on TikTok">' + ICONS.tiktok + '</a>');
     return links.length ? '<span class="social-links">' + links.join('') + '</span>' : '';
   }
 
   function cardHTML(m){
-    const sigil = D.sigils[m.cats[0]] || 'Wanderer';
+    const sigil = (D.titles && D.titles[m.name]) || 'Forger';
     const avatar = FF.avatarFor(m);
     const nameInner = m.channel
       ? '<a href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">' + esc(m.name) + '</a>'
@@ -283,7 +289,7 @@
           (avatar ? '<img class="avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
           '<h3 class="card-name">' + nameInner + '</h3>' +
         '</div>' +
-        '<div class="card-country">' + esc(m.country) + ' ' + esc(m.flag || '') + '</div>' +
+        '<div class="card-country">' + esc(m.country || '') + '</div>' +
         '<div class="card-now"></div>' +
         '<p class="card-about">' + esc(m.about) + '</p>' +
         '<div class="card-games">' + m.games.map(g => '<span class="tag">' + esc(g) + '</span>').join('') + '</div>' +
@@ -295,7 +301,7 @@
     const mk = (key, label, pressed) =>
       '<button class="chip" data-cat="' + key + '" aria-pressed="' + pressed + '">' + esc(label) + '</button>';
     chipsEl.innerHTML = mk('all', 'All', 'true') +
-      Object.entries(D.cats).map(([k, l]) => mk(k, l, 'false')).join('');
+      Object.entries(D.platforms).map(([k, l]) => mk(k, l, 'false')).join('');
     chipsEl.addEventListener('click', e => {
       const btn = e.target.closest('.chip');
       if (!btn) return;
@@ -308,7 +314,10 @@
   function render(){
     const q = searchInput.value.trim().toLowerCase();
     const filtered = D.members.filter(m => {
-      if (activeCat !== 'all' && !m.cats.includes(activeCat)) return false;
+      if (activeCat !== 'all'){
+        const onPlatform = activeCat === 'twitch' ? !!(m.channel || m.twitch) : !!m[activeCat];
+        if (!onPlatform) return false;
+      }
       if (!q) return true;
       return (m.name + ' ' + m.country + ' ' + m.games.join(' ') + ' ' + m.about).toLowerCase().includes(q);
     });
