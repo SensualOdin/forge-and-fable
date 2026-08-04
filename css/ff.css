@@ -133,7 +133,7 @@ nav.links a.nav-live.none:hover{ border-color:var(--gold-dim); color:var(--parch
     background:var(--iron-1); border-bottom:1px solid var(--iron-edge);
     max-height:0; overflow:hidden; transition:max-height .3s ease;
   }
-  nav.links.open{ max-height:320px; }
+  nav.links.open{ max-height:420px; }
   nav.links a{ padding:15px 28px; width:100%; border-top:1px solid var(--iron-2); }
   nav.links a::after{ display:none; }
   .nav-live{ margin:12px 28px 16px; align-self:flex-start; }
@@ -485,6 +485,51 @@ nav.links a.nav-live.none:hover{ border-color:var(--gold-dim); color:var(--parch
   font-size:.88rem;
 }
 .notice-strip strong{ color:var(--ember-bright); }
+
+/* ---------- schedule page ---------- */
+.sched-section{ padding:56px 0 90px; }
+.sched-scroll{
+  overflow-x:auto; border:1px solid var(--iron-edge); border-radius:10px;
+  background:var(--iron-1); box-shadow:0 14px 30px rgba(0,0,0,.35);
+}
+table.sched{ border-collapse:collapse; width:100%; min-width:920px; font-size:.88rem; }
+.sched thead th{
+  font-family:var(--font-head); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--parchment-2); padding:13px 10px; text-align:center;
+  background:var(--iron-2); border-bottom:2px solid var(--iron-edge);
+}
+.sched thead th.today{ color:var(--gold); }
+.today-tag{
+  display:block; font-size:.52rem; letter-spacing:.2em; color:var(--ember-bright); margin-top:2px;
+}
+.sched td, .sched tbody th{ padding:11px 10px; border-bottom:1px solid var(--iron-2); text-align:center; color:var(--parchment); }
+.sched tbody tr:last-child td, .sched tbody tr:last-child th{ border-bottom:none; }
+.sched td.empty{ color:var(--steel); opacity:.4; }
+.sched td.today{ background:rgba(201,163,92,.08); }
+.sched td.note-cell{ font-family:var(--font-scribe); color:var(--gold-dim); }
+.member-col{ text-align:left !important; min-width:210px; position:sticky; left:0; background:var(--iron-1); border-right:1px solid var(--iron-edge); z-index:1; }
+.sched thead .member-col{ background:var(--iron-2); }
+.mrow{ display:flex; align-items:center; gap:10px; font-weight:normal; }
+.sched-avatar{
+  width:30px; height:30px; border-radius:50%; object-fit:cover; flex-shrink:0;
+  border:1px solid var(--gold-dim);
+}
+.sched-name{ font-family:var(--font-head); font-size:.82rem; white-space:nowrap; }
+.sched-name a{ text-decoration:none; color:var(--parchment); }
+.sched-name a:hover{ color:var(--ember-bright); }
+.tz-chip{
+  font-family:var(--font-head); font-size:.56rem; letter-spacing:.08em; color:var(--steel);
+  border:1px solid var(--iron-edge); border-radius:8px; padding:1px 6px; flex-shrink:0;
+}
+tr.is-live .sched-name{ position:relative; padding-left:14px; }
+tr.is-live .sched-name::before{
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:8px; height:8px; border-radius:50%; background:var(--live);
+  animation:pulse 2s infinite;
+}
+tr.is-live .member-col{ background:linear-gradient(90deg, rgba(61,220,111,.08), var(--iron-1)); }
+.sched-footnote{ margin-top:18px; text-align:center; color:var(--steel); font-size:.85rem; }
+.sched-footnote a{ color:var(--parchment-2); }
 
 /* ---------- footer ---------- */
 footer.site{

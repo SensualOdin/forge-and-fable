@@ -42,7 +42,14 @@ window.FF_DATA = {
       "twitch": "https://www.twitch.tv/willylo",
       "youtube": "https://www.youtube.com/@WillyLo",
       "tiktok": "https://www.tiktok.com/@willylogaming",
-      "channel": "willylo"
+      "channel": "willylo",
+      "schedule": {
+        "tz": "EST",
+        "wed": "12P",
+        "thu": "12P",
+        "sat": "12P",
+        "sun": "12P"
+      }
     },
     {
       "name": "Monika_witha_k",
@@ -79,7 +86,12 @@ window.FF_DATA = {
       "about": "Part-time streamer, full-time introvert, lifelong theater kid. Building a cozy, judgment-free zone out of chaos and jump scares.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/c1127cd6-522a-4288-8f51-d840eadc66f5-profile_image-300x300.jpeg",
       "twitch": "https://www.twitch.tv/beast10334",
-      "channel": "beast10334"
+      "channel": "beast10334",
+      "schedule": {
+        "tz": "CST*",
+        "fri": "6-11P",
+        "sun": "When able, 6P"
+      }
     },
     {
       "name": "Ke3bz",
@@ -98,7 +110,13 @@ window.FF_DATA = {
       "about": "Professional musician, IT network engineer, music director, and voice actor — streaming part-time since 2020.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/addbb54a-afb0-4e88-b3da-9b3967d3a0de-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/ke3bz",
-      "channel": "ke3bz"
+      "channel": "ke3bz",
+      "schedule": {
+        "tz": "EST",
+        "tue": "9P",
+        "thu": "9P",
+        "sat": "9P"
+      }
     },
     {
       "name": "Ibbygrey",
@@ -118,7 +136,13 @@ window.FF_DATA = {
       "about": "6+ years streaming, founding F&F member since July 2025. First stream July 21, 2019; earned affiliate status in 2023.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/93ac98aa-a989-420c-a009-469a7aa49e3b-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/ibbygrey",
-      "channel": "ibbygrey"
+      "channel": "ibbygrey",
+      "schedule": {
+        "tz": "EST",
+        "tue": "5-9P",
+        "wed": "5-9P",
+        "fri": "5P-10P"
+      }
     },
     {
       "name": "chefjess_95",
@@ -137,7 +161,12 @@ window.FF_DATA = {
       "about": "Chef-turned-gamer who refuses affiliate monetization on principle — every dollar goes to Extra Life and the Crohn's & Colitis Foundation instead.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/226ac8f3-355d-471b-bdbb-504303d08f8e-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/chefjess_95",
-      "channel": "chefjess_95"
+      "channel": "chefjess_95",
+      "schedule": {
+        "tz": "EST",
+        "tue": "7-9:30P",
+        "wed": "7-10P"
+      }
     },
     {
       "name": "thejonofwar",
@@ -157,7 +186,12 @@ window.FF_DATA = {
       "about": "8-bit-crushing, speed-running charity streamer with a lifelong console collection — and a fresh Helldivers II addiction.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/bae47e2d-7b02-4949-9bcc-0e0fac9ef606-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/thejonofwar",
-      "channel": "thejonofwar"
+      "channel": "thejonofwar",
+      "schedule": {
+        "tz": "EST",
+        "wed": "8P",
+        "sat": "9P"
+      }
     },
     {
       "name": "Thebrandymancan",
@@ -176,7 +210,13 @@ window.FF_DATA = {
       "about": "Streaming since 2019, raised on Intellivision and Roller Coaster Tycoon with his grandfather. Proud dad to Jack Russell Joy, age 13.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/9554debd-8514-4178-a162-f7da4126a59d-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/thebrandymancan",
-      "channel": "thebrandymancan"
+      "channel": "thebrandymancan",
+      "schedule": {
+        "tz": "EST",
+        "wed": "Bonus 7-10P",
+        "fri": "7P",
+        "sat": "Bonus 7P"
+      }
     },
     {
       "name": "Emmanessy",
@@ -196,7 +236,13 @@ window.FF_DATA = {
       "twitch": "https://www.twitch.tv/emmanessy",
       "youtube": "https://www.youtube.com/@EmmanessyGaming",
       "tiktok": "https://www.tiktok.com/@emmanessygaming",
-      "channel": "emmanessy"
+      "channel": "emmanessy",
+      "schedule": {
+        "tz": "EST",
+        "mon": "11A-3P",
+        "wed": "11A-3P",
+        "fri": "11A-3P"
+      }
     },
     {
       "name": "Vestium",
@@ -213,7 +259,12 @@ window.FF_DATA = {
       "about": "Former \"professional\" D&D dungeon master, now running games at conventions. Chasing a bucket list of every country — 60 down so far.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/f3e3efa4-125d-44da-a6fb-2f8a8645f45b-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/vestium_",
-      "channel": "vestium_"
+      "channel": "vestium_",
+      "schedule": {
+        "tz": "AST",
+        "sat": "9A-1P",
+        "sun": "9A-1P"
+      }
     },
     {
       "name": "archimedes743",
@@ -230,7 +281,13 @@ window.FF_DATA = {
       "about": "52 years young, engineer & father of 4, started streaming on a dare with his kids in 2023. Runs the A_A_Streaming family team with son Axle and daughter Churl.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/e4ee6ce5-d020-4d62-848b-3962f630315a-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/a_a_streaming",
-      "channel": "a_a_streaming"
+      "channel": "a_a_streaming",
+      "schedule": {
+        "tz": "CST",
+        "mon": "8:45P-10:30P",
+        "wed": "8:45P-10:30P",
+        "sun": "2:30P-4:30P"
+      }
     },
     {
       "name": "w0lferz",
@@ -250,7 +307,15 @@ window.FF_DATA = {
       "about": "Former dog groomer and humane society worker, now streaming FFXIV, Fortnite, and Phasmophobia every weekday.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/9ad58e31-979f-46a0-8e2a-5b1c7258d335-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/w0lferz",
-      "channel": "w0lferz"
+      "channel": "w0lferz",
+      "schedule": {
+        "tz": "CST",
+        "mon": "9A",
+        "tue": "9A",
+        "wed": "9A",
+        "thu": "9A",
+        "fri": "9A"
+      }
     },
     {
       "name": "Mitharan",
@@ -269,7 +334,14 @@ window.FF_DATA = {
       "about": "Started streaming to recruit for an X-wing vs. TIE Fighter clan in 2000. Now donates all stream revenue to veterans', animal, and LGBT charities.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/9768ae9d-4356-4a47-b2ee-eefe88ba1e58-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/tra_mitharan",
-      "channel": "tra_mitharan"
+      "channel": "tra_mitharan",
+      "schedule": {
+        "tz": "CST",
+        "mon": "4:30P-7:30P",
+        "tue": "4:30P-7:30P",
+        "thu": "4:30P-8:30P",
+        "sun": "10A-2P"
+      }
     },
     {
       "name": "swagatron9k",
@@ -284,7 +356,11 @@ window.FF_DATA = {
       "about": "Laid-back community leader streaming on and off since the Warzone days. Married with two kids who open Pokémon packs on stream.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/47e942c9-b6c0-4f02-a831-ba1d2a4942df-profile_image-300x300.jpeg",
       "twitch": "https://www.twitch.tv/swagatron9k",
-      "channel": "swagatron9k"
+      "channel": "swagatron9k",
+      "schedule": {
+        "tz": "EST",
+        "note": "On hiatus"
+      }
     },
     {
       "name": "TheTog82",
@@ -304,7 +380,17 @@ window.FF_DATA = {
       "about": "US Army veteran streaming 7 days a week since December 2023. Widely, unfairly, blamed for causing chaos.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/26ee63db-c75e-4588-b252-f239d2008e57-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/thetog82",
-      "channel": "thetog82"
+      "channel": "thetog82",
+      "schedule": {
+        "tz": "EST",
+        "mon": "6P",
+        "tue": "6P",
+        "wed": "6P",
+        "thu": "6P",
+        "fri": "6P",
+        "sat": "6P",
+        "sun": "6P"
+      }
     },
     {
       "name": "5qu34k5",
@@ -322,7 +408,15 @@ window.FF_DATA = {
       "about": "Self-proclaimed nerdy athlete on an indefinite hiatus from streaming while chasing a Sports Broadcasting degree.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/9045ea6a-4aee-47e0-b7a7-458535bb4996-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/5qu34k5",
-      "channel": "5qu34k5"
+      "channel": "5qu34k5",
+      "schedule": {
+        "tz": "EST",
+        "tue": "10A-6P",
+        "wed": "10A-6P",
+        "thu": "10A-6P",
+        "fri": "10A-6P",
+        "sat": "10A-6P"
+      }
     },
     {
       "name": "zeldasauce",
@@ -342,7 +436,15 @@ window.FF_DATA = {
       "about": "Mom of two who streams after bedtime — which never quite happens on schedule. Official Community Contributor for World of Warships.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/zeldasauce-profile_image-f1de5777e2e069d9-300x300.jpeg",
       "twitch": "https://www.twitch.tv/zeldasauce",
-      "channel": "zeldasauce"
+      "channel": "zeldasauce",
+      "schedule": {
+        "tz": "PST*",
+        "wed": "8P-11P",
+        "thu": "8P-11P",
+        "fri": "8P-11P",
+        "sat": "8P-11P",
+        "sun": "8P-11P"
+      }
     },
     {
       "name": "JayBartlett",
@@ -360,7 +462,15 @@ window.FF_DATA = {
       "about": "YouTube-first creator since 2020, new to Twitch since last October. Hunts games with WillyLo at least once a month for the channel.",
       "img": "assets/avatars/jaybartlett.jpg",
       "youtube": "https://www.youtube.com/@JayBartlett1975",
-      "channel": null
+      "channel": null,
+      "schedule": {
+        "tz": "EST",
+        "mon": "9A",
+        "tue": "9A",
+        "wed": "9A",
+        "thu": "9A",
+        "fri": "9A"
+      }
     },
     {
       "name": "Vyc Tory",
@@ -378,7 +488,13 @@ window.FF_DATA = {
       "about": "A man of few words with a weird sense of humor, who started streaming as a distraction after losing his wife — and found friends along the way.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/3a04b36e-5afe-472e-aceb-3a254e93f86c-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/vyctory1",
-      "channel": "vyctory1"
+      "channel": "vyctory1",
+      "schedule": {
+        "tz": "EST",
+        "mon": "1-4P",
+        "thu": "1-4P",
+        "fri": "1-4P"
+      }
     },
     {
       "name": "Wulfborn",
@@ -395,7 +511,14 @@ window.FF_DATA = {
       "about": "Former CAF reservist and martial artist since childhood. Proud Pagan and self-described massive lore junkie for Star Wars, Elder Scrolls, and Warhammer 40K.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/3ff550fe-9694-4e0b-ad2c-33e7d942c10e-profile_image-300x300.jpeg",
       "twitch": "https://www.twitch.tv/wulfbornttv",
-      "channel": "wulfbornttv"
+      "channel": "wulfbornttv",
+      "schedule": {
+        "tz": "PST*",
+        "wed": "6P-9P",
+        "fri": "6P-10P",
+        "sat": "1P-8P",
+        "sun": "4P-8P"
+      }
     },
     {
       "name": "GamerGirlFred",
@@ -413,7 +536,16 @@ window.FF_DATA = {
       "about": "Sign-builder by day, sword-and-book collector always. Only gaming for 6 years, streaming for 18 months, and loving every new discovery.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/e4334249-6ed6-4885-98ac-fb84fbdff8eb-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/therealgirlfromgallifrey",
-      "channel": "therealgirlfromgallifrey"
+      "channel": "therealgirlfromgallifrey",
+      "schedule": {
+        "tz": "EST",
+        "mon": "6P-6P",
+        "tue": "6P-6P",
+        "wed": "6P-6P",
+        "thu": "6P-6P",
+        "fri": "6P-6P",
+        "sat": "9A-1P / 2:30-5:30"
+      }
     },
     {
       "name": "Glytch",
@@ -432,7 +564,13 @@ window.FF_DATA = {
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/74a088b9-4533-4bb5-8a6a-defdcfc31d96-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/glytchgames",
       "youtube": "https://www.youtube.com/@GlytchGamesTTV",
-      "channel": "glytchgames"
+      "channel": "glytchgames",
+      "schedule": {
+        "tz": "CST",
+        "tue": "7:30P-12A",
+        "thu": "7:30P-12A",
+        "sun": "7:30P-12A"
+      }
     },
     {
       "name": "PappaPaws",
@@ -452,7 +590,14 @@ window.FF_DATA = {
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/d3b84715-af28-4d6b-9262-8cda2f0464ab-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/pappapaws",
       "youtube": "https://www.youtube.com/@PappaPaws",
-      "channel": "pappapaws"
+      "channel": "pappapaws",
+      "schedule": {
+        "tz": "EST",
+        "mon": "10A",
+        "tue": "10A",
+        "wed": "10A",
+        "thu": "10A"
+      }
     },
     {
       "name": "Huldra_86",
@@ -468,7 +613,15 @@ window.FF_DATA = {
       "about": "C-PTSD survivor and mental health advocate who found her calling in streaming instead of the therapy career she once dreamed of. Two bonus stepdaughters and a 9-year-old at home.",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/395a6c5a-6ea0-4f77-9c6d-c510fcdf4067-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/huldra_86",
-      "channel": "huldra_86"
+      "channel": "huldra_86",
+      "schedule": {
+        "tz": "GMT",
+        "mon": "10A-2:30P",
+        "tue": "10A-2:30P",
+        "wed": "7:30P-10P",
+        "thu": "10A-2:30P",
+        "fri": "7:30P-10P"
+      }
     },
     {
       "name": "ThatAngryViking",
@@ -489,7 +642,17 @@ window.FF_DATA = {
       "twitch": "https://www.twitch.tv/thatangryviking",
       "youtube": "https://www.youtube.com/thatangryviking",
       "tiktok": "https://www.tiktok.com/@thatangryviking",
-      "channel": "thatangryviking"
+      "channel": "thatangryviking",
+      "schedule": {
+        "tz": "AST",
+        "mon": "8:30P-12:30A",
+        "tue": "8:30P-12:30A",
+        "wed": "8:30P-12:30A",
+        "thu": "8:30P-12:30A",
+        "fri": "8:30P-12:30A",
+        "sat": "8:30P-12:30A",
+        "sun": "8:30P-12:30A"
+      }
     },
     {
       "name": "paskaroni",
@@ -506,7 +669,15 @@ window.FF_DATA = {
       "about": "Twitch Partner and Vault Network streamer. Bio details coming soon — check back for the full introduction!",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/4bc776c3-ed3f-4983-a28a-09267de13a41-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/paskaroni",
-      "channel": "paskaroni"
+      "channel": "paskaroni",
+      "schedule": {
+        "tz": "EST",
+        "mon": "12-4P",
+        "tue": "12-4P",
+        "wed": "12-4P",
+        "thu": "12-4P",
+        "fri": "12-4P"
+      }
     },
     {
       "name": "HeyD763",
@@ -521,7 +692,14 @@ window.FF_DATA = {
       "about": "Runs the \"Den of Shenanigans,\" playing a bit of everything. Bio details coming soon — check back for the full introduction!",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/df8ba4b5-28bf-4f6d-a761-a66cfa965435-profile_image-300x300.jpeg",
       "twitch": "https://www.twitch.tv/heyd763",
-      "channel": "heyd763"
+      "channel": "heyd763",
+      "schedule": {
+        "tz": "PST",
+        "mon": "10A",
+        "tue": "Bonus",
+        "wed": "10A",
+        "thu": "Bonus"
+      }
     },
     {
       "name": "Serinatonin",
@@ -537,7 +715,17 @@ window.FF_DATA = {
       "about": "Plays a variety of multiplayer games and loves meeting new friends in the community Discord. Bio details coming soon — check back for the full introduction!",
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/a41979b7-fae4-41e0-a26b-062fd36a5edc-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/serinatonin",
-      "channel": "serinatonin"
+      "channel": "serinatonin",
+      "schedule": {
+        "tz": "CST",
+        "mon": "10A-5P",
+        "tue": "10A-5P",
+        "wed": "10A-5P",
+        "thu": "10A-5P",
+        "fri": "10A-5P",
+        "sat": "10A-5P",
+        "sun": "10A-5P"
+      }
     },
     {
       "name": "tehcricket",
@@ -555,7 +743,16 @@ window.FF_DATA = {
       "img": "https://static-cdn.jtvnw.net/jtv_user_pictures/1e149301-99a4-41c8-ba50-173682d0e694-profile_image-300x300.png",
       "twitch": "https://www.twitch.tv/tehcricket",
       "youtube": "https://www.youtube.com/@tehcricket",
-      "channel": "tehcricket"
+      "channel": "tehcricket",
+      "schedule": {
+        "tz": "CST",
+        "mon": "9A",
+        "tue": "9A",
+        "wed": "9A",
+        "fri": "9A",
+        "sat": "9A",
+        "sun": "9A"
+      }
     }
   ]
 };
