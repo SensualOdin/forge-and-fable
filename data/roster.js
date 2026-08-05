@@ -540,11 +540,11 @@ window.FF_DATA = {
       "channel": "therealgirlfromgallifrey",
       "schedule": {
         "tz": "EST",
-        "mon": "6P-6P",
-        "tue": "6P-6P",
-        "wed": "6P-6P",
-        "thu": "6P-6P",
-        "fri": "6P-6P",
+        "mon": "6-9P",
+        "tue": "6-9P",
+        "wed": "6-9P",
+        "thu": "6-9P",
+        "fri": "6-9P",
         "sat": "9A-1P / 2:30-5:30"
       }
     },

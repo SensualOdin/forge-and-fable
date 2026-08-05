@@ -167,6 +167,33 @@
     });
   }
 
+  /* ---------- the mark takes light while the guild is on air ----------
+     A pinned tab should be able to tell you someone is streaming without
+     being opened: the hammer strikes brighter and the forge glow comes up. */
+  const FAVICON_COLD = 'assets/favicon.svg';
+  const FAVICON_LIT = 'data:image/svg+xml,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+    '<rect width="64" height="64" rx="12" fill="#171310"/>' +
+    '<circle cx="33" cy="34" r="25" fill="#d8531f" opacity=".3"/>' +
+    '<path d="M10 42c7-4 14-4 22-1 8-3 15-3 22 1v14c-7-4-14-4-22-1-8-3-15-3-22 1z" fill="#ece0c3" stroke="#c9a35c" stroke-width="1.6" stroke-linejoin="round"/>' +
+    '<path d="M32 41v14" stroke="#b9a377" stroke-width="1.4"/>' +
+    '<path d="M54 8 38 27" stroke="#c9a35c" stroke-width="3" stroke-linecap="round"/>' +
+    '<path d="M33 22l9-9 8 8-9 9z" fill="#ff8c42" stroke="#ffd6a0" stroke-width="1.4" stroke-linejoin="round"/>' +
+    '<path d="M32 29l2.5 6.6L41 38l-6.5 2.4L32 47l-2.5-6.6L23 38l6.5-2.4z" fill="#ffe0b8"/>' +
+    '</svg>');
+
+  function initLiveFavicon() {
+    const link = document.querySelector('link[rel="icon"]');
+    if (!link) return;
+    let lit = null;
+    state.listeners.push(() => {
+      const on = Object.values(state.statuses).some(s => s.live);
+      if (on === lit) return;
+      lit = on;
+      link.href = on ? FAVICON_LIT : FAVICON_COLD;
+    });
+  }
+
   /* ---------- shared UI: scroll reveals + count-ups ---------- */
   function initReveals() {
     const els = document.querySelectorAll('.reveal');
@@ -182,6 +209,8 @@
   }
 
   function countUp(el) {
+    const stat = el.closest && el.closest('.stat');
+    if (stat) stat.classList.add('struck');   // the blow that lands the number
     const target = parseInt(el.dataset.count, 10);
     if (REDUCED || isNaN(target)) { el.textContent = el.dataset.count; return; }
     const dur = 1100;
@@ -206,6 +235,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     initNav();
     initNavLiveBadge();
+    initLiveFavicon();
     initReveals();
     initCounters();
     if (!REDUCED) { /* embers are page-owned; nothing global */ }

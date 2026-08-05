@@ -160,7 +160,7 @@
     <div class="roster-head reveal">
       <span class="eyebrow">The Guild Roster</span>
       <h2 id="rosterTitle">Twenty-Five Chapters, One Team</h2>
-      <p>Search by name or game, or filter by where they stream. Anyone broadcasting right now carries a live mark.</p>
+      <p>The wall sorts itself by heat: whoever is at the anvil right now comes first, then everyone scheduled today. Search by name or game, or filter by where they stream.</p>
     </div>
     <div class="controls reveal d1">
       <div class="search-box">
@@ -294,6 +294,20 @@
     return links.length ? '<span class="social-links">' + links.join('') + '</span>' : '';
   }
 
+  // follower counts arrive after first paint; kept here so a re-render keeps them
+  const followers = {};
+  const fmtFollowers = n => n >= 10000
+    ? (n / 1000).toFixed(n % 1000 >= 100 ? 1 : 0).replace(/\.0$/, '') + 'k'
+    : Number(n).toLocaleString();
+
+  function followersHTML(m){
+    const f = followers[m.channel];
+    if (!f || f.count == null) return '';
+    return '<div class="card-followers">⚑ ' + fmtFollowers(f.count) + ' followers' +
+      (f.crossed ? ' <span class="milestone-pop">🎉 crossed ' + fmtFollowers(f.crossed) + '!</span>' : '') +
+      '</div>';
+  }
+
   function cardHTML(m){
     const sigil = (D.titles && D.titles[m.name]) || 'Forger';
     const avatar = FF.avatarFor(m);
@@ -313,6 +327,7 @@
           '<h3 class="card-name">' + nameInner + '</h3>' +
         '</div>' +
         '<div class="card-country">' + esc(m.country || '') + '</div>' +
+        followersHTML(m) +
         '<div class="card-now"></div>' +
         '<p class="card-about">' + esc(m.about) + '</p>' +
         '<div class="card-games">' + m.games.map(g => '<span class="tag">' + esc(g) + '</span>').join('') + '</div>' +
@@ -334,6 +349,18 @@
     });
   }
 
+  /* ---------- the wall reads in order of heat ----------
+     Anyone at the anvil right now comes first, then whoever is scheduled
+     today, then the rest of the guild. Data-entry order tells no story. */
+  const todayIdx = (new Date().getDay() + 6) % 7; // Mon = 0
+
+  function groupHeadingHTML(cls, label, n){
+    return '<div class="roster-group ' + cls + '">' +
+      '<h3>' + label + '</h3>' +
+      '<span class="rg-n">' + n + '</span>' +
+      '<span class="rg-rule" aria-hidden="true"></span></div>';
+  }
+
   function render(){
     const q = searchInput.value.trim().toLowerCase();
     const filtered = D.members.filter(m => {
@@ -344,9 +371,31 @@
       if (!q) return true;
       return (m.name + ' ' + m.country + ' ' + m.games.join(' ') + ' ' + m.about).toLowerCase().includes(q);
     });
-    grid.innerHTML = filtered.length
-      ? filtered.map(cardHTML).join('')
-      : '<div class="empty-note">No one in the guild matches that search yet.</div>';
+
+    if (!filtered.length){
+      grid.innerHTML = '<div class="empty-note">No one in the guild matches that search yet.</div>';
+      countLine.textContent = '0 of ' + D.members.length + ' guild members shown';
+      applyLiveMarks();
+      return;
+    }
+
+    const isLive = m => !!(m.channel && FF.state.statuses[m.channel] && FF.state.statuses[m.channel].live);
+    const live = filtered.filter(isLive);
+    const today = filtered.filter(m => !isLive(m) && FFTime.streamsOn(m, todayIdx));
+    const rest = filtered.filter(m => !isLive(m) && !FFTime.streamsOn(m, todayIdx));
+
+    // With nothing live and nobody scheduled, headings would label a single pile.
+    const grouped = live.length > 0 || today.length > 0;
+    const section = (cls, label, list) =>
+      list.length ? (grouped ? groupHeadingHTML(cls, label, list.length) : '') + list.map(cardHTML).join('') : '';
+
+    grid.innerHTML =
+      section('hot', 'At the Anvil Now', live) +
+      section('today', 'Striking Today', today) +
+      section('', live.length || today.length ? 'The Rest of the Guild' : 'The Guild', rest);
+
+    // a milestone gets one celebration, not one every poll
+    Object.keys(followers).forEach(ch => { followers[ch].crossed = null; });
     countLine.textContent = filtered.length + ' of ' + D.members.length + ' guild members shown';
     applyLiveMarks();
   }
@@ -419,7 +468,16 @@
   buildChips();
   searchInput.addEventListener('input', render);
   render();
-  FF.onLiveUpdate(applyLiveMarks);
+  // Re-group only when the live roster actually changes; a poll that finds the
+  // same people on air just refreshes their marks, so cards don't flicker.
+  let lastLiveKey = '';
+  FF.onLiveUpdate(() => {
+    const key = Object.keys(FF.state.statuses)
+      .filter(ch => FF.state.statuses[ch].live).sort().join(',');
+    if (key === lastLiveKey) { applyLiveMarks(); return; }
+    lastLiveKey = key;
+    render();
+  });
   FF.startPolling();
 
   const ALL_CHANNELS = D.members.filter(m => m.channel).map(m => m.channel).join(',');
@@ -464,7 +522,6 @@
   /* ---------- follower counts + milestone celebrations ---------- */
   (async function(){
     const MILESTONES = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
-    const fmt = n => n >= 10000 ? (n / 1000).toFixed(n % 1000 >= 100 ? 1 : 0).replace(/\.0$/, '') + 'k' : Number(n).toLocaleString();
     try {
       const r = await fetch('/api/team?channels=' + encodeURIComponent(ALL_CHANNELS));
       if (!r.ok) return;
@@ -472,20 +529,16 @@
       let prev = {};
       try { prev = JSON.parse(localStorage.getItem('ff:followers')) || {}; } catch(e){}
       const next = {};
-      document.querySelectorAll('.card[data-channel]').forEach(card => {
-        const ch = card.dataset.channel;
+      Object.keys(members).forEach(ch => {
         const info = members[ch];
         if (!info || info.followers == null) return;
         next[ch] = info.followers;
-        const crossed = MILESTONES.filter(t => prev[ch] != null && prev[ch] < t && info.followers >= t).pop();
-        const country = card.querySelector('.card-country');
-        if (country && !card.querySelector('.card-followers')) {
-          country.insertAdjacentHTML('afterend',
-            '<div class="card-followers">⚑ ' + fmt(info.followers) + ' followers' +
-            (crossed ? ' <span class="milestone-pop">🎉 crossed ' + fmt(crossed) + '!</span>' : '') +
-            '</div>');
-        }
+        followers[ch] = {
+          count: info.followers,
+          crossed: MILESTONES.filter(t => prev[ch] != null && prev[ch] < t && info.followers >= t).pop() || null
+        };
       });
+      render();
       try { localStorage.setItem('ff:followers', JSON.stringify(Object.assign(prev, next))); } catch(e){}
     } catch (e) { /* counts simply don't appear */ }
   })();

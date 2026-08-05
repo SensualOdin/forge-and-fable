@@ -43,7 +43,10 @@
     if (toks[1]) {
       const merB = toks[1].mer || toks[0].mer || 'p';
       end = toMinutes(toks[1].h, toks[1].min, merB);
-      if (end <= start) end += 24 * 60; // crosses midnight ("8:30P-12:30A")
+      // "6P-6P" is a typo in the sheet, not a 24-hour stream: treat it as
+      // open-ended rather than exporting a day-long weekly calendar event.
+      if (end === start) end = null;
+      else if (end < start) end += 24 * 60; // genuinely crosses midnight ("8:30P-12:30A")
     }
     return { start, end };
   }
@@ -113,6 +116,14 @@
     return (parsed.label ? parsed.label + ' ' : '') + parts.join(' / ');
   }
 
+  // Does this member have a scheduled slot on the given weekday (Mon = 0)?
+  function streamsOn(member, dayIdx) {
+    const s = member && member.schedule;
+    if (!s || s.note) return false;
+    const parsed = parseCell(s[DAYS[dayIdx]]);
+    return !!(parsed && parsed.ranges.length);
+  }
+
   // Soonest upcoming scheduled start across all members.
   function nextStrike(members) {
     let best = null;
@@ -143,6 +154,10 @@
     ];
     const BYDAY = { mon: 'MO', tue: 'TU', wed: 'WE', thu: 'TH', fri: 'FR', sat: 'SA', sun: 'SU' };
     const pad = n => String(n).padStart(2, '0');
+    // RFC 5545: commas, semicolons and backslashes are delimiters in text values,
+    // so a member name like "Sam, the Bard" would otherwise corrupt the event.
+    const esc = v => String(v == null ? '' : v).replace(/([\\;,])/g, '\\$1').replace(/\r?\n/g, '\\n');
+    const MAX_MIN = 12 * 60;   // a recurring weekly slot longer than this is a parse artifact
     const now = new Date();
     const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
 
@@ -151,6 +166,7 @@
       if (!s || s.note) continue;
       const iana = ianaFor(s.tz);
       if (!iana) continue;
+      const approxTz = /\*/.test(String(s.tz || ''));  // the sheet's "CST*" — a guess, not a confirmation
       DAYS.forEach((d, di) => {
         const parsed = parseCell(s[d]);
         if (!parsed || !parsed.ranges.length) return;
@@ -161,9 +177,15 @@
             const cand = new Date(now.getFullYear(), now.getMonth(), now.getDate() + add);
             if ((cand.getDay() + 6) % 7 === di) first = cand;
           }
-          const durMin = r.end != null ? r.end - r.start : 120; // default 2h
+          let durMin = r.end != null ? r.end - r.start : 120; // open-ended slots default to 2h
+          if (durMin <= 0) durMin = 120;
+          if (durMin > MAX_MIN) durMin = MAX_MIN;
           const dt = first.getFullYear() + pad(first.getMonth() + 1) + pad(first.getDate()) +
             'T' + pad(Math.floor(r.start / 60) % 24) + pad(r.start % 60) + '00';
+          const desc = 'Regular weekly stream time for ' + m.name + '.' +
+            (r.end == null ? ' End time is not listed, so this is a 2-hour placeholder.' : '') +
+            (approxTz ? ' Heads up: this streamer\'s timezone is approximate, so the event may be off by an hour.' : '') +
+            ' Schedules shift — the Live page always knows who is actually on the air.';
           lines.push(
             'BEGIN:VEVENT',
             'UID:' + (m.channel || m.name.toLowerCase().replace(/\W+/g, '')) + '-' + d + '-' + ri + '@forge-and-fable',
@@ -171,7 +193,8 @@
             'DTSTART;TZID=' + iana + ':' + dt,
             'DURATION:PT' + durMin + 'M',
             'RRULE:FREQ=WEEKLY;BYDAY=' + BYDAY[d],
-            'SUMMARY:' + m.name + ' live on Twitch' + (parsed.label ? ' (' + parsed.label + ')' : ''),
+            'SUMMARY:' + esc(m.name + ' live on Twitch' + (parsed.label ? ' (' + parsed.label + ')' : '') + (approxTz ? ' ~' : '')),
+            'DESCRIPTION:' + esc(desc),
             'URL:' + (m.channel ? 'https://www.twitch.tv/' + m.channel : siteUrl),
             'END:VEVENT'
           );
@@ -179,8 +202,24 @@
       });
     }
     lines.push('END:VCALENDAR');
-    return lines.join('\r\n');
+    // RFC 5545 caps a content line at 75 octets; long descriptions must be folded
+    // or strict clients reject the file.
+    // Fold at 70 rather than the 75-octet limit so multi-byte characters keep
+    // headroom, and never break between a backslash and the character it escapes.
+    const fold = line => {
+      if (line.length <= 70) return line;
+      const out = [];
+      let i = 0, width = 70;
+      while (i < line.length) {
+        let take = Math.min(width, line.length - i);
+        while (take > 1 && line[i + take - 1] === '\\') take--;
+        out.push((i ? ' ' : '') + line.substr(i, take));
+        i += take; width = 69;
+      }
+      return out.join('\r\n');
+    };
+    return lines.map(fold).join('\r\n');
   }
 
-  window.FFTime = { ianaFor, parseCell, cellToLocal, nextStrike, icsForTeam, fmtLocal };
+  window.FFTime = { ianaFor, parseCell, cellToLocal, nextStrike, streamsOn, icsForTeam, fmtLocal };
 })();
