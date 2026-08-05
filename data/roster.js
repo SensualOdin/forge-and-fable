@@ -21,7 +21,8 @@ window.FF_DATA = {
   },
   "titles": {
     "WillyLo": "Forgemaster",
-    "Monika_witha_k": "Keeper of the Swords"
+    "Monika_witha_k": "Keeper of the Swords",
+    "JayBartlett": "The Red Knight"
   },
   "members": [
     {
