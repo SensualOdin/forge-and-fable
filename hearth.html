@@ -27,10 +27,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ff.css">
+<link rel="stylesheet" href="css/pages/hearth.css">
+<noscript><style>
+  .reveal{ opacity:1 !important; transform:none !important; }
+  [data-parallax]{ translate:none !important; }
+</style></noscript>
 </head>
-<body>
+<body class="page-hearth">
 
 <a class="skip-link" href="#main">Skip to content</a>
+
+<div class="hearth-atmos" aria-hidden="true"></div>
 
 <header class="site">
   <div class="nav">
@@ -49,8 +56,9 @@
     </button>
     <nav class="links" id="navLinks" aria-label="Main">
       <a href="index.html">Home</a>
+      <a href="index.html#tale">The Tale</a>
       <a href="index.html#roster">The Guild</a>
-      <a href="schedule.html">Schedule</a>
+      <a href="schedule.html">The Forge Week</a>
       <a href="hearth.html" class="current" aria-current="page">The Hearth</a>
       <a class="nav-live none" id="navLive" href="live.html"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
@@ -59,31 +67,81 @@
 
 <main id="main">
 
-<section class="live-hero">
+<section class="live-hero hearth-hero">
+  <span class="grain" aria-hidden="true"></span>
   <div class="wrap">
+    <!-- THE MARK. This was a filled two-gradient flame: glossy, off-palette,
+         and at 42px it read as an operating-system colour emoji pasted into
+         the highest-attention position on the page. It is drawn now in the
+         same line-work vocabulary as the brand sigil, the anvil and the
+         schedule glyphs — stroked, warm, no fill except the one struck
+         ember at the core — so the first mark a visitor sees is the site's
+         own hand rather than their font stack's. -->
+    <svg class="hearth-flame" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <!-- the flame, outlined -->
+      <path d="M20 4.5c5.4 6.7 8.7 12.1 8.7 18.4A8.7 8.7 0 0 1 20 31.6a8.7 8.7 0 0 1-8.7-8.7c0-4.5 2.1-7.6 4.5-10.8.4 3 1.3 4.8 2.7 5.4-.6-4.6-.3-8.6 1.5-13z"
+            stroke="#c9a35c" stroke-width="1.5" stroke-linejoin="round"/>
+      <!-- the core, the one struck ember -->
+      <path d="M20 19.8c2.3 3 3.6 5.2 3.6 7.5a3.6 3.6 0 0 1-7.2 0c0-2 1.1-3.5 2.4-5.1.2 1.4.6 2.2 1.2 2.5z"
+            fill="#ff8c42" opacity=".9"/>
+      <!-- the hearth it burns on: a struck rule with turned-up ends -->
+      <path d="M9 36.5h22M11.5 40.5h17" stroke="#8a7040" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M9 36.5l-2.5-3M31 36.5l2.5-3" stroke="#8a7040" stroke-width="1.4" stroke-linecap="round"/>
+      <!-- two sparks, deliberately unequal -->
+      <path d="M31.5 14.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="#ff8c42" opacity=".75"/>
+      <circle cx="7.6" cy="20.4" r="1.15" fill="#c9a35c" opacity=".6"/>
+    </svg>
     <span class="eyebrow">Some Forge for Others</span>
     <h1>The Hearth</h1>
-    <p>A hearth warms everyone who gathers at it. These guild members turn their streams into fundraisers, awareness drives, and safe places — every one of them wrote their cause into their own chapter.</p>
+    <p class="hearth-lede">A hearth warms everyone who gathers at it. These guild members turn their streams into fundraisers, awareness drives, and safe places — every one of them wrote their cause into their own chapter.</p>
   </div>
 </section>
 
 <section class="hearth-section">
   <div class="wrap">
-    <div class="hearth-grid" id="hearthGrid"></div>
+    <div class="hearth-grid" id="hearthGrid" data-reveal-stagger="6"></div>
 
-    <div class="hearth-causes reveal">
-      <div class="section-label">
-        <span class="eyebrow">The Causes We Carry</span>
-        <h2>Where the Warmth Goes</h2>
+    <div class="hearth-causes hearthstone rim-top reveal">
+      <span class="hammered" aria-hidden="true"></span>
+      <span class="grain" aria-hidden="true"></span>
+      <div class="hearthstone-inner">
+        <div class="section-label">
+          <span class="eyebrow">The Causes We Carry</span>
+          <h2>Where the Warmth Goes</h2>
+        </div>
+        <div class="cause-row">
+          <a class="cause-chip" href="https://www.extra-life.org" target="_blank" rel="noopener">
+            <span class="cause-name">Extra Life — Children's Miracle Network Hospitals</span>
+            <span class="cause-who">Carried by chefjess_95</span>
+          </a>
+          <a class="cause-chip" href="https://www.crohnscolitisfoundation.org" target="_blank" rel="noopener">
+            <span class="cause-name">Crohn's &amp; Colitis Foundation</span>
+            <span class="cause-who">Carried by chefjess_95</span>
+          </a>
+          <span class="cause-chip static">
+            <span class="cause-name">LGBTQIA+ Human Rights</span>
+            <span class="cause-who">Carried by Emmanessy and Mitharan</span>
+          </span>
+          <span class="cause-chip static">
+            <span class="cause-name">Veterans' &amp; Animal Charities</span>
+            <span class="cause-who">Carried by Mitharan</span>
+          </span>
+          <span class="cause-chip static">
+            <span class="cause-name">Mental Health Advocacy</span>
+            <span class="cause-who">Carried by PappaPaws and Huldra_86</span>
+          </span>
+          <span class="cause-chip static">
+            <span class="cause-name">Speedruns Run for Charity</span>
+            <span class="cause-who">Carried by thejonofwar</span>
+          </span>
+        </div>
+        <div class="hearth-give">
+          <a class="cta-btn" href="https://www.extra-life.org" target="_blank" rel="noopener">Give Through Extra Life</a>
+          <p class="give-aside">The lit marks above go straight to the charity. The rest are carried stream by stream.</p>
+        </div>
+        <p class="hearth-note">Follow a beacon-bearer and you'll be there when they light it — the campaign links go up on their channels the night of the run. And Tav's Healthy Hearth, founded by ThatAngryViking, keeps the community's own wellness burning bright.</p>
       </div>
-      <div class="cause-row">
-        <a class="cause-chip" href="https://www.extra-life.org" target="_blank" rel="noopener">Extra Life — Children's Miracle Network Hospitals</a>
-        <a class="cause-chip" href="https://www.crohnscolitisfoundation.org" target="_blank" rel="noopener">Crohn's &amp; Colitis Foundation</a>
-        <span class="cause-chip static">LGBTQIA+ Human Rights</span>
-        <span class="cause-chip static">Veterans' &amp; Animal Charities</span>
-        <span class="cause-chip static">Mental Health Advocacy</span>
-      </div>
-      <p class="hearth-note">Want to give during a stream? Each member's channel has their active campaign — drop into their chat and they'll point the way. And Tav's Healthy Hearth, founded by ThatAngryViking, keeps the community's own wellness burning bright.</p>
+      <span class="hearth-embers" aria-hidden="true"></span>
     </div>
   </div>
 </section>
@@ -93,24 +151,62 @@
 <footer class="site">
   <div class="brand-text">FORGE &amp; FABLE</div>
   <p>A stream team for people who build things — worlds, communities, and each other.</p>
+  <nav class="foot-nav" aria-label="Footer">
+    <a href="index.html">Home</a>
+    <a href="index.html#tale">The Tale</a>
+    <a href="index.html#roster">The Guild</a>
+    <a href="schedule.html">The Forge Week</a>
+    <a href="hearth.html">The Hearth</a>
+    <a href="live.html">Live Now</a>
+  </nav>
+  <a class="foot-top" href="#top"><span aria-hidden="true">↑</span> Back to the top</a>
   <div class="foot-quote">“A little kindness goes a long way.”</div>
+  <div class="foot-fine">Est. 2025 &nbsp;·&nbsp; Live status via Twitch</div>
 </footer>
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
+<script src="js/ff-motion.js"></script>
 <script>
 (function(){
   'use strict';
   const D = window.FF_DATA, esc = FF.esc;
+
+  /* The cause each bearer carries, taken from the line they wrote about
+     themselves in data/roster.js. This slot used to say "Beacon-Bearer" on
+     all six cards — the page title, restated six times, in the one place a
+     visitor is looking for which cause THIS person streams for. Anything
+     not listed falls back to the guild title, so a new charity member can
+     never render a blank. */
+  const CAUSES = {
+    'chefjess_95': 'Extra Life · Crohn’s & Colitis',
+    'thejonofwar': 'Speedruns Run for Charity',
+    'Emmanessy':   'LGBTQIA+ Human Rights',
+    'Mitharan':    'Veterans’ · Animal · LGBT Charities',
+    'PappaPaws':   'Mental Health Education',
+    'Huldra_86':   'Mental Health Advocacy'
+  };
+
   const bearers = D.members.filter(m => m.cats && m.cats.includes('charity'));
-  document.getElementById('hearthGrid').innerHTML = bearers.map(m => {
+
+  /* Composition, not a directory: the first sheet runs the full width of
+     the grid and is set larger. The last one runs full width TOO, but only
+     when the remaining count would otherwise strand it alone in a half
+     row — so the shape is wide / pair / pair / wide at six bearers, and
+     still correct at five or seven. */
+  const closerRuns = bearers.length > 2 && (bearers.length - 1) % 2 === 1;
+
+  document.getElementById('hearthGrid').innerHTML = bearers.map((m, i) => {
     const avatar = FF.avatarFor(m);
-    return '<article class="hearth-card reveal">' +
+    const lead = i === 0;
+    const wide = lead || (closerRuns && i === bearers.length - 1);
+    const cls = 'hearth-card reveal' + (wide ? ' is-wide' : '') + (lead ? ' is-lead' : '');
+    return '<article class="' + cls + '">' +
       (avatar ? '<img class="hearth-avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
       '<div class="hearth-body">' +
-        '<div class="hearth-name">' + esc(m.name) + ' <span class="sigil">Beacon-Bearer</span></div>' +
+        '<div class="hearth-name">' + esc(m.name) + ' <span class="sigil">' + esc(CAUSES[m.name] || 'Beacon-Bearer') + '</span></div>' +
         '<p class="hearth-about">' + esc(m.about) + '</p>' +
-        (m.channel ? '<a class="live-link" href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">Watch &amp; Support</a>' : '') +
+        (m.channel ? '<a class="cta-btn" href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">Watch &amp; Support</a>' : '') +
       '</div>' +
     '</article>';
   }).join('');

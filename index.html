@@ -28,6 +28,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ff.css">
+<link rel="stylesheet" href="css/pages/home.css">
+<noscript><style>
+  /* without JS nothing ever adds .reveal.in — 14 containers, the whole roster
+     among them, would stay at opacity 0 forever */
+  .reveal{ opacity:1 !important; transform:none !important; }
+  [data-parallax]{ translate:none !important; }
+</style></noscript>
 
 <script type="application/ld+json">
 {
@@ -67,7 +74,7 @@
       <a href="index.html" class="current" aria-current="page">Home</a>
       <a href="#tale">The Tale</a>
       <a href="#roster">The Guild</a>
-      <a href="schedule.html">Schedule</a>
+      <a href="schedule.html">The Forge Week</a>
       <a href="hearth.html">The Hearth</a>
       <a class="nav-live none" id="navLive" href="live.html"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
@@ -79,7 +86,19 @@
 <section class="hero" id="top">
   <div class="hero-forge">
     <div class="grain"></div>
-    <div class="hammered" style="position:absolute; inset:0;"></div>
+    <!-- overscanned top and bottom so the parallax drift never exposes an edge -->
+    <div class="hammered" style="position:absolute; inset:-18% 0;" data-parallax="0.12"></div>
+    <!-- the forge floor: hearth-mouth bloom, the anvil standing in front of it,
+         and the coal bed it is lit by. Purely decorative, sits under the ember
+         canvas so sparks fly in FRONT of the anvil. -->
+    <div class="forge-floor" aria-hidden="true">
+      <span class="hearth-mouth"></span>
+      <svg class="anvil" viewBox="0 0 240 124" preserveAspectRatio="xMidYMax meet" focusable="false">
+        <path class="anvil-body" d="M2 32 L30 18 L206 18 L206 36 L150 36 L142 86 L170 86 L182 116 L54 116 L66 86 L94 86 L86 36 L30 36 Z"/>
+        <path class="anvil-lit" d="M30 18 L206 18 L206 22 L30 22 Z"/>
+      </svg>
+      <span class="coal-bed"></span>
+    </div>
     <canvas id="emberCanvas" aria-hidden="true"></canvas>
     <div class="hero-copy reveal">
       <span class="eyebrow">Where the Iron Is Struck</span>
@@ -88,6 +107,8 @@
       <a class="next-strike" id="nextStrike" href="schedule.html" hidden></a>
     </div>
   </div>
+  <!-- the light the weld throws onto both plates; sits under the hero copy -->
+  <div class="seam-heat" aria-hidden="true"></div>
   <div class="seam" aria-hidden="true"></div>
   <div class="seam-cta">
     <a href="#roster" class="seal-btn">Meet<br>the Guild</a>
@@ -95,8 +116,15 @@
   </div>
   <div class="hero-fable">
     <div class="grain"></div>
+    <!-- vellum: fibre, foxing and the scorch the sheet has taken from the weld.
+         Multiply blend, so it ages the paper instead of painting over it. -->
+    <div class="vellum" aria-hidden="true"></div>
+    <!-- the burn the sheet has taken from the weld. Its own layer, NOT a child
+         of .vellum: inside .vellum it inherited opacity:.62 and was crushed to
+         nothing, so the "this page has been near fire" idea never rendered. -->
+    <div class="scorch" aria-hidden="true"></div>
     <div class="hero-copy reveal d1">
-      <span class="eyebrow" style="color:#a5772f;">And Every Story Its Page</span>
+      <span class="eyebrow">And Every Story Its Page</span>
       <h1 class="hero-title">Every World<br>We Play in<br>Becomes a Fable</h1>
       <p class="hero-sub">Streamers, moderators, and friends — all writing their own chapter, together.</p>
     </div>
@@ -112,7 +140,7 @@
 <section class="tale" id="tale">
   <div class="wrap">
     <div class="tale-head reveal">
-      <h2>Once every craftsperson worked alone. Forge &amp; Fable was built so no one has to.</h2>
+      <h2>Once every craftsperson worked alone. <span class="nowrap">Forge &amp; Fable</span> was built so no one has to.</h2>
       <p>Part guild hall, part story circle — this team is where survival crafters, RPG loremasters, horror screamers and cozy-game chefs share a hearth. Below are the two ideas we build every stream around.</p>
     </div>
     <div class="tale-grid">
@@ -187,13 +215,23 @@
 <footer class="site">
   <div class="brand-text">FORGE &amp; FABLE</div>
   <p>A stream team for people who build things — worlds, communities, and each other.</p>
+  <nav class="foot-nav" aria-label="Footer">
+    <a href="index.html">Home</a>
+    <a href="#tale">The Tale</a>
+    <a href="#roster">The Guild</a>
+    <a href="schedule.html">The Forge Week</a>
+    <a href="hearth.html">The Hearth</a>
+    <a href="live.html">Live Now</a>
+  </nav>
+  <a class="foot-top" href="#top"><span aria-hidden="true">↑</span> Back to the top</a>
   <div class="foot-quote">“A little kindness goes a long way.”</div>
-  <div class="foot-fine">Est. 2025 &nbsp;·&nbsp; Guild roster lives in <span style="letter-spacing:0; text-transform:none;">data/roster.js</span> &nbsp;·&nbsp; Live status via Twitch</div>
+  <div class="foot-fine">Est. 2025 &nbsp;·&nbsp; Live status via Twitch</div>
 </footer>
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
 <script src="js/ff-time.js"></script>
+<script src="js/ff-motion.js"></script>
 <script>
 (function(){
   'use strict';
@@ -264,7 +302,10 @@
       { n: D.members.length, l: 'Guild Members' },
       { n: countries.size,   l: 'Countries' },
       { n: worlds,           l: 'Kinds of Worlds' },
-      { n: '∞',              l: 'Limitless Stories' }
+      // "∞" has no glyph in Cinzel Decorative: it fell back to a hairline
+      // lemniscate sitting high beside the heavy gilt numerals and read as a
+      // broken character. A word in the display face sits in the same ramp.
+      { n: 'Many',           l: 'Stories to Tell' }
     ];
     document.getElementById('statsRow').innerHTML = stats.map((s, i) =>
       '<div class="stat reveal d' + i + '"><div class="num" data-count="' + s.n + '">0</div><div class="lbl">' + esc(s.l) + '</div></div>'
@@ -311,6 +352,11 @@
   function cardHTML(m){
     const sigil = (D.titles && D.titles[m.name]) || 'Forger';
     const avatar = FF.avatarFor(m);
+    // The medallion is now always present, whether or not a portrait exists or
+    // ever loads: it carries an engraved monogram behind the <img>. Without it
+    // a missing portrait collapsed .avatar-row and the name jumped left, so the
+    // grid lost its alignment on exactly the cards that were already weakest.
+    const initial = ((m.name || '').match(/[A-Za-z0-9]/) || ['?'])[0].toUpperCase();
     const nameInner = m.channel
       ? '<a href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">' + esc(m.name) + '</a>'
       : esc(m.name);
@@ -320,10 +366,15 @@
         (m.team ? '<span class="team-seal">' + esc(m.team) + '</span>' : '') +
         '<div class="card-rivets" aria-hidden="true"></div>' +
       '</div>' +
-      '<span class="card-live-badge">Live</span>' +
       '<div class="card-body">' +
         '<div class="avatar-row">' +
-          (avatar ? '<img class="avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
+          '<span class="avatar-frame">' +
+            '<span class="mono" aria-hidden="true">' + esc(initial) + '</span>' +
+            (avatar ? '<img class="avatar" src="' + esc(avatar) + '" data-avatar="' + esc(m.channel || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">' : '') +
+            // pinned to the medallion, not to the iron band: in the band it
+            // forced padding-right:70px and ellipsised the guild title
+            '<span class="card-live-badge">Live</span>' +
+          '</span>' +
           '<h3 class="card-name">' + nameInner + '</h3>' +
         '</div>' +
         '<div class="card-country">' + esc(m.country || '') + '</div>' +
@@ -468,7 +519,7 @@
   buildChips();
   searchInput.addEventListener('input', render);
   render();
-  // Re-group only when the live roster actually changes; a poll that finds the
+  // Going live re-sorts the wall, so the whole grid is rebuilt; but the
   // same people on air just refreshes their marks, so cards don't flicker.
   let lastLiveKey = '';
   FF.onLiveUpdate(() => {

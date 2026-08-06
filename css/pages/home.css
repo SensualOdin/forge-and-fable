@@ -1,0 +1,1058 @@
+/* ============================================================
+   FORGE & FABLE — HOME
+   Loaded after css/ff.css. Everything here is additive: it uses the
+   design system's tokens (--ember-*, --gold-*, --parchment-*, --el-*,
+   --glow-*, --bevel-*, --metal-*) and never redefines one.
+
+   What this file is chasing, in order of how much it matters:
+     1. THE SEAM. It is the signature of the whole site. It is now an
+        SVG weld bead: a spine that WANDERS down the joint, stroked
+        five times from cold shell to white-hot core, with hammer ticks
+        and cool interruptions that follow the same wander. No neutral
+        white anywhere — the hot core is #ffe9b8 and rgba(255,132,58)
+        owns the middle 40% of the gap.
+     2. A forge side that reads HOT, and a fable side that has visibly
+        been NEAR that heat — a real scorch on its own layer, not a
+        child of .vellum where opacity:.62 was eating it.
+     3. Roster plates that read as one object: a lifted iron header,
+        an engraved medallion that survives a failed portrait, vellum
+        inside the sheet, and a LIVE state in the brand's hot end
+        instead of Twitch green.
+     4. Section joins that dissolve instead of stepping, and enough
+        noise on the big dark falloffs to dither the banding.
+
+   Every animation added here is either already caught by ff.css's
+   reduced-motion layer or is switched off explicitly at the bottom.
+   ============================================================ */
+
+
+/* ============================================================
+   0 — PAGE-LOCAL VALUES
+   ============================================================ */
+.hero, .roster, .cta-band, .stats-band, .spotlight{
+  /* A straight alpha-noise tile. .grain uses mix-blend-mode:overlay,
+     which is nearly a no-op over near-black — which is exactly where
+     the radial stacks band. This one composites normally, so it
+     actually dithers the dark falloffs. */
+  --dither:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23d)' opacity='0.06'/%3E%3C/svg%3E");
+}
+.roster{
+  /* the live plate's palette: the brand's hot end, never --live */
+  --plate-live-rim:rgba(255,220,168,.55);
+  --plate-live-core:#fff0d2;
+}
+
+
+/* ============================================================
+   1 — HERO SHELL
+   ============================================================ */
+.hero{
+  min-height:min(720px, calc(100svh - var(--header-h)));
+  isolation:isolate;
+}
+
+/* The forge half loses its muddy middle: the fire is a real source at the
+   bottom near the seam, and the far corner falls off into cold iron.
+   The dither tile rides on top of the whole stack so the big low-contrast
+   radials stop showing contour rings. */
+.hero .hero-forge{
+  background:
+    var(--dither),
+    /* the fire is a source: small, low, near the joint — everything else is
+       cold iron. The old wash lit the whole plate evenly and read as fog. */
+    radial-gradient(30% 26% at 72% 102%, rgba(255,170,96,.36), transparent 64%),
+    radial-gradient(52% 44% at 72% 110%, rgba(var(--rgb-ember),.36), transparent 68%),
+    /* the light the fire throws up the plate — a shaft, so the headline sits
+       inside the light instead of floating in a dead middle */
+    radial-gradient(78% 104% at 84% 122%, rgba(var(--rgb-ember),.20), transparent 62%),
+    linear-gradient(214deg, rgba(var(--rgb-ember),.10) 0%, transparent 46%),
+    linear-gradient(158deg, #191307 0%, #100c08 46%, #090706 100%);
+  background-size:160px 160px, auto, auto, auto, auto, auto;
+}
+/* the inner face of the plate, lit by the joint beside it */
+.hero .hero-forge::before{
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    linear-gradient(270deg,
+      rgba(255,170,96,.16) 0,
+      rgba(var(--rgb-ember),.07) 46px,
+      rgba(var(--rgb-ember),.025) 120px,
+      transparent 220px);
+  mask-image:linear-gradient(180deg, transparent, #000 22%, #000 88%, transparent);
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 22%, #000 88%, transparent);
+}
+/* stronger falloff at the outer corners so the eye is pushed to the joint */
+.hero .hero-forge::after{
+  background:
+    radial-gradient(108% 84% at 74% 88%, transparent 38%, rgba(0,0,0,.40) 74%, rgba(0,0,0,.74) 100%);
+}
+/* the shared grain is doing real work on the hero — let it */
+.hero .hero-forge .grain{ opacity:.66; }
+
+/* BOTH copy blocks are the same box now. Before, each block was shrink-to-fit
+   around its own longest line, so the fable headline ran to 61px off the right
+   edge of the window while the forge headline sat 101px in, and the split read
+   lopsided. Equal width + equal padding = equal outer gutter on both plates. */
+.hero .hero-copy{
+  width:100%; max-width:648px;
+  padding:68px clamp(22px, 3vw, 46px);
+}
+/* and the display face comes down just enough that the longest line
+   ("BECOMES A FABLE") clears the new measure with room to spare */
+/* A steeper ramp than --fs-display: this headline lives in a HALF-width
+   panel, so it has to give up size faster than a full-bleed one. Tuned so the
+   longest line ("BECOMES A FABLE") always clears the copy block's measure. */
+.hero .hero-title{
+  font-size:clamp(1.9rem, 1.02rem + 2.31vw, 3.12rem);
+}
+
+/* one more stop of heat behind the forge headline */
+.hero .hero-forge .hero-title{
+  color:#f7ead0;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,.92),
+    0 3px 2px rgba(0,0,0,.55),
+    0 0 22px rgba(var(--rgb-ember-bright),.40),
+    0 0 60px rgba(var(--rgb-ember),.28),
+    0 0 120px rgba(var(--rgb-ember),.16);
+}
+.hero .hero-forge .hero-sub{ color:#dccbaa; }
+
+
+/* ============================================================
+   2 — THE FORGE FLOOR
+   Hearth mouth, anvil, coal bed. Sits under #emberCanvas so the
+   sparks rise in front of the anvil rather than behind it.
+   ============================================================ */
+.forge-floor{
+  position:absolute; inset:auto 0 0 0; z-index:0; height:min(46%, 260px);
+  pointer-events:none;
+  /* the whole assembly is pushed toward the joint, where the fire is */
+  display:flex; align-items:flex-end; justify-content:flex-end;
+  padding-right:10%;
+}
+
+/* the open mouth of the hearth behind everything: low, tight, and hot */
+.hearth-mouth{
+  position:absolute; left:50%; bottom:-26%; width:min(60%, 400px); height:86%;
+  transform:translateX(-16%);
+  background:
+    radial-gradient(38% 46% at 50% 84%, rgba(255,232,192,.40), transparent 62%),
+    radial-gradient(52% 64% at 50% 90%, rgba(255,140,66,.30), transparent 68%),
+    radial-gradient(74% 88% at 50% 96%, rgba(var(--rgb-ember),.22), transparent 74%);
+  filter:blur(3px);
+  animation:ffHearthBreathe 7s ease-in-out infinite;
+}
+@keyframes ffHearthBreathe{
+  0%,100%{ opacity:.82; transform:translateX(-16%) scale(1); }
+  50%    { opacity:1;   transform:translateX(-16%) scale(1.05); }
+}
+
+/* the coal bed — a hot line at the very floor, mostly cropped away */
+.coal-bed{
+  position:absolute; left:0; right:0; bottom:0; height:44px;
+  background:
+    radial-gradient(52% 100% at 66% 124%, rgba(255,196,138,.34), transparent 66%),
+    linear-gradient(180deg, transparent, rgba(var(--rgb-ember),.16) 62%, rgba(255,140,66,.24));
+  mask-image:linear-gradient(180deg, transparent, #000 76%);
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 76%);
+}
+
+/* An anvil standing in front of the fire. It is scenery, not an illustration:
+   near-black, mostly cropped by the floor, and the only light on it is the
+   rim the fire puts along its top edge. */
+.anvil{
+  position:relative; z-index:1;
+  width:min(38%, 210px); height:auto;
+  margin-bottom:-9%;
+  opacity:.9;
+}
+.anvil-body{
+  fill:#070505;
+  stroke:rgba(255,150,80,.30);
+  stroke-width:.9;
+  stroke-linejoin:round;
+  paint-order:stroke fill;
+}
+/* the top face, catching just enough of the fire to describe the shape */
+.anvil-lit{ fill:rgba(255,178,110,.30); }
+
+
+/* ============================================================
+   3 — THE SEAM: a forge weld, not a border
+   ------------------------------------------------------------
+   The previous version was a 12px CSS rectangle carrying a horizontal
+   gradient whose 46%–54% band was #fff2dc/#fffaf0. Two failures, and
+   they compounded: the neutral core desaturated the whole gap into a
+   grey pinstripe with orange fringes, and the geometry was dead
+   straight for 700px, so no fill could rescue it — a rectangle reads
+   as a rectangle.
+
+   Both are fixed by building the weld as SVG STROKES ALONG A WANDERING
+   SPINE. Every layer follows the same irregular path, so the whole
+   cross-section wanders together instead of a straight column with a
+   wobbling core clipped out of it:
+
+     21px  #b03a10 @ .34  the cold shell of the bead   (spine B)
+     16.5  #d8531f @ .72  the shoulder                 (spine B)
+     11    #ff843a        rgba(255,132,58) owning the middle ~42%
+     6.6   #ffa257        the inner heat
+     3.2   #ffe9b8        the hottest stop — SATURATED, no white
+     13    #5e2208 dashed cool interruptions — WARM dark, so a cool
+                          stretch reads as darker orange, never as grey
+     11    #ffd79a dashed hammer ticks, mutually prime dash pattern
+     4     #fff1d4 dashed the brightest pools inside the core
+
+   Two spines, not one: the shell follows a different wander from the
+   core, so the bead's thickness varies down its length instead of the
+   whole thing being a bent tube of constant width. Every dashed layer
+   is butt-capped — round caps on a 17px stroke drew a chain of dark
+   PILLS down the joint, which read as beads on a string.
+   ============================================================ */
+.hero .seam{
+  width:26px;
+  background-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='720' viewBox='0 0 26 720' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cpath id='s' d='M13 -10 C 10.0 66 15.8 128 11.9 202 C 9.0 264 15.2 318 12.9 384 C 10.7 446 16.0 496 11.8 560 C 9.2 612 14.6 662 12.7 730' fill='none'/%3E%3Cpath id='b' d='M13 -10 C 15.6 60 10.2 140 13.6 208 C 16.4 272 11.0 330 13.2 396 C 15.6 452 10.4 508 13.4 566 C 16.0 618 11.4 668 13.1 730' fill='none'/%3E%3C/defs%3E%3Cg fill='none'%3E%3Cg stroke-linecap='round'%3E%3Cuse href='%23b' stroke='%23b03a10' stroke-width='21' opacity='.34'/%3E%3Cuse href='%23b' stroke='%23d8531f' stroke-width='16.5' opacity='.72'/%3E%3Cuse href='%23s' stroke='%23ff843a' stroke-width='11'/%3E%3Cuse href='%23s' stroke='%23ffa257' stroke-width='6.6'/%3E%3Cuse href='%23s' stroke='%23ffe9b8' stroke-width='3.2'/%3E%3C/g%3E%3Cg stroke-linecap='butt'%3E%3Cuse href='%23s' stroke='%235e2208' stroke-width='13' opacity='.32' stroke-dasharray='14 88 9 67 19 109 11 79'/%3E%3Cuse href='%23s' stroke='%23ffd79a' stroke-width='11' opacity='.24' stroke-dasharray='2 46 1.4 67 2.6 53 1.2 39'/%3E%3Cuse href='%23s' stroke='%23fff1d4' stroke-width='4' opacity='.8' stroke-dasharray='3 113 2 79 4 137'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  /* the joint cools as it runs off the top and bottom of the plate */
+  mask-image:linear-gradient(180deg,
+    transparent 0, rgba(0,0,0,.62) 8%, #000 19%, #000 81%, rgba(0,0,0,.62) 92%, transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,
+    transparent 0, rgba(0,0,0,.62) 8%, #000 19%, #000 81%, rgba(0,0,0,.62) 92%, transparent 100%);
+  box-shadow:none;
+  animation:ffWeldHeat 3.6s ease-in-out infinite;
+}
+/* The lit lip of each plate, keyed to the new 26px bead: a 260px frame with
+   the gap at 119–141px. Iron on the left takes a hot chamfer highlight;
+   the vellum lip takes only a thin char line here — the wide scorch is its
+   own layer (.scorch) so it cannot be crushed by .vellum's opacity. */
+.hero .seam::before{
+  content:''; position:absolute; top:0; bottom:0; left:50%; width:260px;
+  transform:translateX(-50%); pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 0 44px,
+    rgba(255,146,74,.10) 74px,
+    /* Warm, dim, and OUTSIDE the bead. At .58 of a near-white, sitting on the
+       bead's own left edge, this highlight read as a grey pinstripe running
+       the full height — the single thing that most made the weld look like a
+       trim strip. It now lights the iron's cut face and stops at 106px. */
+    rgba(255,176,110,.18) 92px,
+    rgba(255,202,146,.30) 104px,
+    rgba(255,212,164,.10) 108px,
+    transparent 111px,
+    transparent 139px,
+    rgba(84,38,10,.52) 144px,
+    rgba(118,64,24,.22) 158px,
+    transparent 182px);
+  /* fades with the joint, not independently of it — otherwise the lip
+     survived where the bead had already cooled away */
+  mask-image:linear-gradient(180deg, transparent 0, rgba(0,0,0,.6) 8%, #000 19%, #000 81%, rgba(0,0,0,.6) 92%, transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0, rgba(0,0,0,.6) 8%, #000 19%, #000 81%, rgba(0,0,0,.6) 92%, transparent 100%);
+}
+/* scale thrown off the hot stretch of the joint */
+.hero .seam::after{
+  content:''; position:absolute; top:0; bottom:0; left:50%; width:64px;
+  transform:translateX(-50%); pointer-events:none;
+  background:
+    radial-gradient(circle at 22% 12%, rgba(255,196,138,.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 79% 34%, rgba(255,170,96,.5) 0 1px, transparent 2px),
+    radial-gradient(circle at 34% 61%, rgba(255,214,170,.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 71% 83%, rgba(255,150,80,.46) 0 1px, transparent 2px);
+  background-size:64px 143px, 64px 111px, 64px 167px, 64px 127px;
+  mask-image:linear-gradient(180deg, transparent 18%, #000 40%, #000 62%, transparent 84%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 18%, #000 40%, #000 62%, transparent 84%);
+}
+@keyframes ffWeldHeat{
+  0%,100%{ filter:drop-shadow(0 0 4px rgba(255,226,190,.9)) drop-shadow(0 0 15px rgba(var(--rgb-ember-bright),.85)) drop-shadow(0 0 44px rgba(var(--rgb-ember),.55)) drop-shadow(0 0 96px rgba(var(--rgb-ember),.3)); }
+  50%    { filter:drop-shadow(0 0 6px rgba(255,240,214,1))  drop-shadow(0 0 24px rgba(var(--rgb-ember-bright),1))  drop-shadow(0 0 66px rgba(var(--rgb-ember),.72)) drop-shadow(0 0 130px rgba(var(--rgb-ember),.4)); }
+}
+
+/* The light the weld throws across both plates. Under the hero copy
+   (z-index 1 vs 2) so it lights the type instead of veiling it. */
+.seam-heat{
+  position:absolute; top:0; bottom:0; left:50%; z-index:1; pointer-events:none;
+  width:min(52vw, 720px); transform:translateX(-50%);
+  background:
+    /* the pool the molten stretch throws, centred on the seal */
+    radial-gradient(26% 34% at 50% 50%, rgba(255,186,116,.30), transparent 72%),
+    radial-gradient(46% 58% at 50% 52%, rgba(var(--rgb-ember),.15), transparent 74%),
+    /* and a thinner wash along the rest of the joint */
+    linear-gradient(90deg,
+      transparent 0,
+      rgba(var(--rgb-ember),.07) 40%,
+      rgba(255,170,96,.13) 49.4%,
+      rgba(190,132,64,.12) 50.6%,
+      rgba(176,124,62,.06) 60%,
+      transparent 100%);
+  mask-image:linear-gradient(180deg, transparent 2%, #000 26%, #000 74%, transparent 98%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 2%, #000 26%, #000 74%, transparent 98%);
+}
+
+
+/* ============================================================
+   4 — THE SEAL: a medallion pressed into the weld
+   ============================================================ */
+.seam-cta{ gap:16px; }
+.hero .seal-btn{
+  width:clamp(96px, 9vw, 118px); height:clamp(96px, 9vw, 118px);
+  color:var(--gold-bright);
+  border-color:#6f5a30;
+  background:
+    radial-gradient(circle at 36% 24%, rgba(255,232,198,.20), transparent 44%),
+    radial-gradient(circle at 50% 122%, rgba(255,140,66,.48), transparent 56%),
+    radial-gradient(circle at 38% 32%, #40342a, #17120e 74%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,232,198,.18),
+    inset 0 -4px 10px rgba(0,0,0,.7),
+    0 0 0 5px rgba(12,9,7,.78),
+    0 0 0 6px rgba(255,150,80,.32),
+    0 12px 30px rgba(0,0,0,.62),
+    0 0 44px -6px rgba(var(--rgb-ember),.55);
+}
+/* molten ring caught around the rim */
+.hero .seal-btn::after{
+  content:''; position:absolute; inset:-11px; border-radius:50%; pointer-events:none;
+  background:conic-gradient(from 210deg,
+    rgba(255,170,96,0) 0deg, rgba(255,196,138,.55) 60deg, rgba(255,140,66,.18) 130deg,
+    rgba(255,170,96,0) 190deg, rgba(255,196,138,.42) 280deg, rgba(255,170,96,0) 360deg);
+  mask-image:radial-gradient(circle, transparent 60%, #000 66%, #000 84%, transparent 90%);
+  -webkit-mask-image:radial-gradient(circle, transparent 60%, #000 66%, #000 84%, transparent 90%);
+  opacity:.9;
+}
+.hero .seal-btn:hover{ color:#ffeec4; }
+
+/* NOT A BUTTON. It was a <span> wearing a pill radius, a border and a drop
+   shadow, parked directly under a real 118px button — a false affordance.
+   It is now an engraved ribbon with chamfered ends, and it is set in Cinzel:
+   Uncial Antiqua at .8rem rendered "read on" as "read ou". It keeps a solid
+   backing because it straddles the joint and half of it sits on parchment. */
+.hero .seam-caption{
+  font-family:var(--font-head); font-weight:600; text-transform:uppercase;
+  font-size:var(--fs-nano); letter-spacing:.28em; text-indent:.28em;
+  color:var(--gold);
+  background:linear-gradient(180deg, rgba(12,9,6,.92), rgba(12,9,6,.78));
+  border:0; border-radius:0; box-shadow:none;
+  padding:6px 20px;
+  clip-path:polygon(11px 0, calc(100% - 11px) 0, 100% 50%, calc(100% - 11px) 100%, 11px 100%, 0 50%);
+  text-shadow:0 1px 0 rgba(0,0,0,.95);
+}
+
+
+/* ============================================================
+   5 — THE FABLE SIDE: aged vellum under warm lamplight
+   ============================================================ */
+.hero .hero-fable{
+  background:
+    radial-gradient(52% 44% at 34% 8%, rgba(255,252,242,.75), transparent 62%),
+    radial-gradient(90% 70% at 26% 22%, rgba(255,244,222,.5), transparent 70%),
+    linear-gradient(198deg, var(--parchment-hi) 0%, var(--parchment) 44%, #d9c496 100%);
+}
+/* the lamp: a pool of warm light high on the sheet, everything else cools */
+.hero .hero-fable::before{
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(44% 40% at 40% 14%, rgba(255,236,190,.55), transparent 66%);
+  mix-blend-mode:multiply;
+}
+/* deeper aging in the corners than the shared vignette gives */
+.hero .hero-fable::after{
+  background:
+    radial-gradient(104% 78% at 42% 34%, transparent 46%, rgba(126,96,52,.24) 78%, rgba(104,76,38,.42) 100%);
+}
+/* fibre + foxing + the paper's own tooth */
+.vellum{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  mix-blend-mode:multiply; opacity:.62;
+  background-image:
+    /* foxing — the brown age spots on old paper, soft and barely there */
+    radial-gradient(circle at 14% 22%, rgba(150,110,58,.075) 0 2px, transparent 26px),
+    radial-gradient(circle at 68% 12%, rgba(150,110,58,.06) 0 2px, transparent 20px),
+    radial-gradient(circle at 84% 62%, rgba(142,102,50,.08) 0 3px, transparent 34px),
+    radial-gradient(circle at 32% 78%, rgba(150,110,58,.065) 0 2px, transparent 24px),
+    radial-gradient(circle at 54% 46%, rgba(150,110,58,.05) 0 4px, transparent 40px),
+    /* long fibres pulled through the sheet */
+    repeating-linear-gradient(96deg,
+      rgba(140,104,54,.055) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(2deg,
+      rgba(140,104,54,.04) 0 1px, transparent 1px 11px),
+    /* the paper's own tooth */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)' opacity='0.22'/%3E%3C/svg%3E");
+  background-size:auto, auto, auto, auto, auto, auto, auto, 200px 200px;
+}
+
+/* THE SCORCH. Its own element at z-index 1, above .vellum and below the copy.
+   As a child of .vellum it inherited opacity:.62 on top of multiply blend and
+   was invisible — paper 10px from the weld measured the same as paper 400px
+   away. The blotches keep it off a clean rectangle. */
+.hero .hero-fable .scorch{
+  position:absolute; inset:0 auto 0 0; z-index:1; pointer-events:none;
+  width:clamp(96px, 12vw, 172px);
+  mix-blend-mode:multiply;
+  background:
+    /* the char line right where the sheet was cut against the hot joint */
+    linear-gradient(90deg,
+      rgba(52,24,7,.78) 0,
+      rgba(88,40,12,.60) 5px,
+      rgba(122,66,26,.36) 22px,
+      rgba(154,106,54,.17) 62px,
+      rgba(190,154,104,.06) 112px,
+      transparent 100%),
+    /* the burn is not even down the edge */
+    radial-gradient(62% 20% at 0% 16%, rgba(90,46,16,.34), transparent 72%),
+    radial-gradient(78% 15% at 0% 46%, rgba(76,34,10,.40), transparent 74%),
+    radial-gradient(50% 24% at 0% 79%, rgba(100,54,20,.28), transparent 76%);
+  mask-image:linear-gradient(180deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+
+.hero .hero-fable .hero-title{
+  color:#241a0d;
+  text-shadow:0 1px 0 rgba(255,255,255,.72), 0 -1px 0 rgba(var(--rgb-ink),.12), 0 14px 30px rgba(120,92,50,.20);
+}
+.hero .hero-fable .hero-sub{ color:#54432a; }
+
+
+/* ============================================================
+   6 — THE STATS BAND: one plate, struck and riveted
+   ============================================================ */
+.stats-band{ padding-top:var(--sp-8); }
+.stats-band .stats-row{
+  position:relative;
+  --stats-gap:0px;
+  --num-size:clamp(2.2rem, 1.35rem + 2.5vw, 2.95rem);
+  padding:clamp(20px, 2.2vw, 27px) clamp(8px, 1.4vw, 18px);
+  border-radius:var(--r-2);
+  border:1px solid #453a2e;
+  /* iron, not leather: the warm cast belongs on the top rim only */
+  background:
+    var(--dither),
+    linear-gradient(180deg, rgba(255,236,208,.07), transparent 22%),
+    radial-gradient(140% 120% at 50% -34%, rgba(var(--rgb-ember),.07), transparent 56%),
+    linear-gradient(172deg, #2c2721 0%, #1a1614 46%, #0f0d0b 100%);
+  background-size:160px 160px, auto, auto, auto;
+  box-shadow:
+    inset 0 1px 0 rgba(255,236,208,.16),
+    inset 0 -2px 0 rgba(0,0,0,.7),
+    inset 0 -26px 36px -28px #000,
+    var(--el-3);
+}
+/* the planished surface of the plate */
+.stats-band .stats-row::after{
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  opacity:.30; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.055' numOctaves='2' seed='7' stitchTiles='stitch' result='t'/%3E%3CfeDiffuseLighting in='t' lighting-color='%23ffffff' surfaceScale='2.2' diffuseConstant='1'%3E%3CfeDistantLight azimuth='215' elevation='56'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  background-size:300px 300px;
+}
+/* four rivets, one per corner of the plate */
+.stats-band .stats-row::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:1;
+  --rv:radial-gradient(circle closest-side at 50% 50%,
+        #c0a76c 0 44%, #85713f 70%, #443722 90%, rgba(0,0,0,0) 100%);
+  --rvs:radial-gradient(circle closest-side at 50% 50%,
+        rgba(255,245,220,.92) 0 34%, rgba(255,245,220,0) 100%);
+  background-image:var(--rvs),var(--rvs),var(--rvs),var(--rvs),var(--rv),var(--rv),var(--rv),var(--rv);
+  background-repeat:no-repeat;
+  background-size:3px 3px,3px 3px,3px 3px,3px 3px,7px 7px,7px 7px,7px 7px,7px 7px;
+  background-position:
+    left 12px top 12px, right 13px top 12px, left 12px bottom 15px, right 13px bottom 15px,
+    left 11px top 11px, right 11px top 11px, left 11px bottom 11px, right 11px bottom 11px;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.85));
+}
+.stats-band .stat{ padding:0 6px; }
+/* the divider becomes a chisel groove cut into the plate */
+.stats-band .stat + .stat::before{
+  left:0; transform:none; width:3px; top:6%; bottom:6%;
+  background:linear-gradient(180deg,
+    transparent, rgba(0,0,0,.85) 20%, rgba(0,0,0,.85) 80%, transparent);
+  box-shadow:2px 0 0 rgba(255,236,208,.09), -1px 0 0 rgba(0,0,0,.5);
+}
+/* struck gilt: dark bites in at the top of every stroke, light pools below */
+.stats-band .stat .num{
+  font-size:var(--num-size);
+  line-height:1;
+  letter-spacing:.01em;
+}
+/* "MANY" set at the numerals' size carried about five times their visual
+   mass, so cell four owned the row and the struck-plate rhythm collapsed.
+   The word drops to the text face at .55× — and its line-height is the exact
+   reciprocal, so its BOX still measures --num-size and all four cells strike
+   on the same line. */
+.stats-band .stat .num[data-count="Many"]{
+  font-family:var(--font-head); font-weight:700;
+  font-size:calc(var(--num-size) * .55);
+  line-height:1.818;
+  letter-spacing:.2em; text-indent:.2em;
+}
+@supports (-webkit-background-clip:text) or (background-clip:text){
+  .stats-band .stat .num{
+    background:linear-gradient(180deg, #8d7135 0%, var(--gold-bright) 34%, var(--gold) 62%, #6f5626 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:
+      drop-shadow(0 -1px 0 rgba(0,0,0,.9))
+      drop-shadow(0 1px 0 rgba(255,232,190,.20))
+      drop-shadow(0 3px 6px rgba(0,0,0,.6))
+      drop-shadow(0 0 22px rgba(var(--rgb-gold),.30));
+  }
+}
+.stats-band .stat .lbl{
+  margin-top:12px; color:#9aa2aa;
+  text-shadow:0 1px 0 rgba(0,0,0,.75);
+}
+
+
+/* ============================================================
+   7 — THE TALE
+   The intro used to be a left-hanging column: the h2 stopped at
+   1030 and the paragraph at 910 inside a 130–1310 wrap, leaving a
+   ~400px dead strip down the whole right side. It is now a real
+   two-column opening spread — statement left, standfirst right,
+   separated by an engraved rule — so the block occupies its measure.
+   ============================================================ */
+.tale .tale-head{
+  display:grid;
+  grid-template-columns:minmax(0, 1.12fr) minmax(0, .88fr);
+  gap:0 clamp(30px, 3.6vw, 58px);
+  align-items:start;
+}
+.tale .tale-head h2{ max-width:none; }
+.tale .tale-head p{
+  margin-top:0; max-width:none;
+  padding-left:clamp(18px, 2vw, 30px);
+  padding-top:.34em;
+  border-left:1px solid rgba(var(--rgb-ink),.17);
+  box-shadow:inset 1px 0 0 rgba(255,255,255,.62);
+}
+
+.tale .tale-col h3{
+  letter-spacing:.06em; text-transform:uppercase; font-size:var(--fs-h3);
+}
+/* a gilt rule under each column head, so the two ideas read as headings */
+.tale .tale-col h3::after{
+  content:''; flex:1; height:1px; min-width:24px;
+  background:linear-gradient(90deg, rgba(150,48,10,.42), rgba(var(--rgb-ink),.06));
+}
+
+
+/* ============================================================
+   8 — THE SPOTLIGHT
+   ============================================================ */
+/* the card is lit like a page on a lectern, not floating in a void */
+.spotlight{
+  position:relative;
+  background:
+    /* the same noise floor as the roster below it — without it the roster's
+       dither switched on at the boundary and lifted its first pixel by ~7 */
+    var(--dither),
+    radial-gradient(44% 80% at 50% 46%, rgba(var(--rgb-gold),.075), transparent 72%),
+    linear-gradient(180deg, var(--iron-0), #17120e 52%, var(--iron-0));
+  background-size:160px 160px, auto, auto;
+  /* the flat 1px iron-edge line read as a rendering seam across the full
+     width; a forged rail that fades at both ends reads as a section change */
+  border-bottom-color:transparent;
+}
+.spotlight::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px; z-index:2;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent, rgba(var(--rgb-gold),.22) 20%, rgba(var(--rgb-ember-bright),.42) 50%,
+    rgba(var(--rgb-gold),.22) 80%, transparent);
+}
+/* a plate from a book: printed margin, then a hairline rule around the text */
+.spotlight .spotlight-card{
+  max-width:760px; padding:34px 38px; gap:28px;
+  /* was align-items:center, which dropped the medallion ~48px below the name's
+     cap line and left a dead notch in the card's top-left corner */
+  align-items:flex-start;
+  border-radius:var(--r-2);
+  box-shadow:
+    var(--el-4), var(--rim-gold), var(--parchment-edge),
+    0 32px 74px -34px rgba(var(--rgb-ember),.42);
+}
+/* the printed rule that runs inside the margin of a plate in a book */
+.spotlight .spotlight-card::before{
+  content:''; position:absolute; inset:12px; z-index:2; pointer-events:none;
+  border:1px solid rgba(150,48,10,.30);
+  border-radius:3px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.6),
+    0 0 0 1px rgba(255,255,255,.5),
+    0 0 0 4px rgba(150,48,10,.09);
+}
+.spotlight .spot-avatar{ width:104px; height:104px; margin-top:3px; }
+/* the body was a 491px block inside a 684px measure — 130px of the card's
+   right side was simply unused */
+.spotlight .spot-body{ flex:1; min-width:0; }
+.spotlight .spot-name{ font-size:1.4rem; }
+.spotlight .spot-about{ max-width:none; }
+
+
+/* ============================================================
+   9 — THE ROSTER: a character-select rack
+   ============================================================ */
+.roster{
+  background:
+    var(--dither),
+    /* the top of the rack starts at the exact value the spotlight ends on, so
+       the boundary dissolves instead of stepping across the full width */
+    linear-gradient(180deg, var(--iron-0) 0, rgba(15,12,9,0) 210px),
+    radial-gradient(132% 66% at 50% 7%, #17120d, var(--iron-0) 66%);
+  background-size:160px 160px, auto, auto;
+}
+/* the hall the plates are hung in */
+.roster::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  opacity:.16; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340'%3E%3Cfilter id='r' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.045' numOctaves='2' seed='19' stitchTiles='stitch' result='t'/%3E%3CfeDiffuseLighting in='t' lighting-color='%23ffffff' surfaceScale='2' diffuseConstant='1'%3E%3CfeDistantLight azimuth='215' elevation='58'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+  background-size:340px 340px;
+  /* This overlay screens the near-black ground up by ~14 in luminance, and it
+     used to switch on at full strength on the section's first pixel — which is
+     what made the spotlight→roster and roster→CTA joins read as rendering
+     seams rather than section changes. It ramps in and out now. */
+  mask-image:linear-gradient(180deg, transparent 0, #000 200px, #000 calc(100% - 170px), transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 200px, #000 calc(100% - 170px), transparent 100%);
+}
+/* ff.css's ember dome also starts at full strength on the boundary line */
+.roster::before{
+  height:340px;
+  background:radial-gradient(76% 100% at 50% 16%, rgba(var(--rgb-ember),.075), transparent 72%);
+}
+.roster .wrap{ position:relative; z-index:1; }
+
+.roster .grid{ gap:24px; }
+
+/* ---------- the plate ---------- */
+.roster .card{
+  border-radius:var(--r-2) var(--r-2) var(--r-3) var(--r-3);
+  box-shadow:
+    var(--el-3), var(--rim-gold), var(--parchment-edge),
+    0 0 0 1px rgba(0,0,0,.5);
+}
+.roster .card:hover{
+  transform:translateY(-7px);
+  box-shadow:
+    var(--el-4), 0 0 0 1px rgba(var(--rgb-gold),.42), var(--parchment-edge),
+    0 0 0 2px rgba(0,0,0,.5),
+    0 28px 66px -26px rgba(var(--rgb-ember),.60);
+}
+/* light rakes across the sheet as the plate lifts */
+.roster .card::before{
+  content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  border-radius:inherit; opacity:0;
+  background:linear-gradient(158deg, rgba(255,255,255,.34) 0 22%, transparent 52%);
+  transition:opacity var(--dur-2) var(--ease-out);
+}
+.roster .card:hover::before{ opacity:1; }
+
+/* ---------- the iron header ----------
+   The old band ran #1b1512 → #2a211a on a #15100c ground: within a few values
+   of the page behind it, so the header dissolved and every card read as a
+   cream rectangle with an orange line hovering above it. The iron is lifted
+   two full steps and given its own dark outer edge, so the band and the sheet
+   become one object. */
+.roster .card-band{
+  height:50px;
+  border-bottom-color:transparent;
+  background:
+    linear-gradient(180deg, rgba(255,236,208,.12), transparent 34%, rgba(0,0,0,.28)),
+    repeating-linear-gradient(90deg, rgba(255,236,208,.026) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 26% 28%, rgba(255,232,198,.07) 0 12%, transparent 46%),
+    radial-gradient(circle at 33% 38%, rgba(0,0,0,.30) 0 14%, transparent 48%),
+    linear-gradient(118deg, #2c2319, #3d3124 52%, #251d15);
+  background-size:100% 100%, 100% 100%, 44px 44px, 44px 44px, 100% 100%;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,236,208,.20),
+    inset 0 -8px 14px -10px rgba(0,0,0,.9);
+}
+/* the hot line where the iron header is welded to the sheet */
+.roster .card-band::after{
+  content:''; position:absolute; left:0; right:0; bottom:-3px; height:3px;
+  background:linear-gradient(90deg,
+    #4a1a08, var(--ember-dim) 14%, var(--ember) 42%, #ff9d55 52%, var(--ember) 62%, var(--ember-dim) 86%, #4a1a08);
+  box-shadow:0 1px 9px -1px rgba(var(--rgb-ember),.55);
+  transition:box-shadow var(--dur-2) var(--ease-out), filter var(--dur-2) var(--ease-out);
+}
+.roster .card:hover .card-band::after{
+  filter:brightness(1.28);
+  box-shadow:0 1px 16px 0 rgba(var(--rgb-ember),.8);
+}
+/* THE ENGRAVED BANNER: the title is cut into a slot in the iron. It no longer
+   truncates in the live state — the LIVE badge moved off the band entirely. */
+.roster .band-left{ min-width:0; }
+.roster .social-links{ flex-shrink:0; }
+.roster .card .sigil{
+  overflow:hidden; text-overflow:ellipsis; min-width:0;
+  padding:4px 10px;
+  border-radius:2px;
+  color:var(--ember-pale);
+  letter-spacing:.15em;
+  background:linear-gradient(180deg, rgba(0,0,0,.56), rgba(0,0,0,.18));
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,.92),
+    inset 0 -1px 0 rgba(255,196,138,.16),
+    0 1px 0 rgba(255,222,186,.10);
+  text-shadow:0 -1px 0 rgba(0,0,0,.95), 0 1px 1px rgba(255,170,96,.30);
+}
+.roster .card .team-seal{ color:var(--gold-bright); border-color:#6f5a30; }
+
+/* ---------- the sheet ----------
+   The hero got fibre, foxing and tooth; the 29 plates — ~70% of the page —
+   got a flat cream-to-tan ramp. They get the same paper now, cheaply: two
+   fibre passes and one tooth tile, multiplied into the existing sheet.
+   z-index:-1 keeps it above card-body's own background and under the type. */
+.roster .card-body{ padding:22px 20px 24px; }
+.roster .card-body::before{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  border-radius:inherit;
+  mix-blend-mode:multiply; opacity:.55;
+  background-image:
+    radial-gradient(circle at 17% 24%, rgba(150,110,58,.07) 0 2px, transparent 24px),
+    radial-gradient(circle at 79% 71%, rgba(142,102,50,.06) 0 3px, transparent 32px),
+    repeating-linear-gradient(96deg, rgba(140,104,54,.05) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(3deg, rgba(140,104,54,.035) 0 1px, transparent 1px 11px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='cv'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.68' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23cv)' opacity='0.20'/%3E%3C/svg%3E");
+  background-size:auto, auto, auto, auto, 180px 180px;
+}
+
+/* ---------- THE MEDALLION ----------
+   29 featureless dark discs were the dominant rhythm of the page, and on any
+   card whose portrait was missing the <img> was never emitted at all, so
+   .avatar-row collapsed and the name jumped left. The frame is now always
+   present and carries an engraved gilt monogram behind the portrait. */
+.roster .avatar-row{ margin-top:-18px; }
+.roster .avatar-frame{
+  position:relative; flex-shrink:0;
+  width:68px; height:68px; border-radius:50%;
+  display:grid; place-items:center;
+  border:3px solid var(--parchment-hi);
+  outline:2px solid var(--gold-dim);
+  background:radial-gradient(circle at 34% 26%, #3d3227 0%, #1a1410 62%, #0d0a07 100%);
+  box-shadow:
+    0 7px 18px rgba(0,0,0,.5),
+    0 0 0 1px rgba(var(--rgb-ink),.16),
+    inset 0 2px 7px rgba(0,0,0,.85);
+  transition:outline-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
+}
+/* struck into the disc: dark bites the top of every stroke, light pools below */
+.roster .avatar-frame .mono{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.72rem; line-height:1; letter-spacing:.02em;
+  color:var(--gold-dim);
+  user-select:none;
+}
+@supports (-webkit-background-clip:text) or (background-clip:text){
+  .roster .avatar-frame .mono{
+    background:linear-gradient(180deg, #6b5527 0%, var(--gold) 44%, var(--gold-bright) 64%, #4e3d1c 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 -1px 0 rgba(0,0,0,.95)) drop-shadow(0 1px 0 rgba(255,232,190,.18));
+  }
+}
+/* the portrait now fills the frame; the frame owns the border and the rim */
+.roster .avatar-frame .avatar{
+  position:absolute; inset:0; width:100%; height:100%;
+  border:0; outline:0; border-radius:50%;
+  box-shadow:none; background:transparent;
+}
+
+/* the name's rule was the exact weight and colour of a browser default link
+   underline, so the hero element of every plate read as unstyled markup.
+   It is an engraved line now: dark stroke, 1px of light caught under it. */
+.roster .card-name{ font-size:1.2rem; padding-top:16px; }
+.roster .card-name a{
+  text-decoration:none;
+  padding-bottom:4px;
+  background-image:linear-gradient(180deg,
+    rgba(var(--rgb-ink),.55) 0 1px, rgba(255,255,255,.78) 1px 2px);
+  background-repeat:no-repeat;
+  background-size:100% 2px;
+  background-position:0 100%;
+  transition:color var(--dur-1) var(--ease-out), background-image var(--dur-1) var(--ease-out);
+}
+.roster .card-name a:hover{
+  color:var(--ember-on-paper);
+  background-image:linear-gradient(180deg,
+    rgba(150,48,10,.85) 0 1px, rgba(255,255,255,.7) 1px 2px);
+}
+.roster .card-country{ letter-spacing:.03em; }
+/* Tags used to be bottom-anchored (.card-about carried flex:1), so a short bio
+   opened a ~90px void between the sentence and the tag row. The tags sit
+   directly under the bio now, and the bio carries a floor of three lines so
+   the internal rhythm is the same across a row. Slack falls to the sheet's
+   bottom margin, where it reads as margin. */
+.roster .card-about{ color:#4d3f28; flex:0 0 auto; min-height:4.9em; margin-bottom:0; }
+.roster .card-games{ margin-top:14px; }
+
+/* ---------- LIVE: hot, not neon ----------
+   Every live signal was rgb(61,220,111) — rim, band, hot rule, sigil, badge
+   and medallion glow. Nothing else on the site is green, so the live plate
+   read as Twitch chrome pasted onto a fantasy page. The state now speaks in
+   the brand's hot end (white-gold rim, ember band rule, gilt badge) and the
+   ffLiveAura pulse carries "live" instead of hue. */
+.roster .card.is-live{
+  box-shadow:
+    var(--el-3),
+    0 0 0 1px var(--plate-live-rim),
+    var(--parchment-edge),
+    0 0 0 2px rgba(0,0,0,.45),
+    0 0 48px -12px rgba(var(--rgb-ember),.72);
+}
+.roster .card.is-live:hover{
+  box-shadow:
+    var(--el-4),
+    0 0 0 1px var(--plate-live-rim),
+    var(--parchment-edge),
+    0 0 0 2px rgba(0,0,0,.45),
+    0 28px 66px -22px rgba(var(--rgb-ember),.7);
+}
+.roster .card.is-live .card-band{
+  border-bottom-color:transparent;
+  background:
+    linear-gradient(180deg, rgba(255,170,96,.20), transparent 40%, rgba(0,0,0,.26)),
+    repeating-linear-gradient(90deg, rgba(255,236,208,.03) 0 1px, transparent 1px 4px),
+    linear-gradient(118deg, #3a2617, #4d3520 52%, #2e1e12);
+  background-size:100% 100%, 100% 100%, 100% 100%;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,224,180,.28),
+    inset 0 -8px 16px -10px rgba(var(--rgb-ember),.55);
+}
+.roster .card.is-live .card-band::after{
+  background:linear-gradient(90deg,
+    #7a2c10, var(--ember) 16%, #ffb066 40%, var(--plate-live-core) 52%, #ffb066 64%, var(--ember) 84%, #7a2c10);
+  box-shadow:0 1px 14px 0 rgba(var(--rgb-ember-bright),.85);
+}
+.roster .card.is-live .sigil{
+  color:#ffe3ba;
+  text-shadow:0 -1px 0 rgba(0,0,0,.95), 0 1px 2px rgba(var(--rgb-ember),.55);
+}
+/* the aura, breathing inside the plate's own edge */
+.roster .card.is-live::after{
+  content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  border-radius:inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,214,164,.42),
+    inset 0 0 36px -10px rgba(var(--rgb-ember-bright),.55);
+  animation:ffLiveAura 2.8s ease-in-out infinite;
+}
+@keyframes ffLiveAura{
+  0%,100%{ opacity:.55; }
+  50%    { opacity:1; }
+}
+.roster .card.is-live .avatar-frame{
+  outline-color:var(--gold-bright);
+  box-shadow:
+    0 7px 18px rgba(0,0,0,.45),
+    0 0 0 1px rgba(var(--rgb-ink),.14),
+    0 0 26px -2px rgba(var(--rgb-ember),.9),
+    inset 0 2px 7px rgba(0,0,0,.8);
+}
+/* a struck gilt tag hung off the medallion, not a green flag jammed into the
+   iron band's flow */
+.roster .card-live-badge{
+  top:auto; right:auto; bottom:-9px; left:50%;
+  transform:translateX(-50%);
+  z-index:2;
+  font-size:var(--fs-nano); letter-spacing:.18em; text-indent:.18em;
+  padding:3px 10px; border-radius:var(--r-pill);
+  background:linear-gradient(180deg, #ffeec4 0%, var(--gold) 56%, #8d7135 100%);
+  color:#241a0d;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.7),
+    0 0 0 1px rgba(0,0,0,.5),
+    0 4px 12px -3px rgba(0,0,0,.8),
+    0 0 20px -4px rgba(var(--rgb-ember),.85);
+  text-shadow:0 1px 0 rgba(255,240,214,.5);
+}
+.roster .card-now{ color:var(--ember-on-paper); }
+
+/* the count line is the rack's own label */
+.roster .count-line{ color:#9aa2aa; }
+
+
+/* ============================================================
+   10 — THE CTA BAND: the last strike
+   ============================================================ */
+.cta-band{
+  padding-bottom:calc(var(--sp-10) + 10px);
+  /* the flat iron-edge border across the top read as a rendering seam; a
+     forged rail that fades at both ends reads as a section change */
+  border-top-color:transparent;
+  background:
+    linear-gradient(90deg,
+      transparent, rgba(var(--rgb-gold),.24) 18%, rgba(var(--rgb-ember-bright),.42) 50%,
+      rgba(var(--rgb-gold),.24) 82%, transparent) top left / 100% 1px no-repeat,
+    var(--dither),
+    radial-gradient(58% 86% at 50% 116%, rgba(var(--rgb-ember),.46), transparent 68%),
+    radial-gradient(34% 56% at 50% 122%, rgba(var(--rgb-ember-bright),.26), transparent 60%),
+    linear-gradient(180deg, var(--iron-0), #14100d 58%, #1b1512);
+  background-size:100% 1px, 160px 160px, auto, auto, auto;
+  background-repeat:no-repeat, repeat, repeat, repeat, repeat;
+}
+.cta-band h2{
+  font-size:clamp(2.1rem, 1.4rem + 3vw, 3.3rem);
+  color:#f7ead0;
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.75),
+    0 0 30px rgba(var(--rgb-ember),.36),
+    0 0 74px rgba(var(--rgb-ember),.22);
+}
+/* the hot floor the band closes on */
+.cta-band::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:3px; z-index:2;
+  background:linear-gradient(90deg,
+    transparent, rgba(var(--rgb-ember),.55) 22%, rgba(255,157,85,.85) 50%, rgba(var(--rgb-ember),.55) 78%, transparent);
+  box-shadow:0 0 22px -2px rgba(var(--rgb-ember),.7);
+}
+
+
+/* ============================================================
+   11 — RESPONSIVE
+   ============================================================ */
+@media (max-width:1020px){
+  .anvil{ width:min(58%, 250px); }
+}
+
+@media (max-width:860px){
+  /* stacked hero: the weld runs horizontally between the two plates */
+  .hero{ min-height:auto; }
+  .hero .hero-forge, .hero .hero-fable{ min-height:min(52svh, 386px); }
+  .hero .hero-copy{ padding:46px 22px 50px; max-width:none; }
+  .hero .hero-forge::before{
+    background:linear-gradient(0deg, rgba(255,170,96,.16), transparent 40%);
+  }
+  .hero .hero-fable::before{
+    background:radial-gradient(58% 44% at 40% 8%, rgba(255,236,190,.5), transparent 68%);
+    mix-blend-mode:multiply;
+  }
+  /* the sheet's burn moves to the edge that now faces the weld */
+  .hero .hero-fable .scorch{
+    inset:0 0 auto 0; width:auto; height:clamp(70px, 15vw, 116px);
+    background:
+      linear-gradient(180deg,
+        rgba(52,24,7,.72) 0, rgba(88,40,12,.54) 5px, rgba(122,66,26,.32) 22px,
+        rgba(154,106,54,.15) 56px, transparent 100%),
+      radial-gradient(20% 62% at 16% 0%, rgba(90,46,16,.30), transparent 72%),
+      radial-gradient(15% 78% at 47% 0%, rgba(76,34,10,.36), transparent 74%),
+      radial-gradient(24% 50% at 80% 0%, rgba(100,54,20,.26), transparent 76%);
+    mask-image:linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  }
+
+  .seam-heat{ display:none; }
+
+  /* Stacked, the joint runs horizontally — so the seal band IS the weld, and
+     it has to look like one. It was a ~220px black gutter holding a medallion:
+     the signature moment of the site degrading into dead space. The same
+     wandering bead now runs the full width THROUGH the seal. */
+  .seam-cta{
+    /* the base rule still carries left:50%/top:50% from the desktop centring;
+       relative positioning would honour them and shove the band off-axis */
+    position:relative; left:auto; top:auto; transform:none;
+    width:100%; margin:0;
+    display:grid; justify-items:center; align-content:start; gap:10px;
+    padding:22px var(--gutter) 18px;
+    background:
+      radial-gradient(70% 150% at 50% 40%, rgba(var(--rgb-ember),.20), transparent 72%),
+      linear-gradient(180deg, #0c0907, #16100a 46%, #0c0907);
+  }
+  .seam-cta::before{
+    content:''; position:absolute; left:0; right:0; top:62px; height:26px;
+    transform:translateY(-50%); z-index:0; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='26' viewBox='0 0 720 26' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cpath id='h' d='M-10 13 C 66 10.0 128 15.8 202 11.9 C 264 9.0 318 15.2 384 12.9 C 446 10.7 496 16.0 560 11.8 C 612 9.2 662 14.6 730 12.7' fill='none'/%3E%3Cpath id='hb' d='M-10 13 C 60 15.6 140 10.2 208 13.6 C 272 16.4 330 11.0 396 13.2 C 452 15.6 508 10.4 566 13.4 C 618 16.0 668 11.4 730 13.1' fill='none'/%3E%3C/defs%3E%3Cg fill='none'%3E%3Cg stroke-linecap='round'%3E%3Cuse href='%23hb' stroke='%23b03a10' stroke-width='21' opacity='.34'/%3E%3Cuse href='%23hb' stroke='%23d8531f' stroke-width='16.5' opacity='.72'/%3E%3Cuse href='%23h' stroke='%23ff843a' stroke-width='11'/%3E%3Cuse href='%23h' stroke='%23ffa257' stroke-width='6.6'/%3E%3Cuse href='%23h' stroke='%23ffe9b8' stroke-width='3.2'/%3E%3C/g%3E%3Cg stroke-linecap='butt'%3E%3Cuse href='%23h' stroke='%235e2208' stroke-width='13' opacity='.32' stroke-dasharray='14 88 9 67 19 109 11 79'/%3E%3Cuse href='%23h' stroke='%23ffd79a' stroke-width='11' opacity='.24' stroke-dasharray='2 46 1.4 67 2.6 53 1.2 39'/%3E%3Cuse href='%23h' stroke='%23fff1d4' stroke-width='4' opacity='.8' stroke-dasharray='3 113 2 79 4 137'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-size:100% 100%; background-repeat:no-repeat;
+    mask-image:linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+    animation:ffWeldHeat 3.6s ease-in-out infinite;
+  }
+  .seam-cta > *{ position:relative; z-index:1; }
+  .hero .seal-btn{ width:80px; height:80px; font-size:var(--fs-nano); letter-spacing:.1em; }
+  .hero .seam-caption{ padding:5px 16px; }
+
+  /* the anvil has nowhere to stand in a 390px column — it collided with the
+     countdown pill and read as a smear. The fire alone carries the floor. */
+  .forge-floor{ height:min(46%, 200px); padding-right:0; justify-content:center; }
+  .anvil{ display:none; }
+  .hearth-mouth{ transform:translateX(-50%); width:min(86%, 340px); }
+  @keyframes ffHearthBreathe{
+    0%,100%{ opacity:.86; transform:translateX(-50%) scale(1); }
+    50%    { opacity:1;   transform:translateX(-50%) scale(1.05); }
+  }
+
+  /* the opening spread folds back to one column */
+  .tale .tale-head{ grid-template-columns:1fr; gap:0; }
+  .tale .tale-head p{
+    margin-top:18px; padding-left:0; padding-top:0;
+    border-left:0; box-shadow:none;
+  }
+}
+
+@media (max-width:700px){
+  .stats-band .stats-row{
+    --stats-gap:0px;
+    padding:24px 6px; row-gap:26px;
+  }
+  /* on two columns the groove only belongs between the pair, never under it */
+  .stats-band .stat:nth-child(odd) + .stat::before{ display:block; }
+  .stats-band .stat:nth-child(3)::before{ display:none; }
+  .stats-band .stats-row::before{
+    background-position:
+      left 10px top 10px, right 11px top 10px, left 10px bottom 13px, right 11px bottom 13px,
+      left 9px top 9px, right 9px top 9px, left 9px bottom 9px, right 9px bottom 9px;
+  }
+}
+
+@media (max-width:600px){
+  /* At 390px the floated cap ate half the measure: line 1 was "NCE EVERY" and
+     line 3 snapped back to the margin, so the whole block read accidental.
+     Below this width the sentence is just a sentence. */
+  .tale .tale-head h2::first-letter{
+    font-family:inherit; font-size:inherit; line-height:inherit;
+    float:none; margin:0;
+    color:var(--ember-on-paper);
+  }
+}
+
+@media (max-width:560px){
+  .spotlight .spotlight-card{ padding:28px 24px; gap:18px; }
+  .spotlight .spotlight-card::before{ inset:9px; }
+
+  /* THE RACK, COMPACTED. 29 plates at 366px apiece drove the page to 15,028px
+     with no concession to the viewport. Every dimension comes in a notch —
+     but the bio stays at 14.4px, because shrinking the only real prose on the
+     page to buy scroll length is the wrong trade. */
+  .roster .grid{ gap:14px; }
+  .roster .card-band{ height:42px; padding:0 11px; }
+  .roster .card-body{ padding:15px 15px 17px; }
+  .roster .avatar-row{ margin-top:-14px; gap:11px; }
+  .roster .avatar-frame{ width:52px; height:52px; border-width:2px; }
+  .roster .avatar-frame .mono{ font-size:1.32rem; }
+  .roster .card-live-badge{ bottom:-11px; padding:2px 8px; letter-spacing:.14em; text-indent:.14em; }
+  .roster .card-name{ font-size:1.06rem; padding-top:10px; }
+  .roster .card-about{ font-size:.9rem; line-height:1.5; margin-top:9px; min-height:0; }
+  .roster .card-games{ margin-top:10px; gap:5px; }
+  .roster .card .tag{ padding:2px 8px; }
+  .roster .card-now{ margin-top:8px; }
+}
+
+
+/* ============================================================
+   12 — REDUCED MOTION
+   ff.css already flattens durations and names .seam directly; this
+   covers the elements it does not know about. Nothing that carries
+   meaning disappears — the live plate keeps its full aura, the weld
+   keeps its full heat. They simply stop breathing.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  .hearth-mouth, .hero .seam, .seam-cta::before,
+  .roster .card.is-live::after{ animation:none !important; }
+  .hearth-mouth{ opacity:.94; }
+  .roster .card.is-live::after{ opacity:1; }
+  .hero .seam, .seam-cta::before{
+    filter:
+      drop-shadow(0 0 3px rgba(255,214,170,.95))
+      drop-shadow(0 0 14px rgba(var(--rgb-ember-bright),.7))
+      drop-shadow(0 0 36px rgba(var(--rgb-ember),.5));
+  }
+  .roster .card:hover{ transform:none; }
+  .roster .card:hover::before{ opacity:0; }
+}

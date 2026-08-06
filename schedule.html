@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ff.css">
+<link rel="stylesheet" href="css/pages/schedule.css">
 </head>
 <body>
 
@@ -49,8 +50,9 @@
     </button>
     <nav class="links" id="navLinks" aria-label="Main">
       <a href="index.html">Home</a>
+      <a href="index.html#tale">The Tale</a>
       <a href="index.html#roster">The Guild</a>
-      <a href="schedule.html" class="current" aria-current="page">Schedule</a>
+      <a href="schedule.html" class="current" aria-current="page">The Forge Week</a>
       <a href="hearth.html">The Hearth</a>
       <a class="nav-live none" id="navLive" href="live.html"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
@@ -59,33 +61,66 @@
 
 <main id="main">
 
-<section class="live-hero">
+<section class="live-hero sched-hero">
+  <div class="hall-timber" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
   <div class="wrap">
     <span class="eyebrow">When We Strike</span>
     <h1>The Weekly Forge</h1>
-    <p>Every member's regular streaming hours, shown in <strong>their own timezone</strong>. Today's column glows gold — and anyone live right now carries the ember.</p>
-    <div class="status-row">
+    <div class="status-row sched-today">
       <span class="pulse-dot" aria-hidden="true"></span>
       <span id="todayLine" aria-live="polite">Loading the week…</span>
     </div>
-    <div class="status-row" role="group" aria-label="Schedule display options">
-      <button class="chip" id="modeTheirs" aria-pressed="true">Their Time</button>
-      <button class="chip" id="modeYours" aria-pressed="false">Your Time</button>
-      <button class="refresh-btn" id="icsBtn" title="Download a calendar file that repeats weekly">⬇ Add to Your Calendar</button>
+
+    <div class="strike-mount reveal" id="strikeMount">
+      <div class="strike-live" id="strikeLive" hidden></div>
+      <article class="strike" id="strikeNotice" data-state="pending" aria-live="polite">
+        <p class="strike-eyebrow">Next Strike</p>
+        <p class="strike-empty">Reading the board…</p>
+      </article>
     </div>
   </div>
 </section>
 
 <section class="sched-section">
   <div class="wrap">
-    <div class="sched-scroll">
-      <table class="sched" id="schedTable">
-        <caption class="sr-only">Weekly streaming schedule for all guild members</caption>
-        <thead><tr id="schedHead"></tr></thead>
-        <tbody id="schedBody"></tbody>
-      </table>
+
+    <div class="section-label">
+      <span class="eyebrow">The Quest Board</span>
+      <h2>Seven Days, One Anvil</h2>
     </div>
-    <p class="sched-footnote" id="schedFootnote">Times are each streamer's local timezone (shown next to their name). An asterisk marks a timezone that's approximate. Schedules shift — the <a href="live.html">Live page</a> always knows who's actually on the air.</p>
+
+    <div class="board-bar">
+      <div class="clock-switch" role="group" aria-label="Which clock to show times in">
+        <button class="chip" id="modeTheirs" aria-pressed="true">Their Time</button>
+        <button class="chip" id="modeYours" aria-pressed="false">Your Time</button>
+      </div>
+      <p class="clock-note" id="clockNote">Every notice is posted in the streamer's own clock.</p>
+      <button class="refresh-btn" id="icsBtn" title="Download a calendar file that repeats weekly">⬇ Add to Your Calendar</button>
+    </div>
+
+    <!-- Phone only (hidden at board width by CSS). The desktop board answers
+         "who is on today?" with the lit column; a 390px screen cannot show
+         seven columns, so it gets an explicit day switch, parked on today.
+         The tabs and their counts are built by the script below. -->
+    <div class="day-rail" id="dayRail">
+      <div class="day-rail-head">
+        <span class="day-rail-title">Show a day</span>
+        <span class="day-rail-count" id="dayRailCount" aria-live="polite"></span>
+      </div>
+      <div class="day-tabs" role="group" aria-label="Show one day of the board"></div>
+    </div>
+
+    <div class="board reveal" id="board" data-mode="theirs">
+      <div class="sched-scroll">
+        <table class="sched" id="schedTable">
+          <caption class="sr-only">Weekly streaming schedule for all guild members</caption>
+          <thead><tr id="schedHead"></tr></thead>
+          <tbody id="schedBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="sched-footnote" id="schedFootnote">Times are each streamer’s local timezone (shown next to their name). An asterisk marks a timezone that’s approximate. Schedules shift — the <a href="live.html">Live page</a> always knows who’s actually on the air.</p>
   </div>
 </section>
 
@@ -94,12 +129,23 @@
 <footer class="site">
   <div class="brand-text">FORGE &amp; FABLE</div>
   <p>A stream team for people who build things — worlds, communities, and each other.</p>
-  <div class="foot-fine">Schedule lives in <span style="letter-spacing:0; text-transform:none;">data/roster.js</span> &nbsp;·&nbsp; Live status via Twitch</div>
+  <nav class="foot-nav" aria-label="Footer">
+    <a href="index.html">Home</a>
+    <a href="index.html#tale">The Tale</a>
+    <a href="index.html#roster">The Guild</a>
+    <a href="schedule.html">The Forge Week</a>
+    <a href="hearth.html">The Hearth</a>
+    <a href="live.html">Live Now</a>
+  </nav>
+  <a class="foot-top" href="#top"><span aria-hidden="true">↑</span> Back to the top</a>
+  <div class="foot-quote">“A little kindness goes a long way.”</div>
+  <div class="foot-fine">Est. 2025 &nbsp;·&nbsp; Live status via Twitch</div>
 </footer>
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
 <script src="js/ff-time.js"></script>
+<script src="js/ff-motion.js"></script>
 <script>
 (function(){
   'use strict';
@@ -156,7 +202,7 @@
   const FOOT_THEIRS = footnote.innerHTML;
   const FOOT_YOURS = 'All times converted to <strong>your</strong> clock (' +
     esc(Intl.DateTimeFormat().resolvedOptions().timeZone) + '). (+1d) means it lands on the next day for you. ' +
-    'Schedules shift — the <a href="live.html">Live page</a> always knows who\'s actually on the air.';
+    'Schedules shift — the <a href="live.html">Live page</a> always knows who’s actually on the air.';
 
   function applyMode(mode){
     document.querySelectorAll('#schedBody td[data-src]').forEach(td => {
@@ -198,6 +244,369 @@
     });
   });
   FF.startPolling();
+})();
+</script>
+
+<script>
+/* ============================================================
+   TIME LOCKUPS + THE PHONE DAY RAIL
+   Additive. Reads only what the board already carries (data-src,
+   data-day, the row's data-tz) and never writes to any of them.
+
+   1. Every notice is re-set as a typographic lockup instead of the
+      roster's shorthand: tabular numerals at the dominant size, a
+      small-caps meridiem, an en-dash range, "Noon"/"Midnight"
+      spelled out (a bare "12P" is genuinely ambiguous), and a
+      double session broken onto two ruled lines instead of a slash.
+      It re-runs AFTER the Their Time / Your Time toggle above —
+      that block owns the numbers, this one only sets them.
+
+   2. The em-dash in each of the 77 unbooked slots is removed: it is
+      decoration a screen reader announced 77 times, and bare carved
+      metal says "nothing here" better than a glyph does.
+
+   3. Phones get a day rail above the board, parked on today.
+      Desktop answers "who is on today?" with the lit column; 28
+      members x 7 days of cream strips does not.
+   ============================================================ */
+(function(){
+  'use strict';
+  var esc = FF.esc;
+  var body  = document.getElementById('schedBody');
+  var board = document.getElementById('board');
+  if (!body || !board || !window.FFTime) return;
+
+  /* ---------- 1. the lockup ---------- */
+  function two(n){ return n < 10 ? '0' + n : '' + n; }
+
+  // minutes-past-midnight -> the pieces of one printed time
+  function tok(min){
+    var h24 = Math.floor(min / 60) % 24, m = ((min % 60) + 60) % 60;
+    var mer = h24 >= 12 ? 'PM' : 'AM';
+    var h = h24 % 12; if (h === 0) h = 12;
+    var word = null;
+    if (m === 0 && h24 === 12) word = 'Noon';
+    if (m === 0 && h24 === 0)  word = 'Midnight';
+    return { n: h + (m ? ':' + two(m) : ''), mer: mer, word: word };
+  }
+  function tokHTML(t, showMer){
+    if (t.word) return '<span class="tl-t"><span class="tl-w">' + t.word + '</span></span>';
+    return '<span class="tl-t"><span class="tl-n">' + t.n + '</span>' +
+      (showMer ? '<span class="tl-m">' + t.mer + '</span>' : '') + '</span>';
+  }
+  // One meridiem when both ends share it ("7–10 PM"), two when they do not
+  // ("10 AM – 6 PM") or when the range crosses midnight, where one would lie.
+  function rangeHTML(r){
+    var a = tok(r.start);
+    if (r.end == null) return tokHTML(a, true);
+    var b = tok(r.end);
+    var sameMer = a.mer === b.mer && !a.word && !b.word && r.end < 1440;
+    return tokHTML(a, !sameMer) +
+      '<span class="tl-d" aria-hidden="true">–</span><span class="sr-only"> to </span>' +
+      tokHTML(b, true);
+  }
+
+  // FFTime.parseCell already resolves meridiem inheritance and midnight
+  // crossings, so the lockup is built from minutes — never from the string.
+  function fmtCell(raw){
+    if (raw == null || raw === '') return '';
+    var rows = [], label = null;
+    String(raw).split('/').forEach(function(part){
+      var shift = null;
+      var p = part.replace(/\(\s*([+-]\s*\d+\s*d)\s*\)/gi, function(_, s){
+        shift = s.replace(/\s+/g, ''); return ' ';
+      });
+      var parsed = null;
+      try { parsed = FFTime.parseCell(p); } catch(e){}
+      if (!parsed) return;
+      if (parsed.label && !label) label = parsed.label;
+      parsed.ranges.forEach(function(r){
+        rows.push('<span class="tl-r">' + rangeHTML(r) +
+          (shift ? '<span class="tl-x">' + esc(shift) + '</span>' : '') + '</span>');
+      });
+    });
+    if (!rows.length){
+      return '<span class="tl"><span class="' + (label ? 'tl-l' : 'tl-w') + '">' +
+        esc(label || raw) + '</span></span>';
+    }
+    return '<span class="tl">' +
+      (label ? '<span class="tl-l">' + esc(label) + '</span>' : '') +
+      rows.join('') + '</span>';
+  }
+
+  // The hero's own clock string is already formatted ("10:00 AM") — this only
+  // splits the meridiem off so it can ride small under the big numerals.
+  function lockup(str){
+    var m = String(str).match(/^\s*(\d{1,2})(?::(\d{2}))?\s*([AaPp])\.?[Mm]?\.?\s*$/);
+    if (!m) return esc(str);
+    return '<span class="tl-n">' + parseInt(m[1], 10) + ':' + two(m[2] ? parseInt(m[2], 10) : 0) +
+      '</span><span class="tl-m">' + m[3].toUpperCase() + 'M</span>';
+  }
+  window.FFFmt = { cell: fmtCell, lockup: lockup };
+
+  /* ---------- 2. set every notice ---------- */
+  var cells = Array.prototype.slice.call(body.querySelectorAll('td[data-src]'));
+  function decorate(mode){
+    cells.forEach(function(td){
+      var src = td.dataset.src;
+      var text = src;
+      if (mode === 'yours'){
+        var tz = td.parentNode && td.parentNode.dataset.tz;
+        text = FFTime.cellToLocal(src, parseInt(td.dataset.day, 10), tz) || src;
+      }
+      td.innerHTML = fmtCell(text);
+    });
+  }
+  Array.prototype.forEach.call(body.querySelectorAll('td.empty'), function(td){
+    td.textContent = '';
+  });
+
+  var bT = document.getElementById('modeTheirs'), bY = document.getElementById('modeYours');
+  // registered after the toggle's own handler, so it runs after the numbers change
+  if (bT) bT.addEventListener('click', function(){ decorate('theirs'); });
+  if (bY) bY.addEventListener('click', function(){ decorate('yours'); });
+  decorate(bY && bY.getAttribute('aria-pressed') === 'true' ? 'yours' : 'theirs');
+
+  /* ---------- 3. the day rail (phone) ---------- */
+  var tabsHost = document.querySelector('#dayRail .day-tabs');
+  var countEl  = document.getElementById('dayRailCount');
+  if (!tabsHost) return;
+
+  var ABBR = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var FULL = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  var today = (new Date().getDay() + 6) % 7;
+  var rows  = Array.prototype.slice.call(body.querySelectorAll('tr'));
+
+  function countFor(d){
+    var n = 0;
+    rows.forEach(function(tr){ if (tr.querySelector('td[data-day="' + d + '"]')) n++; });
+    return n;
+  }
+
+  var html = '';
+  for (var i = 0; i < 7; i++){
+    var c = countFor(i);
+    html += '<button type="button" class="day-tab" data-day="' + i + '"' +
+      (i === today ? ' data-today="1"' : '') + ' aria-pressed="false"' +
+      ' aria-label="' + FULL[i] + ', ' + c + ' streaming' + (i === today ? ', today' : '') + '">' +
+      '<span class="dt-d" aria-hidden="true">' + ABBR[i] + '</span>' +
+      '<span class="dt-n" aria-hidden="true">' + c + '</span></button>';
+  }
+  html += '<button type="button" class="day-tab" data-day="all" aria-pressed="false"' +
+    ' aria-label="Show the whole week">' +
+    '<span class="dt-d" aria-hidden="true">All</span>' +
+    '<span class="dt-n" aria-hidden="true">week</span></button>';
+  tabsHost.innerHTML = html;
+
+  // Both classes are only honoured below 900px — on the desktop board they are
+  // inert, so this can run unconditionally.
+  function applyDay(d){
+    board.dataset.dayFilter = d;
+    rows.forEach(function(tr){
+      var keep = (d === 'all') || !!tr.querySelector('td[data-day="' + d + '"]');
+      tr.classList.toggle('day-off', !keep);
+      Array.prototype.forEach.call(tr.querySelectorAll('td[data-day]'), function(td){
+        td.classList.toggle('cell-off', d !== 'all' && td.dataset.day !== d);
+      });
+    });
+    Array.prototype.forEach.call(tabsHost.children, function(b){
+      b.setAttribute('aria-pressed', String(b.dataset.day === d));
+    });
+    if (countEl){
+      countEl.textContent = (d === 'all')
+        ? rows.length + ' members · seven days'
+        : countFor(d) + ' at the anvil on ' + FULL[d];
+    }
+    try { localStorage.setItem('ff:schedday', d); } catch(e){}
+  }
+
+  tabsHost.addEventListener('click', function(e){
+    var b = e.target && e.target.closest ? e.target.closest('.day-tab') : null;
+    if (b) applyDay(b.dataset.day);
+  });
+
+  var start = String(today);
+  try { var saved = localStorage.getItem('ff:schedday'); if (saved) start = saved; } catch(e){}
+  applyDay(start);
+})();
+</script>
+
+<script>
+/* ============================================================
+   NEXT STRIKE — the hero notice pinned above the quest board.
+   Additive only: reads FF_DATA + FFTime, renders into #strikeNotice,
+   and mirrors (never replaces) the Their Time / Your Time toggle
+   owned by the block above. Nothing here writes to the table.
+   ============================================================ */
+(function(){
+  'use strict';
+  var D = window.FF_DATA, esc = FF.esc;
+  var notice = document.getElementById('strikeNotice');
+  var band   = document.getElementById('strikeLive');
+  var board  = document.getElementById('board');
+  var note   = document.getElementById('clockNote');
+  if (!notice || !window.FFTime) return;
+
+  var scheduled = D.members.filter(function(m){ return m.schedule; });
+  var TZNAME = '';
+  try { TZNAME = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e){}
+  /* "America/Chicago" is a database key, not a thing to print at a visitor.
+     The short zone name is what a person calls their own clock. */
+  var TZSHORT = '';
+  try {
+    TZSHORT = (new Intl.DateTimeFormat('en-US', { timeZoneName:'short' })
+      .formatToParts(new Date())
+      .filter(function(p){ return p.type === 'timeZoneName'; })[0] || {}).value || '';
+  } catch(e){}
+  if (!TZSHORT) TZSHORT = (TZNAME.split('/').pop() || '').replace(/_/g, ' ');
+
+  var mode = 'theirs';
+  try { mode = localStorage.getItem('ff:timemode') || 'theirs'; } catch(e){}
+
+  var next = null;            // { member, time, day }
+  var live = null;            // member currently on air
+  var liveExtra = 0;          // how many more besides `live`
+  var lastKey = '';           // guards needless re-renders
+
+  function findNext(){
+    try { next = FFTime.nextStrike(scheduled); } catch(e){ next = null; }
+  }
+
+  function parts(date, tz){
+    var o = { weekday:'long' }, p = { hour:'numeric', minute:'2-digit' };
+    if (tz){ o.timeZone = tz; p.timeZone = tz; }
+    return {
+      day:  date.toLocaleString('en-US', o),
+      time: date.toLocaleString('en-US', p)
+    };
+  }
+
+  function countText(ms){
+    if (ms <= 0) return 'any moment now';
+    var s = Math.floor(ms/1000);
+    var d = Math.floor(s/86400), h = Math.floor((s%86400)/3600),
+        m = Math.floor((s%3600)/60), sec = s%60;
+    if (d) return d + 'd ' + h + 'h ' + m + 'm';
+    if (h) return h + 'h ' + m + 'm ' + sec + 's';
+    return m + 'm ' + sec + 's';
+  }
+
+  function sigil(m){
+    var a = FF.avatarFor(m);
+    return a
+      ? '<img class="strike-sigil" src="' + esc(a) + '" data-avatar="' + esc(m.channel || '') +
+        '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">'
+      : '<span class="strike-sigil strike-sigil-blank" aria-hidden="true"></span>';
+  }
+
+  function nameHTML(m){
+    return m.channel
+      ? '<a href="https://www.twitch.tv/' + esc(m.channel) + '" target="_blank" rel="noopener">' + esc(m.name) + '</a>'
+      : esc(m.name);
+  }
+
+  /* The band nailed across the top of the notice when the forge is already
+     hot. It never replaces the countdown — both facts matter. */
+  function renderLive(){
+    if (!band) return;
+    if (!live){ band.hidden = true; band.innerHTML = ''; return; }
+    var many = liveExtra > 0;
+    var href = many ? 'live.html'
+                    : (live.channel ? 'https://www.twitch.tv/' + esc(live.channel) : 'live.html');
+    var ext  = (!many && live.channel) ? ' target="_blank" rel="noopener"' : '';
+    var text = many
+      ? esc(live.name) + ' and ' + liveExtra + ' more are at the anvil right now'
+      : esc(live.name) + ' is at the anvil right now';
+    band.hidden = false;
+    band.innerHTML =
+      '<a class="strike-live-link" href="' + href + '"' + ext + '>' +
+        '<span class="strike-dot" aria-hidden="true"></span>' +
+        '<span class="strike-live-text">' + text + '</span>' +
+        '<span class="strike-live-go" aria-hidden="true">Watch →</span>' +
+      '</a>';
+  }
+
+  function render(){
+    if (!next){
+      notice.dataset.state = 'empty';
+      notice.innerHTML = '<p class="strike-eyebrow">Next Strike</p>' +
+        '<p class="strike-empty">The board is quiet — check the <a href="live.html">Live page</a> for who is on the air.</p>';
+      return;
+    }
+
+    var m = next.member;
+    var tz = (m.schedule && m.schedule.tz) || '';
+    var iana = FFTime.ianaFor(tz);
+    var theirs = parts(next.time, iana);
+    var yours  = parts(next.time, null);
+    var showYours = (mode === 'yours');
+    var lead = showYours ? yours : theirs;
+    var other = showYours
+      ? theirs.time + ' ' + esc(tz.replace('*','')) + ' where they are'
+      : yours.time + ' on your clock' + (TZSHORT ? ' (' + esc(TZSHORT) + ')' : '');
+
+    notice.dataset.state = 'next';
+    notice.innerHTML =
+      '<p class="strike-eyebrow">Next Strike</p>' +
+      '<div class="strike-body">' + sigil(m) +
+        '<div class="strike-lines">' +
+          '<h2 class="strike-name">' + nameHTML(m) + '</h2>' +
+          '<p class="strike-when">' +
+            '<span class="strike-time">' +
+              (window.FFFmt ? FFFmt.lockup(lead.time) : esc(lead.time)) + '</span>' +
+            '<span class="strike-day">' + esc(lead.day) + '</span>' +
+          '</p>' +
+          '<p class="strike-sub">' +
+            '<span class="strike-clock">' + (showYours ? 'Your clock' : esc(tz.replace('*','')) + ' — their clock') + '</span>' +
+            '<span class="strike-sep" aria-hidden="true">·</span>' + other +
+          '</p>' +
+        '</div>' +
+      '</div>' +
+      '<p class="strike-plate">' +
+        '<span class="strike-plate-label">Hammer falls in</span>' +
+        '<span class="strike-count" id="strikeCount">' + esc(countText(next.time - new Date())) + '</span>' +
+      '</p>';
+  }
+
+  function tick(){
+    if (!next) return;
+    var left = next.time - new Date();
+    if (left <= 0){ findNext(); render(); return; }
+    var el = document.getElementById('strikeCount');
+    if (el) el.textContent = countText(left);
+  }
+
+  /* ---------- clock mode: mirror the toggle, never fight it ---------- */
+  function setMode(m){
+    mode = m;
+    if (board) board.dataset.mode = m;
+    if (note) note.textContent = m === 'yours'
+      ? (TZSHORT ? 'Converted to your clock — ' + TZSHORT + '.' : 'Converted to your local clock.')
+      : 'Every notice is posted in the streamer’s own clock.';
+    render();
+  }
+  var bT = document.getElementById('modeTheirs'), bY = document.getElementById('modeYours');
+  if (bT) bT.addEventListener('click', function(){ setMode('theirs'); });
+  if (bY) bY.addEventListener('click', function(){ setMode('yours'); });
+
+  /* ---------- live overrides the countdown ---------- */
+  FF.onLiveUpdate(function(state){
+    var on = scheduled.filter(function(m){
+      return m.channel && state.statuses[m.channel] && state.statuses[m.channel].live;
+    });
+    var nextLive = on.length ? on[0] : null;
+    var key = (nextLive ? nextLive.name : '') + '|' + on.length;
+    if (key === lastKey) return;
+    lastKey = key;
+    live = nextLive;
+    liveExtra = Math.max(0, on.length - 1);
+    renderLive();
+  });
+
+  findNext();
+  setMode(mode);
+  renderLive();
+  setInterval(tick, 1000);
 })();
 </script>
 

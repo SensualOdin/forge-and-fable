@@ -1,0 +1,746 @@
+/* ============================================================
+   FORGE & FABLE — SCHEDULE PAGE
+   A quest board in a guild hall.
+
+   Loaded AFTER css/ff.css and owns nothing outside this page.
+   Everything here builds on the shared tokens: no new colours,
+   no new type scale, no new easing curves.
+
+   The idea:
+     · the hall wall is planked timber and iron
+     · each weekday is a carved plaque bolted to the board
+     · each stream is a parchment notice nailed under its day
+     · today's column is the one lit by the forge
+     · the next strike is a notice pinned above the board, and it is
+       the largest thing on the page — larger than the H1
+
+   Two things the markup does not do on its own, and the page's
+   own inline script adds:
+     1. every time is re-set as a typographic lockup (.tl) —
+        tabular numerals at the dominant size, a small-caps
+        meridiem, an en-dash range, "Noon"/"Midnight" spelled out
+     2. the em-dash in an unbooked cell is removed, so a bare slot
+        is bare carved metal and not 77 repetitions of "—"
+
+   Layout note: the table keeps its markup and every hook the
+   inline script builds. Below 900px it re-flows into one card per
+   member AND gains a day rail, because the one thing a visitor
+   came for — who is streaming today — must not be 23 screens of
+   scrolling away.
+   ============================================================ */
+
+/* ---- page-local materials (tokens, not overrides) ---- */
+:root{
+  /* paper fibre: the same fractal-noise trick as .pressed-paper, tuned
+     finer so it reads as fibre at notice size rather than as grain */
+  --ff-fibre:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.24'/%3E%3C/svg%3E");
+  /* laid lines — the chain marks of a hand-made sheet */
+  --ff-laid:repeating-linear-gradient(0deg, rgba(122,98,58,.07) 0 1px, transparent 1px 5px);
+}
+
+/* ============================================================
+   1 — THE HALL WALL (hero)
+   ============================================================ */
+.sched-hero{
+  padding-bottom:var(--sp-8);
+}
+/* Planked timber behind the ember wash. Three mutually-prime plank widths
+   so the repeat never resolves into stripes, plus the shadow each board
+   casts on the one beside it. */
+.sched-hero .hall-timber{
+  position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,.55) 0 2px,
+      rgba(255,236,208,.045) 2px 3px,
+      transparent 3px 97px),
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,.32) 0 1px,
+      transparent 1px 149px),
+    linear-gradient(180deg, rgba(0,0,0,.5), transparent 42%, rgba(0,0,0,.55));
+  mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.35) 62%, transparent 100%);
+}
+.sched-hero .wrap{ position:relative; z-index:1; }
+
+/* The page title steps back so the next strike can be the hero object the
+   brief asks for. It is still Cinzel Decorative and still the second-largest
+   thing on the fold — it is simply no longer the largest. */
+.sched-hero h1{
+  margin-bottom:2px;
+  font-size:clamp(1.86rem, 1.36rem + 2.1vw, 2.6rem);
+}
+
+/* One centred line with the live dot as its leading marker. The old flex row
+   stranded the dot in dead space at the left the moment the sentence wrapped
+   on a phone, which is every phone. */
+.sched-today{
+  display:block; text-align:center;
+  margin-top:16px; color:var(--parchment-2);
+}
+.sched-today .pulse-dot{
+  display:inline-block; vertical-align:middle;
+  margin-right:9px; position:relative; top:-1px;
+}
+
+/* ============================================================
+   2 — THE NEXT STRIKE (the hero object of the page)
+   A parchment notice nailed to the wall above the board. It is the
+   brightest, largest, warmest thing here on purpose.
+   ============================================================ */
+.strike-mount{
+  margin-top:var(--sp-7);
+  display:flex; flex-direction:column; align-items:center;
+}
+
+/* The live band: nailed across the top of the notice when the forge is
+   already hot. It sits ON the notice, half-overlapping, like a stamped
+   ribbon — and it never replaces the countdown underneath. */
+.strike-live{
+  width:min(660px, 100%);
+  display:flex; justify-content:center;
+  margin-bottom:-11px; position:relative; z-index:2;
+}
+.strike-live-link{
+  display:inline-flex; align-items:center; gap:10px;
+  text-decoration:none;
+  padding:8px 18px; border-radius:var(--r-pill);
+  background:linear-gradient(180deg, #1c2a1f, #101a13);
+  border:1px solid rgba(var(--rgb-live),.55);
+  box-shadow:inset 0 1px 0 rgba(var(--rgb-live),.22), var(--el-2), var(--glow-live);
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-micro); letter-spacing:.1em; text-transform:uppercase;
+  color:var(--parchment);
+  transition:border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out);
+}
+.strike-live-link:hover{
+  border-color:var(--live);
+  box-shadow:inset 0 1px 0 rgba(var(--rgb-live),.3), var(--el-2), 0 0 26px -4px rgba(var(--rgb-live),.6);
+}
+.strike-live-go{ color:var(--live); }
+.strike-live-link .strike-dot{
+  width:8px; height:8px; border-radius:50%; background:var(--live);
+  box-shadow:0 0 9px rgba(var(--rgb-live),.85);
+  animation:pulse 2s infinite; flex-shrink:0;
+}
+
+.strike{
+  position:relative;
+  width:min(660px, 100%);
+  text-align:left;
+  background-color:var(--parchment);
+  background-image:var(--ff-fibre), var(--ff-laid), var(--parchment-sheet);
+  background-size:170px 170px, auto, auto;
+  background-blend-mode:multiply, multiply, normal;
+  color:var(--ink);
+  /* a hand-cut sheet, not a rounded rectangle */
+  border-radius:11px 7px 13px 8px / 8px 13px 7px 12px;
+  padding:24px 26px 0;
+  overflow:hidden;
+  box-shadow:
+    var(--el-4),
+    var(--rim-gold),
+    var(--parchment-edge),
+    0 26px 70px -26px rgba(var(--rgb-ember),.6);
+}
+/* iron nails, top corners */
+.strike::before, .strike::after{
+  content:''; position:absolute; top:13px; width:9px; height:9px; border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, #7b6a53, #221a13 72%);
+  box-shadow:0 1px 2px rgba(var(--rgb-ink),.55), inset 0 1px 0 rgba(255,255,255,.35);
+  z-index:1;
+}
+.strike::before{ left:14px; }
+.strike::after{ right:14px; }
+
+/* the ribbon overlaps the sheet, so the sheet makes room for it */
+.strike-live:not([hidden]) + .strike{ padding-top:34px; }
+
+/* .live-hero p caps its paragraphs at 600px and centres them — correct for a
+   hero paragraph, wrong for a full-bleed plate inside a 660px notice. */
+.strike p{ max-width:none; }
+
+.strike .strike-eyebrow{
+  margin:0 0 14px; text-align:center;
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-eyebrow); letter-spacing:var(--tr-eyebrow); text-transform:uppercase;
+  text-indent:var(--tr-eyebrow);
+  color:var(--ember-on-paper);
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+/* sigil + text read as one posted block, centred on the sheet */
+.strike-body{
+  display:flex; align-items:center; justify-content:center; gap:22px;
+  padding-bottom:22px;
+}
+.strike-sigil{
+  width:78px; height:78px; border-radius:50%; object-fit:cover; flex-shrink:0;
+  border:2px solid var(--gold-dim);
+  box-shadow:
+    0 0 0 4px rgba(var(--rgb-ink),.06),
+    inset 0 2px 6px rgba(var(--rgb-ink),.4),
+    0 6px 16px -6px rgba(var(--rgb-ink),.5);
+}
+.strike-sigil-blank{
+  background:radial-gradient(circle at 36% 30%, #b6a179, #6d5a3d);
+}
+.strike-lines{ min-width:0; }
+.strike-name{
+  font-family:var(--font-display); font-size:var(--fs-h2-sm); line-height:1.1;
+  color:var(--ink); margin:0 0 4px; letter-spacing:var(--tr-display);
+  overflow-wrap:anywhere;
+}
+.strike-name a{ text-decoration:none; color:inherit; }
+.strike-name a:hover{ color:var(--ember-on-paper); text-decoration:underline; text-underline-offset:3px; }
+
+.strike .strike-when{
+  margin:0; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+}
+/* THE hero number. Deliberately larger than the page's H1. */
+.strike-time{
+  font-family:var(--font-head); font-weight:700;
+  font-size:clamp(2.5rem, 1.78rem + 3vw, 3.6rem);
+  line-height:1; color:var(--ember-on-paper);
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 1px 0 rgba(255,255,255,.5);
+}
+/* the lockup inherits the hero's size; only the meridiem steps down */
+.strike-time .tl-n{
+  font-size:1em; font-weight:inherit; color:inherit;
+  letter-spacing:-.01em;
+}
+.strike-time .tl-m{
+  font-size:.30em; letter-spacing:.16em; margin-left:.14em;
+  color:var(--ember-on-paper); font-weight:700;
+}
+.strike-day{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-micro); letter-spacing:var(--tr-micro); text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.strike .strike-sub{
+  margin:10px 0 0; font-size:var(--fs-sm); color:var(--ink-soft);
+}
+.strike-clock{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-nano); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.62), rgba(var(--rgb-ink),.05));
+  border:1px solid rgba(var(--rgb-ink),.18); border-radius:var(--r-pill);
+  padding:2px 9px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.strike-sep{ margin:0 8px; color:rgba(var(--rgb-ink),.4); }
+.strike .strike-empty{ margin:0 0 22px; text-align:center; color:var(--ink-soft); }
+.strike-empty a{ color:var(--ember-on-paper); }
+
+/* the branded iron plate along the foot of the notice */
+.strike .strike-plate{
+  margin:0 -26px; padding:13px 26px;
+  display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  /* the gradient carries the look; the flat colour under it is what a
+     contrast checker (and a paint-failure) actually resolves to */
+  background-color:#1d1712;
+  background-image:var(--metal-plate);
+  border-top:1px solid rgba(var(--rgb-ink),.4);
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.09), inset 0 12px 22px -18px #000;
+}
+.strike-plate-label{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-micro); letter-spacing:var(--tr-micro); text-transform:uppercase;
+  color:var(--gold-bright);
+}
+.strike-count{
+  font-family:var(--font-head); font-weight:700; font-size:var(--fs-h3);
+  color:var(--ember-bright); font-variant-numeric:tabular-nums;
+  text-shadow:0 1px 0 rgba(0,0,0,.7), 0 0 22px rgba(var(--rgb-ember),.35);
+}
+/* nothing scheduled anywhere: the notice still has to look posted */
+.strike[data-state="empty"] .strike-plate{ display:none; }
+.strike[data-state="empty"]{ padding-bottom:6px; }
+
+/* ============================================================
+   3 — BOARD CONTROLS
+   ============================================================ */
+.sched-section{ padding-top:var(--sp-8); }
+
+.board-bar{
+  display:flex; align-items:center; justify-content:center;
+  gap:14px; flex-wrap:wrap; margin-bottom:var(--sp-6);
+}
+/* a sunk iron track with the two states seated in it */
+.clock-switch{
+  display:inline-flex; gap:4px; padding:4px; border-radius:var(--r-pill);
+  background-color:#151110; background-image:var(--metal-sunk); border:1px solid var(--iron-edge);
+  box-shadow:var(--bevel-pressed);
+}
+.clock-switch .chip{
+  box-shadow:none; border-color:transparent; background:transparent;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.clock-switch .chip:hover{ box-shadow:none; color:var(--parchment-hi); border-color:rgba(var(--rgb-ember),.5); }
+.clock-switch .chip[aria-pressed="true"]{
+  background-color:#b03d12; background-image:var(--ember-fill); border-color:var(--ember-bright); color:var(--on-ember);
+  box-shadow:inset 0 1px 0 rgba(255,226,196,.5), inset 0 -2px 0 rgba(0,0,0,.25), var(--glow-ember-sm);
+}
+/* was --gold-dim: 4.0:1 at 12px. This is the sentence that explains which
+   clock the whole board is in — it has to be readable. */
+.clock-note{
+  order:3; flex:0 0 100%; text-align:center; margin:0;
+  font-family:var(--font-head); font-size:var(--fs-micro); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--parchment-2);
+}
+.board[data-mode="yours"] ~ .sched-footnote,
+.board[data-mode="yours"]{ --clock-accent:var(--gold); }
+
+/* ============================================================
+   4 — THE PHONE DAY RAIL
+   Desktop answers "who is on today?" with the lit column. A phone
+   cannot show seven columns, so it gets an explicit day switch,
+   parked on today. Hidden entirely at board width.
+   ============================================================ */
+.day-rail{ display:none; }
+
+/* ============================================================
+   5 — THE BOARD ITSELF
+   ============================================================ */
+.board{
+  position:relative;
+  padding:14px;
+  border:1px solid var(--iron-edge);
+  border-radius:var(--r-3);
+  background-color:var(--iron-1);
+  background-image:
+    /* four forged rivets, one per corner */
+    radial-gradient(circle at 15px 15px, rgba(255,236,208,.30) 0 1.5px, rgba(0,0,0,.55) 2.5px 4px, transparent 5px),
+    radial-gradient(circle at calc(100% - 15px) 15px, rgba(255,236,208,.30) 0 1.5px, rgba(0,0,0,.55) 2.5px 4px, transparent 5px),
+    radial-gradient(circle at 15px calc(100% - 15px), rgba(255,236,208,.30) 0 1.5px, rgba(0,0,0,.55) 2.5px 4px, transparent 5px),
+    radial-gradient(circle at calc(100% - 15px) calc(100% - 15px), rgba(255,236,208,.30) 0 1.5px, rgba(0,0,0,.55) 2.5px 4px, transparent 5px),
+    var(--metal-plate);
+  box-shadow:var(--el-4), var(--bevel-raised);
+}
+/* the lit top edge of the frame */
+.board::before{
+  content:''; position:absolute; left:12px; right:12px; top:0; height:1px; pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(var(--rgb-gold),.4) 18%, rgba(var(--rgb-ember-bright),.5) 50%, rgba(var(--rgb-gold),.4) 82%, transparent);
+}
+/* the scroller keeps the overflow job and drops the panel styling —
+   the .board around it is the panel now */
+.board .sched-scroll{
+  border:none; border-radius:var(--r-2); background:transparent; box-shadow:none;
+}
+
+/* ---- the grid: cells become separate objects, not a ruled sheet ---- */
+/* Fixed layout so all seven day columns are the same width. Auto layout let
+   the widest string in a column set that column, and the board came out
+   visibly ragged — seven carved slots should be seven identical slots. */
+.board table.sched{
+  border-collapse:separate;
+  border-spacing:6px 5px;
+  table-layout:fixed;
+  width:100%;
+  min-width:940px;
+  font-size:var(--fs-xs);
+}
+
+/* ---- weekday plaques, bolted along the top ----
+   These seven words are the board's primary wayfinding. Gilt, not dim gold. */
+.board .sched thead th{
+  border-radius:var(--r-2);
+  border:1px solid var(--iron-edge); border-bottom:1px solid var(--iron-edge);
+  background-color:var(--iron-2);
+  background-image:var(--metal-raised);
+  color:var(--gold-bright);
+  padding:12px 8px;
+  letter-spacing:.2em;
+  box-shadow:var(--bevel-raised), var(--el-1);
+  text-shadow:0 1px 0 rgba(0,0,0,.7);
+}
+.board .sched thead th.today{
+  background-color:#b03d12;
+  background-image:var(--ember-fill);
+  border-color:var(--ember-bright);
+  color:var(--on-ember);
+  text-shadow:0 1px 2px rgba(90,26,4,.6);
+  box-shadow:inset 0 1px 0 rgba(255,226,196,.45), var(--el-1), var(--glow-ember-sm);
+}
+.board .sched thead th.today .today-tag{
+  color:#ffe9d4; letter-spacing:.22em; text-shadow:0 1px 2px rgba(90,26,4,.7);
+}
+.board .sched thead .member-col{
+  background-color:var(--iron-2);
+  background-image:var(--metal-raised);
+  color:var(--parchment-2);
+}
+
+/* ---- the sigil rail down the left ---- */
+.board .sched .member-col{
+  width:246px; min-width:246px;
+  border:1px solid var(--iron-edge);
+  border-radius:var(--r-2);
+  background-color:var(--iron-2);
+  background-image:linear-gradient(180deg, var(--iron-2), var(--iron-1));
+  /* border-spacing leaves a 6px slot beside the sticky column that scrolled
+     cells would show through — this paints it shut */
+  box-shadow:6px 0 0 0 var(--iron-0), 12px 0 16px -10px #000, var(--bevel-raised);
+  padding:7px 12px;
+}
+.board .sched-avatar{
+  width:34px; height:34px;
+  border:1px solid var(--gold-dim);
+  box-shadow:0 0 0 2px rgba(0,0,0,.5), inset 0 1px 2px rgba(0,0,0,.6);
+}
+/* Cinzel renders lowercase as small caps, so "chefjess_95" printed at a
+   visibly smaller cap height than "WillyLo" and the name rail looked like two
+   fonts. The body face has one cap height for every handle in the roster —
+   and on a member-first board the member outranks the times beside them. */
+.board .sched-name{
+  font-family:var(--font-body); font-weight:600;
+  font-size:var(--fs-body); letter-spacing:.005em;
+  line-height:1.2;
+}
+.board .tz-chip{
+  margin-left:auto;
+  color:var(--parchment-2); border-color:rgba(var(--rgb-gold),.30);
+  background:linear-gradient(180deg, rgba(var(--rgb-gold),.14), rgba(var(--rgb-gold),.03));
+  box-shadow:inset 0 1px 0 rgba(var(--rgb-gold),.18);
+}
+/* In "your clock" mode the streamer's own zone is not what is on the notices,
+   so the chip leaves — properly, out of the layout and out of the a11y tree.
+   It used to sit at opacity .45, i.e. legible to nobody and still announced. */
+.board[data-mode="yours"] .tz-chip{ display:none; }
+
+/* ---- every stream is a parchment notice ----
+   Fibre, laid lines, a hand-cut edge and a tone that varies notice to notice.
+   The uniform 6px radius was the tell that this was a table cell tinted cream. */
+.board .sched td[data-src]{
+  --pa:#f3ead4; --pb:#dccca4;
+  background-color:var(--parchment);
+  background-image:var(--ff-fibre), var(--ff-laid), linear-gradient(166deg, var(--pa) 0%, var(--pb) 100%);
+  background-size:170px 170px, auto, auto;
+  background-blend-mode:multiply, multiply, normal;
+  color:var(--ink);
+  border:none;
+  border-radius:7px 4px 8px 5px / 5px 8px 4px 7px;
+  padding:9px 9px 8px;
+  position:relative;
+  box-shadow:
+    var(--bevel-paper),
+    inset 0 0 0 1px rgba(var(--rgb-ink),.10),
+    0 2px 5px rgba(0,0,0,.4);
+  text-shadow:0 1px 0 rgba(255,255,255,.4);
+  transition:box-shadow var(--dur-1) var(--ease-out), filter var(--dur-1) var(--ease-out);
+}
+/* four sheets from four batches, scattered by nth-child arithmetic so no two
+   neighbours share a tone or an edge */
+.board .sched tbody tr:nth-child(2n) td[data-src]{
+  --pa:#efe4ca; --pb:#d7c69e;
+  border-radius:4px 8px 5px 7px / 7px 5px 8px 4px;
+}
+.board .sched td[data-src]:nth-child(3n){
+  --pa:#f6efdc; --pb:#e1d2ac;
+  border-radius:8px 5px 4px 7px / 4px 7px 8px 5px;
+}
+.board .sched tbody tr:nth-child(3n) td[data-src]:nth-child(4n){
+  --pa:#ebdfc2; --pb:#d3c199;
+  border-radius:5px 7px 7px 4px / 8px 4px 5px 8px;
+}
+/* the nail that holds it to the board — never in quite the same spot */
+.board .sched td[data-src]::after{
+  content:''; position:absolute; top:3px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, rgba(var(--rgb-ink),.45), rgba(var(--rgb-ink),.72) 70%);
+  box-shadow:0 1px 0 rgba(255,255,255,.45);
+}
+.board .sched td[data-src]:nth-child(2n)::after{ left:45%; }
+.board .sched td[data-src]:nth-child(3n)::after{ left:56%; }
+.board .sched tbody tr:hover td[data-src]{
+  filter:brightness(1.05);
+  box-shadow:
+    var(--bevel-paper),
+    inset 0 0 0 1px rgba(var(--rgb-ink),.12),
+    0 4px 10px rgba(0,0,0,.5);
+}
+
+/* ---- the time lockup ----
+   Numerals carry the cell; the meridiem is a small-caps rider; the range is
+   an en-dash. Ranges wrap as whole tokens so "8:30 PM" never splits. */
+.tl{ display:flex; flex-direction:column; align-items:center; gap:1px; }
+.tl-l{
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-nano); letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ember-on-paper);
+}
+.tl-r{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:baseline;
+  gap:0 5px;
+}
+/* two sessions in one day get a hairline between them, not a slash */
+.tl-r + .tl-r{
+  align-self:stretch; margin-top:3px; padding-top:3px;
+  border-top:1px solid rgba(var(--rgb-ink),.18);
+}
+.tl-t{ display:inline-flex; align-items:baseline; gap:3px; white-space:nowrap; }
+.tl-n{
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-sm); line-height:1.2;
+  font-variant-numeric:tabular-nums; letter-spacing:.01em;
+  color:var(--ink);
+}
+.tl-m{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-nano); letter-spacing:.09em;
+  color:var(--ink-soft);
+}
+.tl-w{
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-xs); letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink);
+}
+/* .55 alpha put the range dash at 3.3:1 — a glyph that carries the meaning
+   "to" cannot be the faintest thing in the cell. It is aria-hidden and backed
+   by an sr-only " to ", but it still has to be legible to eyes. */
+.tl-d{ color:rgba(var(--rgb-ink),.78); font-size:var(--fs-xs); line-height:1; }
+.tl-x{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-nano); letter-spacing:.08em;
+  color:var(--ember-on-paper);
+}
+
+/* ---- bare board where nobody posted anything ----
+   77 of 190 slots are unbooked. They are recessed metal and they are silent:
+   the inline script strips the em-dash so nothing is drawn here and nothing
+   is read out here. */
+.board .sched td.empty{
+  background:rgba(0,0,0,.30);
+  border-radius:var(--r-1);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.62), inset 0 -1px 0 rgba(255,236,208,.05);
+  /* belt and braces if the decorator never runs */
+  font-size:0; line-height:0; color:transparent;
+}
+
+/* ---- today: the column the forge light falls on ----
+   The 7px spread fills the border-spacing gaps, so the highlight reads as
+   one continuous shaft down the board instead of seven loose swatches. */
+/* No `background` shorthand here: it would reset the notice's fibre + laid +
+   gradient stack and leave today's column as flat dark chips. The shaft is
+   built from the 7px spread alone, and each surface tints itself. */
+.board .sched td.today{
+  box-shadow:0 0 0 7px rgba(var(--rgb-gold),.07);
+}
+.board .sched td.today.empty{
+  background:rgba(var(--rgb-gold),.05);
+  box-shadow:0 0 0 7px rgba(var(--rgb-gold),.07), inset 0 1px 3px rgba(0,0,0,.55);
+}
+/* Literal colours rather than --pa/--pb: the per-notice tone variants are
+   nth-child rules and out-specify this one, so today states its own sheet. */
+.board .sched td.today[data-src]{
+  background-image:var(--ff-fibre), var(--ff-laid), linear-gradient(166deg, #fdf7e6 0%, #ecdfbc 100%);
+  box-shadow:
+    0 0 0 7px rgba(var(--rgb-gold),.07),
+    var(--bevel-paper),
+    inset 0 0 0 1px rgba(var(--rgb-gold),.5),
+    0 3px 9px rgba(0,0,0,.5),
+    0 0 26px -6px rgba(var(--rgb-gold),.75);
+}
+.board .sched td.today[data-src]::after{
+  background:radial-gradient(circle at 34% 30%, var(--gold-bright), #6a5327 72%);
+  box-shadow:0 0 6px rgba(var(--rgb-gold),.8);
+}
+
+/* ---- a member on hiatus: one long strip across the board ---- */
+.board .sched td.note-cell{
+  font-family:var(--font-scribe); font-size:var(--fs-sm);
+  color:var(--ink-soft);
+  background-color:var(--parchment-3);
+  background-image:var(--ff-fibre), var(--ff-laid), linear-gradient(166deg, rgba(219,201,159,.95), rgba(185,163,119,.95));
+  background-size:170px 170px, auto, auto;
+  background-blend-mode:multiply, multiply, normal;
+  border-radius:6px 9px 5px 8px / 8px 5px 9px 6px;
+  box-shadow:var(--bevel-paper), inset 0 0 0 1px rgba(var(--rgb-ink),.12), 0 2px 5px rgba(0,0,0,.4);
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+  padding:12px 8px;
+}
+
+/* ---- live right now ---- */
+.board .sched tr.is-live .member-col{
+  background:linear-gradient(90deg, rgba(var(--rgb-live),.16), var(--iron-1) 70%);
+  border-color:rgba(var(--rgb-live),.4);
+  box-shadow:6px 0 0 0 var(--iron-0), 12px 0 16px -10px #000, var(--rim-live);
+}
+.board .sched tr.is-live .sched-name a{ color:var(--parchment-hi); }
+
+.sched-footnote{ max-width:74ch; margin-left:auto; margin-right:auto; }
+
+/* ============================================================
+   6 — PHONE: the grid becomes one card per member, one day at a time
+   Seven columns of times cannot survive 390px, and 28 members × 7 days
+   of them is 23 screens of scrolling. Each row folds into a card, and
+   the day rail above the board decides which day those cards show.
+   ============================================================ */
+@media (max-width:899px){
+
+  /* ---- the day rail ---- */
+  .day-rail{ display:block; margin-bottom:15px; }
+  .day-rail-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:10px; margin-bottom:9px;
+  }
+  .day-rail-title{
+    font-family:var(--font-head); font-weight:600;
+    font-size:var(--fs-micro); letter-spacing:var(--tr-micro); text-transform:uppercase;
+    color:var(--parchment-2);
+  }
+  .day-rail-count{
+    font-family:var(--font-head); font-weight:600; font-size:var(--fs-sm);
+    color:var(--gold-bright); text-align:right;
+  }
+  .day-tabs{ display:grid; grid-template-columns:repeat(4, 1fr); gap:7px; }
+  .day-tab{
+    min-height:46px; padding:6px 4px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    border:1px solid var(--iron-edge); border-radius:var(--r-2);
+    background-color:var(--iron-2);
+    background-image:var(--metal-raised);
+    box-shadow:var(--bevel-raised), var(--el-1);
+    transition:border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out);
+  }
+  .day-tab .dt-d{
+    font-family:var(--font-head); font-weight:700;
+    font-size:var(--fs-micro); letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold-bright); text-shadow:0 1px 0 rgba(0,0,0,.7);
+  }
+  .day-tab .dt-n{
+    font-family:var(--font-head); font-size:var(--fs-nano); letter-spacing:.08em;
+    color:var(--parchment-2);
+  }
+  .day-tab[data-today="1"]{ border-color:rgba(var(--rgb-gold),.55); }
+  .day-tab:hover{ border-color:rgba(var(--rgb-ember),.6); }
+  .day-tab[aria-pressed="true"]{
+    background-color:#b03d12; background-image:var(--ember-fill); border-color:var(--ember-bright);
+    box-shadow:inset 0 1px 0 rgba(255,226,196,.5), inset 0 -2px 0 rgba(0,0,0,.25), var(--glow-ember-sm);
+  }
+  .day-tab[aria-pressed="true"] .dt-d,
+  .day-tab[aria-pressed="true"] .dt-n{ color:var(--on-ember); text-shadow:0 1px 2px rgba(90,26,4,.6); }
+
+  /* ---- the board folds ---- */
+  .board{ padding:10px; background:var(--metal-plate); }
+  .board .sched-scroll{ overflow:visible; }
+
+  .board table.sched,
+  .board .sched tbody,
+  .board .sched tbody td,
+  .board .sched tbody th{ display:block; }
+  .board table.sched{ min-width:0; width:100%; border-spacing:0; }
+  .board .sched thead{ display:none; }
+
+  /* the card: member plate on top, notices tiled beneath it */
+  .board .sched tbody tr{
+    display:flex; flex-wrap:wrap; align-items:stretch; justify-content:center; gap:7px;
+    padding:0 9px 9px;
+    border:1px solid var(--iron-edge); border-radius:var(--r-2);
+    background-color:#1b1611;
+    background-image:linear-gradient(180deg, rgba(46,37,28,.5), rgba(23,19,16,.5));
+    box-shadow:var(--el-2);
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .board .sched tbody tr:last-child{ margin-bottom:0; }
+
+  .board .sched .member-col{
+    position:static; min-width:0; width:auto;
+    flex:1 0 100%; margin:0 -9px 2px;
+    border:none; border-bottom:1px solid var(--iron-edge); border-radius:0;
+    box-shadow:inset 0 1px 0 rgba(255,236,208,.06);
+    background-color:var(--iron-3);
+    background-image:linear-gradient(180deg, var(--iron-3), var(--iron-2));
+    padding:9px 12px;
+  }
+  .board .sched .mrow{ gap:9px; }
+  .board .sched .sched-name{ white-space:normal; font-size:var(--fs-lead); }
+
+  /* nothing posted that day: say nothing at all */
+  .board .sched td.empty{ display:none; }
+
+  /* Notices are sized by what is written on them and pinned centred, two-up
+     where they fit. A notice that stretched the full card width was a table
+     row wearing cream; a slip with its own edges is a posted notice. */
+  .board .sched td[data-src]{
+    flex:0 1 auto; min-width:42%; max-width:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1px;
+    margin:0; padding:8px 14px 7px;
+    text-align:center;
+  }
+  .board .sched td[data-src]::after{ display:none; }
+
+  /* the weekday, printed on the notice — only when the rail is showing the
+     whole week. With one day selected the rail already said which day it is,
+     and "Today" on every card in a today-only view is noise. */
+  .board .sched td[data-day]::before{
+    font-family:var(--font-head); font-weight:600;
+    font-size:var(--fs-nano); letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .board .sched td[data-day="0"]::before{ content:'Mon'; }
+  .board .sched td[data-day="1"]::before{ content:'Tue'; }
+  .board .sched td[data-day="2"]::before{ content:'Wed'; }
+  .board .sched td[data-day="3"]::before{ content:'Thu'; }
+  .board .sched td[data-day="4"]::before{ content:'Fri'; }
+  .board .sched td[data-day="5"]::before{ content:'Sat'; }
+  .board .sched td[data-day="6"]::before{ content:'Sun'; }
+  .board .sched td.today[data-day]::before{ content:'Today'; color:var(--ember-on-paper); }
+  .board[data-day-filter]:not([data-day-filter="all"]) .sched td[data-day]::before{ display:none; }
+
+  .board .sched td.today[data-src]{
+    box-shadow:
+      var(--bevel-paper),
+      inset 0 0 0 1px rgba(var(--rgb-ink),.14),
+      0 3px 9px rgba(0,0,0,.5),
+      0 0 0 2px rgba(var(--rgb-gold),.45);
+  }
+  .board .sched td.note-cell{ flex:1 1 100%; margin:0; }
+
+  /* the day filter's own hiding — scoped to phone, so the class is inert
+     on the desktop board */
+  .board .sched tbody tr.day-off{ display:none; }
+  .board .sched td.cell-off{ display:none; }
+
+  /* touch targets: the page's only real CTA and its only real switch */
+  #icsBtn{ min-height:46px; padding:10px 18px; }
+  .clock-switch .chip{ min-height:44px; padding:8px 18px; }
+
+  .strike{ padding:22px 18px 0; }
+  .strike .strike-plate{ margin:0 -18px; padding:12px 18px; }
+  .strike-body{ flex-direction:column; text-align:center; gap:14px; }
+  .strike .strike-when{ justify-content:center; }
+  .strike-sigil{ width:66px; height:66px; }
+  .strike .strike-sub .strike-sep{ display:block; height:0; overflow:hidden; margin:0; }
+  .strike-clock{ display:inline-block; margin-bottom:5px; }
+}
+
+@media (max-width:560px){
+  .board-bar{ gap:10px; }
+  .clock-switch{ width:100%; justify-content:center; }
+  .clock-switch .chip{ flex:1 1 0; }
+  #icsBtn{ width:100%; }
+  /* the whole band is the link — the trailing "Watch →" only forced it
+     onto a second line */
+  .strike-live-go{ display:none; }
+  .strike-live-link{ font-size:var(--fs-nano); padding:7px 15px; gap:9px; }
+}
+
+/* ============================================================
+   7 — REDUCED MOTION
+   ff.css already stops the world; these are this page's own moving
+   parts, stated explicitly so they cannot come back by accident.
+   The live dot still has to read as live without the pulse.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  .strike-live-link .strike-dot{
+    animation:none;
+    /* still unmistakably "on air" without the pulse */
+    box-shadow:0 0 0 3px rgba(var(--rgb-live),.28);
+  }
+  .strike-live-link,
+  .day-tab,
+  .board .sched td[data-src]{ transition:none; }
+}

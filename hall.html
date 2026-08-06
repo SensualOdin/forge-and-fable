@@ -8,12 +8,16 @@
 <meta name="theme-color" content="#0f0c09">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ff.css">
+<link rel="stylesheet" href="css/pages/hall.css">
 </head>
 <body class="hall-body">
+
+<a class="skip-link" href="#main">Skip to content</a>
 
 <header class="site">
   <div class="nav">
@@ -27,25 +31,124 @@
       </svg>
       <span class="brand-text">FORGE <span>&amp;</span> FABLE</span>
     </a>
-    <nav class="links" aria-label="Main">
-      <a href="live.html">← Back to Live</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="navLinks" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="links" id="navLinks" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="index.html#tale">The Tale</a>
+      <a href="index.html#roster">The Guild</a>
+      <a href="schedule.html">The Forge Week</a>
+      <a href="hearth.html">The Hearth</a>
+      <a class="nav-live none" id="navLive" href="live.html"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
   </div>
 </header>
 
 <main class="hall-main" id="main">
-  <div class="hall-status" id="hallStatus">Summoning the guild…</div>
+
+  <!-- command rail: what this room is, how many fires are lit, what you can shut off -->
+  <div class="hall-bar">
+    <div class="hall-bar-id">
+      <svg class="hall-crest" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M2.6 21V10.4a9.4 9.4 0 0 1 18.8 0V21" stroke="#c9a35c" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M7.1 21V6.1M12 21V3.6M16.9 21V6.1" stroke="#8a7040" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M4 11.6h16M4 16.3h16" stroke="#8a7040" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M12 3.6 12 21" stroke="#ff8c42" stroke-width="1.3" stroke-linecap="round" opacity=".55"/>
+        <path d="M1.4 21h21.2" stroke="#c9a35c" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div class="hall-id-text">
+        <span class="eyebrow">Multistream</span>
+        <h1 class="hall-title">The Great Hall</h1>
+      </div>
+    </div>
+
+    <div class="hall-bar-meta">
+      <span class="hall-count" id="hallCount" aria-live="polite">
+        <!-- "in the hall", not "Live": the site nav directly above already carries
+             a "N Live Now" pill, and two identical readouts stacked in the same
+             corner read as a rendering bug. This one counts tiles on this screen. -->
+        <span class="hall-dot" aria-hidden="true"></span><b id="hallCountN">0</b>&nbsp;in the hall
+      </span>
+      <button type="button" class="hall-ctrl" id="chatToggle" aria-pressed="true" aria-controls="hallChatPane" disabled>
+        <svg class="ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2 4.2A2.2 2.2 0 0 1 4.2 2h7.6A2.2 2.2 0 0 1 14 4.2v5.1a2.2 2.2 0 0 1-2.2 2.2H6.6L3.2 14.2V11.5H4.2A2.2 2.2 0 0 1 2 9.3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+        <span>Chat</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- the cold forge: shown while checking, and whenever nobody is broadcasting -->
+  <div class="hall-empty is-checking" id="hallEmpty">
+    <span class="grain" aria-hidden="true"></span>
+
+    <svg class="hall-mark" viewBox="0 0 128 118" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="anvilFill" x1="0" y1="34" x2="0" y2="96" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#453729"/><stop offset=".55" stop-color="#241d16"/><stop offset="1" stop-color="#120f0c"/>
+        </linearGradient>
+        <radialGradient id="coalGlow" cx="0" cy="0" r="1"
+          gradientTransform="translate(64 100) rotate(90) scale(15 46)" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#d8531f" stop-opacity=".5"/><stop offset="1" stop-color="#d8531f" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- the last heat in the coals, pooled under the anvil -->
+      <ellipse cx="64" cy="100" rx="46" ry="15" fill="url(#coalGlow)"/>
+
+      <g class="hall-sparks">
+        <circle class="hall-spark s1" cx="52" cy="26" r="2.6" fill="#ff8c42"/>
+        <circle class="hall-spark s2" cx="66" cy="18" r="1.8" fill="#ffc38a"/>
+        <circle class="hall-spark s3" cx="42" cy="17" r="1.5" fill="#d8531f"/>
+      </g>
+      <!-- the one warm patch left on the face -->
+      <ellipse cx="60" cy="36" rx="26" ry="4" fill="#d8531f" opacity=".22"/>
+
+      <path d="M13 45 L30 35 H106 V54 H88 C84 62 82 68 82 78 H102 V94 H34 V78 H54 C54 68 52 62 48 54 H30 Z"
+            fill="url(#anvilFill)" stroke="#a98a55" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M30 37.6 H104" stroke="#f0dda8" stroke-width="1.6" opacity=".5" stroke-linecap="round"/>
+      <path d="M30 54 H48 M88 54 H106" stroke="#0f0c09" stroke-width="1.4" opacity=".75"/>
+      <path d="M31 100.5 H101" stroke="#3a2f24" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+
+    <h2 class="hall-empty-title when-empty">The hall stands empty</h2>
+    <div class="hall-status" id="hallStatus">Summoning the guild…</div>
+    <!-- filled by the schedule script below: who lights the next fire, in the visitor's own clock -->
+    <p class="hall-next when-empty" id="hallNext" hidden></p>
+
+    <div class="hall-scan when-checking" aria-hidden="true"></div>
+
+    <div class="hall-empty-actions when-empty">
+      <a class="hall-btn" href="schedule.html">See who rides next</a>
+      <a class="live-link" href="index.html#roster">Meet the guild</a>
+    </div>
+  </div>
+
   <div class="hall-layout" id="hallLayout" hidden>
     <div class="hall-grid" id="hallGrid"></div>
-    <aside class="hall-chat" id="hallChatPane">
-      <div class="hall-chat-tabs" id="chatTabs" role="tablist" aria-label="Chat channel"></div>
+    <aside class="hall-chat" id="hallChatPane" aria-label="Stream chat">
+      <!-- the panel's only chrome: the channel picker (and, on a phone, the way out).
+           Twitch's embed draws its own "Stream Chat" header — a second title bar
+           40px above it was just noise. -->
+      <div class="hall-chat-bar">
+        <div class="hall-chat-tabs" id="chatTabs" role="tablist" aria-label="Chat channel"></div>
+        <button type="button" class="hall-chat-close" id="chatClose" aria-label="Close chat">
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
       <div class="hall-chat-frame" id="chatFrame"></div>
     </aside>
+    <div class="hall-scrim" id="hallScrim" aria-hidden="true"></div>
   </div>
 </main>
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
+<script src="js/ff-time.js"></script>
+<script src="js/ff-motion.js"></script>
 <script>
 (function(){
   'use strict';
@@ -100,7 +203,7 @@
       if (live.length === 0){
         layout.hidden = true;
         status.hidden = false;
-        status.innerHTML = 'The hall is empty — no one is live right now. <a href="live.html">Back to the Live page</a>.';
+        status.textContent = 'All ' + Object.keys(byChannel).length + ' forges in the guild are cold right now.';
       } else {
         layout.hidden = false;
         status.hidden = true;
@@ -115,6 +218,287 @@
 
   FF.onLiveUpdate(sync);
   FF.startPolling();
+})();
+</script>
+<script>
+/* Hall chrome — additive. Runs after the renderer above, so by the time this
+   listener fires the tiles for a sync are already in the DOM. */
+(function(){
+  'use strict';
+  var grid    = document.getElementById('hallGrid');
+  var statusEl= document.getElementById('hallStatus');
+  var emptyEl = document.getElementById('hallEmpty');
+  var layout  = document.getElementById('hallLayout');
+  var countEl = document.getElementById('hallCount');
+  var countN  = document.getElementById('hallCountN');
+  var toggle  = document.getElementById('chatToggle');
+
+  /* ff-core's count-up engine adopts every [data-count] element it can see at
+     DOMContentLoaded and writes a number into its textContent. The renderer
+     above sets grid.dataset.count synchronously on its first sync — which is
+     before that — so the grid was being enrolled as a "stat" and printed a
+     stray "0" inside itself (and could blank freshly mounted tiles). Strip it
+     here, before ff-core boots; every later sync re-adds it harmlessly, and
+     the CSS column rules keyed to it keep working. */
+  if (grid) grid.removeAttribute('data-count');
+
+  function tiles(){ return grid ? grid.querySelectorAll('.hall-tile').length : 0; }
+
+  FF.onLiveUpdate(function(state){
+    var n = tiles();
+    countN.textContent = String(n);
+    countEl.classList.toggle('is-live', n > 0);
+    countEl.setAttribute('aria-label', n + (n === 1 ? ' channel' : ' channels') + ' live in the hall');
+    toggle.disabled = n === 0;
+
+    emptyEl.classList.toggle('is-checking', !!state.checking);
+    if (!state.checking) emptyEl.hidden = !!statusEl.hidden;
+  });
+
+  /* Collapse the chat rail — on a multistream, screen width is the scarce
+     resource and the rail is the only thing worth giving back. */
+  toggle.addEventListener('click', function(){
+    var on = toggle.getAttribute('aria-pressed') !== 'true';
+    toggle.setAttribute('aria-pressed', String(on));
+    layout.classList.toggle('chat-off', !on);
+  });
+})();
+</script>
+<script>
+/* ============================================================
+   Hall geometry + per-tile controls + the narrow-screen chat sheet.
+   Additive: it only reads the tiles the renderer above produced, wraps
+   the existing .hall-tag in a plate, and appends controls beside it.
+   ============================================================ */
+(function(){
+  'use strict';
+  var grid   = document.getElementById('hallGrid');
+  var layout = document.getElementById('hallLayout');
+  var toggle = document.getElementById('chatToggle');
+  var closeB = document.getElementById('chatClose');
+  var scrim  = document.getElementById('hallScrim');
+  var nextEl = document.getElementById('hallNext');
+  if (!grid || !layout) return;
+
+  var NARROW = 900;     // matches the stack breakpoint in ff.css
+  var MIN_TILE = 232;   // below this a player is a thumbnail; scroll instead
+
+  /* ---------- 1. THE WALL ----------------------------------------
+     The wall has a fixed box (grid height = layout height) and n tiles of
+     one size. For every possible column count we work out the largest 16:9
+     tile that fits both its column and its share of the height, then take
+     the best — so the tiles grow to fill the box instead of huddling in the
+     middle of it. Near-ties go to whichever arrangement covers more of the
+     box, which is what stops 3-up leaving half the wall black. ------- */
+  function tilesOf(all){
+    var out = [], t = grid.querySelectorAll('.hall-tile');
+    for (var i = 0; i < t.length; i++) if (all || !t[i].hidden) out.push(t[i]);
+    return out;
+  }
+
+  var lastKey = '';
+  function layoutWall(){
+    var tiles = tilesOf(false), n = tiles.length;
+    if (!n) { lastKey = ''; return; }
+
+    if (window.innerWidth <= NARROW || !grid.clientHeight){
+      grid.style.removeProperty('--cols');
+      grid.style.removeProperty('--tile-w');
+      for (var k = 0; k < tiles.length; k++) tiles[k].style.transform = '';
+      lastKey = '';
+      return;
+    }
+
+    var gap   = parseFloat(getComputedStyle(grid).columnGap) || 12;
+    var plate = tiles[0].querySelector('.hall-tile-plate');
+    var ph    = plate ? plate.offsetHeight : 0;
+    var W = grid.clientWidth, H = grid.clientHeight;
+
+    var sizes = [], fills = [], max = 0, c, r;
+    for (c = 1; c <= n; c++){
+      r = Math.ceil(n / c);
+      var byW = (W - (c - 1) * gap) / c;
+      var byH = ((H - (r - 1) * gap) / r - ph) * 16 / 9;
+      var s = Math.min(byW, byH);
+      sizes.push(s);
+      fills.push((c * s + (c - 1) * gap) * (r * (s * 9 / 16 + ph) + (r - 1) * gap) / (W * H));
+      if (s > max) max = s;
+    }
+    /* Biggest tile wins; where two arrangements are within 3% of each other
+       (3-up at 344px vs 2-up at 352px, say) the one that leaves less of the
+       wall as bare black takes it. */
+    var cols = 1, bestFill = -1;
+    for (var i = 0; i < sizes.length; i++){
+      if (sizes[i] >= max * 0.97 && fills[i] > bestFill){ bestFill = fills[i]; cols = i + 1; }
+    }
+    var w = sizes[cols - 1];
+
+    if (w < MIN_TILE){                       // too many fires: scroll the wall
+      w = MIN_TILE;
+      cols = Math.max(1, Math.floor((W + gap) / (w + gap)));
+    }
+    w = Math.floor(Math.min(w, W));
+
+    var key = cols + ':' + w + ':' + n;
+    if (key === lastKey) return;
+    lastKey = key;
+
+    grid.style.setProperty('--cols', cols);
+    grid.style.setProperty('--tile-w', w + 'px');
+
+    /* centre a short final row rather than letting it hang off the left */
+    var rem = n % cols, shift = rem ? (cols - rem) * (w + gap) / 2 : 0;
+    for (var j = 0; j < n; j++){
+      tiles[j].style.transform = (rem && j >= n - rem) ? 'translateX(' + shift + 'px)' : '';
+    }
+  }
+
+  /* ---------- 2. TILE CONTROLS -----------------------------------
+     A multistream with no per-tile audio is a wall of mimes. Sound solos
+     one player (Twitch's iframe player only takes muted state through its
+     src, so this reloads that one embed); Focus gives a single stream the
+     whole wall and parks the rest. ---------------------------------- */
+  var ICO_SOUND =
+    '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+      '<path d="M8.4 2.7 4.8 5.6H2.3v4.8h2.5l3.6 2.9z" fill="currentColor"/>' +
+      '<g class="ico-off" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">' +
+        '<path d="M11 6l3.2 4M14.2 6L11 10"/></g>' +
+      '<g class="ico-on" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">' +
+        '<path d="M11 5.7a3.3 3.3 0 0 1 0 4.6M13.2 3.7a6.2 6.2 0 0 1 0 8.6"/></g>' +
+    '</svg>';
+  var ICO_FOCUS =
+    '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+      '<g class="ico-off" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M6 2.7H2.7V6M10 2.7h3.3V6M6 13.3H2.7V10M10 13.3h3.3V10"/></g>' +
+      '<g class="ico-on" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M2.7 6H6V2.7M13.3 6H10V2.7M2.7 10H6v3.3M13.3 10H10v3.3"/></g>' +
+    '</svg>';
+
+  function button(act, label, ico){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'hall-tile-btn';
+    b.dataset.act = act;
+    b.setAttribute('aria-pressed', 'false');
+    b.setAttribute('aria-label', label);
+    b.title = label;
+    b.innerHTML = ico;
+    return b;
+  }
+
+  function dress(){
+    var fresh = grid.querySelectorAll('.hall-tile:not([data-dressed])');
+    for (var i = 0; i < fresh.length; i++){
+      var t = fresh[i];
+      t.setAttribute('data-dressed', '');
+      var tag = t.querySelector('.hall-tag');
+      var name = tag ? tag.textContent.trim() : 'this stream';
+      var plate = document.createElement('div');
+      plate.className = 'hall-tile-plate';
+      if (tag) plate.appendChild(tag);           // the nameplate leaves the video
+      var ctrls = document.createElement('div');
+      ctrls.className = 'hall-tile-ctrls';
+      ctrls.appendChild(button('sound', 'Hear ' + name + ' (mutes the rest)', ICO_SOUND));
+      ctrls.appendChild(button('focus', 'Give ' + name + ' the whole wall', ICO_FOCUS));
+      plate.appendChild(ctrls);
+      t.appendChild(plate);
+      if (grid.classList.contains('is-focused')) t.hidden = true;
+    }
+    if (grid.classList.contains('is-focused') && !grid.querySelector('.hall-tile.is-focus')) setFocus(null, false);
+  }
+
+  function setSound(tile, on){
+    var f = tile.querySelector('iframe');
+    if (f){
+      var src = f.src.replace(/muted=(?:true|false)/, 'muted=' + (on ? 'false' : 'true'));
+      if (src !== f.src) f.src = src;
+    }
+    tile.classList.toggle('is-hot', on);
+    var b = tile.querySelector('.hall-tile-btn[data-act="sound"]');
+    if (b) b.setAttribute('aria-pressed', String(on));
+  }
+  function solo(tile, on){
+    var all = tilesOf(true);
+    for (var i = 0; i < all.length; i++) if (all[i] !== tile) setSound(all[i], false);
+    setSound(tile, on);
+  }
+  function setFocus(tile, on){
+    var all = tilesOf(true);
+    for (var i = 0; i < all.length; i++){
+      var t = all[i], me = on && t === tile;
+      t.classList.toggle('is-focus', !!me);
+      t.hidden = !!(on && !me);
+      var b = t.querySelector('.hall-tile-btn[data-act="focus"]');
+      if (b) b.setAttribute('aria-pressed', String(!!me));
+    }
+    grid.classList.toggle('is-focused', !!on);
+    lastKey = '';
+    layoutWall();
+  }
+
+  grid.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.hall-tile-btn');
+    if (!b) return;
+    var tile = b.closest('.hall-tile');
+    var on = b.getAttribute('aria-pressed') !== 'true';
+    if (b.dataset.act === 'sound') solo(tile, on); else setFocus(tile, on);
+  });
+
+  /* ---------- 3. NARROW: chat as a sheet over the wall ------------
+     Stacked under six players, chat was a 1300px scroll away — you could
+     never see it and a stream at the same time. On a phone it rides over
+     the wall instead, and starts closed. ---------------------------- */
+  function narrow(){ return window.innerWidth <= NARROW; }
+  function chatOpen(){ return !layout.classList.contains('chat-off'); }
+  function closeChat(){ if (chatOpen()) toggle.click(); }
+
+  var mode = null;
+  function syncChatMode(){
+    var n = narrow();
+    if (n === mode) return;
+    mode = n;
+    layout.classList.toggle('chat-off', n);
+    toggle.setAttribute('aria-pressed', String(!n));
+  }
+  syncChatMode();
+
+  toggle.addEventListener('click', function(){
+    if (narrow() && chatOpen()) closeB.focus();
+  });
+  closeB.addEventListener('click', closeChat);
+  if (scrim) scrim.addEventListener('click', closeChat);
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if (grid.classList.contains('is-focused')) { setFocus(null, false); return; }
+    if (narrow() && chatOpen()) closeChat();
+  });
+
+  /* ---------- 4. WHO LIGHTS THE NEXT FIRE ------------------------- */
+  (function(){
+    if (!nextEl || !window.FFTime || !window.FF_DATA) return;
+    var best = FFTime.nextStrike(FF_DATA.members);
+    if (!best) return;
+    var day = best.time.toLocaleDateString([], { weekday: 'long' });
+    var today = new Date();
+    if (best.time.toDateString() === today.toDateString()) day = 'today';
+    /* fmtLocal is the schedule table's shorthand ("4A"); a sentence wants "4 AM" */
+    var at = FFTime.fmtLocal(best.time).replace(/([AP])$/, ' $1M');
+    nextEl.innerHTML = 'Next to strike: <b>' + FF.esc(best.member.name) + '</b>, ' +
+      day + ' at ' + at + ' your time.';
+    nextEl.hidden = false;
+  })();
+
+  /* ---------- 5. KEEP IT ALL IN STEP ------------------------------ */
+  var queued = false;
+  function schedule(){
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function(){ queued = false; layoutWall(); });
+  }
+  FF.onLiveUpdate(function(){ dress(); lastKey = ''; schedule(); });
+  if (window.ResizeObserver) new ResizeObserver(schedule).observe(grid);
+  window.addEventListener('resize', function(){ syncChatMode(); schedule(); });
+  dress(); schedule();
 })();
 </script>
 

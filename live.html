@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ff.css">
+<link rel="stylesheet" href="css/pages/live.css">
 </head>
 <body>
 
@@ -49,10 +50,11 @@
     </button>
     <nav class="links" id="navLinks" aria-label="Main">
       <a href="index.html">Home</a>
+      <a href="index.html#tale">The Tale</a>
       <a href="index.html#roster">The Guild</a>
-      <a href="schedule.html">Schedule</a>
+      <a href="schedule.html">The Forge Week</a>
       <a href="hearth.html">The Hearth</a>
-      <a class="nav-live none" id="navLive" href="#liveGrid" aria-current="page"><span class="n">0</span>&nbsp;Live Now</a>
+      <a class="nav-live none" id="navLive" href="live.html" aria-current="page"><span class="n">0</span>&nbsp;Live Now</a>
     </nav>
   </div>
 </header>
@@ -60,14 +62,35 @@
 <main id="main">
 
 <section class="live-hero">
+  <div class="hero-embers" data-parallax="0.14" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
   <div class="wrap">
     <span class="eyebrow">The Forge Never Sleeps</span>
     <h1>Who's Live Right Now</h1>
     <p>Every member's Twitch channel is checked against the live Twitch API — anyone broadcasting gets pulled straight onto this page, with their game, title, and viewers.</p>
-    <div class="status-row">
-      <span class="pulse-dot" id="pulseDot" aria-hidden="true"></span>
-      <span id="statusText" aria-live="polite">Checking the guild…</span>
-      <button class="refresh-btn" id="refreshBtn">Refresh Now</button>
+
+    <div class="console" id="liveConsole" data-state="checking">
+      <div class="console-main">
+        <div class="lamp">
+          <span class="lamp-bulb" aria-hidden="true"></span>
+          <span class="lamp-text" id="lampText">Standby</span>
+        </div>
+        <div class="readouts">
+          <div class="readout" id="readoutLive">
+            <span class="readout-n" id="tallyLive">0</span>
+            <span class="readout-k" id="tallyLiveLabel">Channels Live</span>
+          </div>
+          <div class="readout">
+            <span class="readout-n" id="tallyViewers">—</span>
+            <span class="readout-k">Watching Now</span>
+          </div>
+        </div>
+      </div>
+      <div class="status-row">
+        <span class="pulse-dot" id="pulseDot" aria-hidden="true"></span>
+        <span id="statusText" aria-live="polite">Checking the guild…</span>
+        <button class="refresh-btn" id="refreshBtn">Refresh Now</button>
+      </div>
     </div>
   </div>
 </section>
@@ -84,18 +107,30 @@
     <div class="section-label">
       <span class="eyebrow">Live Now</span>
       <h2>On the Air</h2>
-      <a class="hall-btn" id="hallBtn" href="hall.html" hidden>⚔ Enter the Great Hall — watch all <span id="hallN">2</span> at once</a>
+      <a class="hall-btn" id="hallBtn" href="hall.html" hidden><svg class="hall-ico" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.9 19.1 13 11" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M21 7 17 3 11 9 15 13Z" fill="currentColor"/></svg><span class="hall-label">Enter the Great Hall — watch all <span id="hallN">2</span> at once</span></a>
     </div>
     <div class="live-grid" id="liveGrid"></div>
     <div class="empty-forge" id="emptyForge" hidden>
+      <div class="grain" aria-hidden="true"></div>
+      <div class="coalbed" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="glyph" aria-hidden="true">✦</div>
-      <p>The forge is quiet for the moment — no one in the guild is live right now. Check back soon, or click any name below to follow them for next time.</p>
+      <h2 class="banked-title">The Forge Is Banked</h2>
+      <p>Coals are still warm — nobody in the guild is broadcasting this minute. The next strike is already on the anvil.</p>
+      <a class="next-plate" id="livePlate" href="schedule.html" hidden>
+        <span class="np-body">
+          <span class="np-k">Next Strike</span>
+          <span class="np-who" id="lpWho"></span>
+          <span class="np-when" id="lpWhen"></span>
+        </span>
+        <span class="np-in" id="lpIn"></span>
+      </a>
+      <a class="banked-link" href="schedule.html">See the whole week's schedule</a>
     </div>
 
-    <div class="offline-strip-head">
+    <div class="offline-strip-head reveal">
       <span id="offlineHead">The Rest of the Guild</span>
     </div>
-    <div class="offline-grid" id="offlineGrid"></div>
+    <div class="offline-grid reveal" id="offlineGrid" data-reveal-stagger="10"></div>
 
   </div>
 </section>
@@ -104,12 +139,24 @@
 
 <footer class="site">
   <div class="brand-text">FORGE &amp; FABLE</div>
-  <p>Live status straight from Twitch. Last checked: <span id="lastChecked">—</span></p>
-  <div class="foot-fine">Auto-refreshes every 3 minutes while this tab is open</div>
+  <p>Live status straight from Twitch, auto-refreshed every 3 minutes while this tab is open. Last checked: <span id="lastChecked">—</span></p>
+  <nav class="foot-nav" aria-label="Footer">
+    <a href="index.html">Home</a>
+    <a href="index.html#tale">The Tale</a>
+    <a href="index.html#roster">The Guild</a>
+    <a href="schedule.html">The Forge Week</a>
+    <a href="hearth.html">The Hearth</a>
+    <a href="live.html">Live Now</a>
+  </nav>
+  <a class="foot-top" href="#top"><span aria-hidden="true">↑</span> Back to the top</a>
+  <div class="foot-quote">“A little kindness goes a long way.”</div>
+  <div class="foot-fine">Est. 2025 &nbsp;·&nbsp; Live status via Twitch</div>
 </footer>
 
 <script src="data/roster.js"></script>
 <script src="js/ff-core.js"></script>
+<script src="js/ff-time.js"></script>
+<script src="js/ff-motion.js"></script>
 <script>
 (function(){
   'use strict';
@@ -260,6 +307,80 @@
   FF.onLiveUpdate(sync);
   sync(FF.state);
   FF.startPolling();
+})();
+</script>
+
+<script>
+/* ------------------------------------------------------------------
+   Broadcast console + banked-forge additions.
+   Purely additive: registers a SECOND live-update listener alongside the
+   renderer above, and never touches the elements that one owns.
+   ------------------------------------------------------------------ */
+(function(){
+  'use strict';
+  const D = window.FF_DATA, esc = FF.esc;
+
+  const section    = document.querySelector('.live-section');
+  const consoleEl  = document.getElementById('liveConsole');
+  const lampText   = document.getElementById('lampText');
+  const tallyLive  = document.getElementById('tallyLive');
+  const tallyView  = document.getElementById('tallyViewers');
+  const readoutLive= document.getElementById('readoutLive');
+  const BASE_TITLE = document.title;
+
+  function paint(state){
+    const live = Object.values(state.statuses).filter(s => s && s.live);
+    const n = live.length;
+    const viewers = live.reduce((sum, s) => sum + (typeof s.viewers === 'number' ? s.viewers : 0), 0);
+    const known = live.some(s => typeof s.viewers === 'number');
+
+    const mode = state.checking ? 'checking' : (n > 0 ? 'live' : 'dark');
+    consoleEl.setAttribute('data-state', mode);
+    lampText.textContent = mode === 'live' ? 'On Air' : mode === 'checking' ? 'Standby' : 'Off Air';
+
+    tallyLive.textContent = String(n);
+    document.getElementById('tallyLiveLabel').textContent = n === 1 ? 'Channel Live' : 'Channels Live';
+    /* A gauge reads zero, it does not read blank. This slot showed an em-dash
+       whenever nobody was live — which is the state the page is in most of the
+       time — so the one numeric readout on the console rendered as punctuation.
+       Zero is the true value when no channel is up; the dash is kept only for
+       the genuinely unknown case (channels live, viewer counts not yet in). */
+    tallyView.textContent = n === 0 ? '0' : (known ? viewers.toLocaleString() : '—');
+    readoutLive.classList.toggle('is-hot', n > 0);
+
+    // the tab itself becomes part of the broadcast
+    document.title = n > 0 ? '● ' + n + ' LIVE — ' + BASE_TITLE : BASE_TITLE;
+
+    // a quiet forge doesn't need an "On the Air" banner over an empty grid
+    if (section) section.classList.toggle('is-quiet', mode === 'dark');
+  }
+
+  /* ---------- next strike, offered as the way forward ---------- */
+  const plate = document.getElementById('livePlate');
+  const lpWho = document.getElementById('lpWho');
+  const lpWhen= document.getElementById('lpWhen');
+  const lpIn  = document.getElementById('lpIn');
+
+  function tickPlate(){
+    if (!plate || !window.FFTime) return;
+    let next = null;
+    try { next = FFTime.nextStrike(D.members); } catch (e) { next = null; }
+    if (!next){ plate.hidden = true; return; }
+    const ms = next.time.getTime() - Date.now();
+    if (ms < 0){ plate.hidden = true; return; }
+    const h = Math.floor(ms / 3600000), min = Math.floor((ms % 3600000) / 60000);
+    lpWho.textContent  = next.member.name;
+    lpWhen.textContent = next.time.toLocaleString([], { weekday:'long', hour:'numeric', minute:'2-digit' }) + ' your time';
+    lpIn.textContent   = 'in ' + (h >= 24 ? Math.floor(h / 24) + 'd ' + (h % 24) + 'h'
+                                : h > 0   ? h + 'h ' + min + 'm'
+                                          : min + 'm');
+    plate.hidden = false;
+  }
+
+  FF.onLiveUpdate(paint);
+  paint(FF.state);
+  tickPlate();
+  setInterval(tickPlate, 60000);
 })();
 </script>
 

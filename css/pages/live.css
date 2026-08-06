@@ -1,0 +1,784 @@
+/* ============================================================
+   FORGE & FABLE — LIVE PAGE
+   Loaded after css/ff.css. Everything here builds on that file's
+   tokens (--metal-plate, --forged-rail, --glow-ember-*, --el-*,
+   --bevel-*, --ember-fill) rather than restating them.
+
+   The page has two faces and both have to carry the page:
+     ON AIR   — a broadcast console, a lit lamp, a full-width
+                featured stream, viewer counts as a scoreboard.
+     BANKED   — the forge damped for the night: a planished panel,
+                live coals along its floor, and the next scheduled
+                strike offered as the way forward.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   0. [hidden] must actually hide
+   ff.css gives .hall-btn `display:inline-flex`, which outranks the
+   UA sheet's `[hidden]{display:none}` — so the Great Hall button was
+   rendering "watch all 0 at once" with nobody live. Same trap waits
+   for anything else on this page that gets display from a class.
+   ------------------------------------------------------------ */
+[hidden]{ display:none !important; }
+
+
+/* ============================================================
+   1. HERO — the control room
+   ============================================================ */
+.live-hero{
+  /* deepen the existing bloom and add a hot floor line under the fold */
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(var(--rgb-ember),.34), transparent 56%),
+    radial-gradient(ellipse at 50% 108%, rgba(var(--rgb-ember),.16), transparent 62%),
+    linear-gradient(180deg, var(--iron-1), var(--iron-0));
+  padding-bottom:var(--sp-8);
+}
+.live-hero .wrap{ position:relative; z-index:2; }
+
+/* A slow field of ember motes rising off the coals. One element, three
+   gradient stacks at different scales, drifting at different rates —
+   cheap enough to run behind a page that also holds video players. */
+.hero-embers{
+  position:absolute; inset:-12% -6% -6%; z-index:1; pointer-events:none;
+  translate:0 var(--ff-parallax, 0px);
+  background-image:
+    radial-gradient(2px 2px at 18% 72%, rgba(255,140,66,.55), transparent 60%),
+    radial-gradient(2px 2px at 34% 44%, rgba(255,195,138,.40), transparent 60%),
+    radial-gradient(3px 3px at 62% 82%, rgba(216,83,31,.50), transparent 60%),
+    radial-gradient(2px 2px at 79% 36%, rgba(255,140,66,.34), transparent 60%),
+    radial-gradient(2px 2px at 90% 66%, rgba(255,195,138,.30), transparent 60%),
+    radial-gradient(2px 2px at 8%  28%, rgba(216,83,31,.34), transparent 60%);
+  background-size:100% 100%;
+  opacity:.9;
+  animation:emberRise 22s linear infinite;
+}
+@keyframes emberRise{
+  0%   { background-position:0 0, 0 0, 0 0, 0 0, 0 0, 0 0; opacity:.35; }
+  50%  { opacity:.9; }
+  100% { background-position:0 -140px, 0 -210px, 0 -95px, 0 -170px, 0 -120px, 0 -240px; opacity:.35; }
+}
+
+/* ---------- the console ---------- */
+.console{
+  position:relative;
+  max-width:620px; margin:clamp(24px,4vw,34px) auto 0;
+  border:1px solid var(--iron-edge); border-radius:var(--r-3);
+  background:var(--metal-plate);
+  box-shadow:var(--bevel-raised), var(--el-3);
+  overflow:hidden; text-align:left;
+  transition:box-shadow var(--dur-3) var(--ease-out), border-color var(--dur-3) var(--ease-out),
+             background var(--dur-3) var(--ease-out);
+}
+/* ---- THE PLATE IS IRON, LIKE THE SCHEDULE BOARD ----
+   This card was a soft-shadowed rounded rect in one near-black value:
+   the same component on schedule.html is a riveted plate, so the two
+   pages read as two sites. Same planished surface + corner rivets used
+   on the stats band and the schedule board, applied here. */
+.console::before{
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  pointer-events:none; z-index:2;
+  /* the planished face */
+  --tooth:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.055' numOctaves='2' seed='7' stitchTiles='stitch' result='t'/%3E%3CfeDiffuseLighting in='t' lighting-color='%23ffffff' surfaceScale='2.2' diffuseConstant='1'%3E%3CfeDistantLight azimuth='215' elevation='56'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  background-image:var(--tooth);
+  background-size:300px 300px;
+  opacity:.26; mix-blend-mode:overlay;
+}
+/* four rivets, one per corner — the same head used on the stats plate */
+.console::after{
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  pointer-events:none; z-index:3;
+  --rv:radial-gradient(circle closest-side at 50% 50%,
+        #c0a76c 0 44%, #85713f 70%, #443722 90%, rgba(0,0,0,0) 100%);
+  --rvs:radial-gradient(circle closest-side at 50% 50%,
+        rgba(255,245,220,.92) 0 34%, rgba(255,245,220,0) 100%);
+  background-image:var(--rvs),var(--rvs),var(--rvs),var(--rvs),var(--rv),var(--rv),var(--rv),var(--rv);
+  background-repeat:no-repeat;
+  background-size:3px 3px,3px 3px,3px 3px,3px 3px,7px 7px,7px 7px,7px 7px,7px 7px;
+  background-position:
+    left 12px top 12px, right 13px top 12px, left 12px bottom 15px, right 13px bottom 15px,
+    left 11px top 11px, right 11px top 11px, left 11px bottom 11px, right 11px bottom 11px;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.85));
+}
+/* the console's own contents sit above the plate texture */
+.console > *{ position:relative; z-index:4; }
+/* Off-air is the state a visitor almost always lands on, and it sits on a
+   hero carrying a 34% ember bloom — at --metal-plate/--iron-edge the plate
+   dissolved into that glow. Warm the alloy and put a real lit edge on it so
+   it stays machined hardware instead of a smudge. */
+.console[data-state="dark"]{
+  border-color:#54432f;
+  background:linear-gradient(168deg, #33281e 0%, #251d16 46%, #1a1410 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,236,208,.18),
+    inset 0 -1px 0 rgba(0,0,0,.6),
+    0 0 0 1px rgba(0,0,0,.45),
+    var(--el-3);
+}
+/* when someone is on air the whole console warms up */
+.console[data-state="live"]{
+  border-color:rgba(var(--rgb-ember),.55);
+  box-shadow:var(--bevel-raised), var(--el-3), var(--glow-ember);
+}
+.console-main{
+  display:flex; align-items:center; gap:clamp(12px,2vw,18px);
+  padding:clamp(14px,2.4vw,18px) clamp(16px,3vw,22px);
+}
+
+/* ---------- ON AIR lamp ---------- */
+.lamp{
+  flex-shrink:0; display:flex; align-items:center; gap:9px;
+  padding:9px 14px; border-radius:var(--r-2);
+  background:var(--metal-sunk);
+  border:1px solid var(--iron-edge);
+  box-shadow:var(--bevel-pressed);
+  transition:background var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out),
+             box-shadow var(--dur-2) var(--ease-out);
+}
+.lamp-bulb{
+  width:11px; height:11px; border-radius:50%; flex-shrink:0;
+  background:radial-gradient(circle at 34% 30%, #5b4436, #241d16 72%);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.8), inset 0 -1px 0 rgba(255,236,208,.10);
+  transition:background var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
+}
+.lamp-text{
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-micro); letter-spacing:.22em; text-transform:uppercase;
+  color:var(--parchment-shadow); white-space:nowrap;
+  transition:color var(--dur-2) var(--ease-out), text-shadow var(--dur-2) var(--ease-out);
+}
+/* standby: gold filament, warming */
+.console[data-state="checking"] .lamp-bulb{
+  background:radial-gradient(circle at 34% 30%, var(--gold-bright), var(--gold) 45%, #6b5528 100%);
+  box-shadow:0 0 10px rgba(var(--rgb-gold),.55), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.console[data-state="checking"] .lamp-text{ color:var(--gold); }
+/* on air: struck. */
+.console[data-state="live"] .lamp{
+  background:linear-gradient(180deg, #d5203f, #8c0d22);
+  border-color:rgba(255,120,140,.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 26px -4px rgba(213,32,63,.75);
+  animation:lampBreathe 2.6s ease-in-out infinite;
+}
+.console[data-state="live"] .lamp-bulb{
+  background:radial-gradient(circle at 34% 30%, #fff, #ffd9df 40%, #ff5a72 100%);
+  box-shadow:0 0 12px rgba(255,255,255,.85), 0 0 22px rgba(255,90,114,.8);
+}
+.console[data-state="live"] .lamp-text{
+  color:#fff; text-shadow:0 1px 0 rgba(90,4,16,.85), 0 0 16px rgba(255,140,160,.55);
+}
+@keyframes lampBreathe{
+  0%,100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 20px -6px rgba(213,32,63,.7); }
+  50%    { box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 0 40px -2px rgba(255,64,96,.95); }
+}
+
+/* ---------- the vent between lamp and gauges ---------- */
+/* Off air there are only three things on a 620px plate, and pushing the
+   gauges right with margin-left:auto left ~350px of bare metal reading as a
+   sparse toolbar. A louvred vent is hardware, not filler: it belongs on the
+   face of a rack panel and it makes the gap part of the machine. */
+/* Colourless and motionless, this read as an unstyled element rather than
+   hardware: four grey streaks parked next to the tally. It is a vent, so give
+   it the one thing a vent on a forge console is for — heat showing through the
+   louvre. Banked to a dull ember off air, open and breathing on air. */
+.console-vent{
+  position:relative; overflow:hidden;
+  flex:1 1 auto; min-width:26px; height:28px; align-self:center;
+  border-radius:2px; pointer-events:none;
+  /* the cut: a sunk slot with the warm lip the firelight catches */
+  background:repeating-linear-gradient(180deg,
+    rgba(0,0,0,.62) 0 4px,
+    rgba(var(--rgb-ember-bright),.24) 4px 5px,
+    rgba(0,0,0,0) 5px 9px);
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 26%, #000 74%, transparent);
+          mask-image:linear-gradient(90deg, transparent, #000 26%, #000 74%, transparent);
+  opacity:.9;
+  transition:opacity var(--dur-3) var(--ease-out);
+}
+/* the coals behind the louvre — only ever visible through the slots */
+.console-vent::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,
+    transparent, rgba(var(--rgb-ember),.62) 34%, rgba(var(--rgb-ember-bright),.5) 62%, transparent);
+  -webkit-mask-image:repeating-linear-gradient(180deg, #000 0 4px, transparent 4px 9px);
+          mask-image:repeating-linear-gradient(180deg, #000 0 4px, transparent 4px 9px);
+  opacity:.26;
+  transition:opacity var(--dur-3) var(--ease-out);
+}
+.console[data-state="live"] .console-vent{ opacity:1; }
+.console[data-state="live"] .console-vent::after{
+  opacity:.9;
+  animation:ffVentBreathe 3.6s ease-in-out infinite;
+}
+@keyframes ffVentBreathe{
+  0%,100%{ opacity:.52; }
+  50%    { opacity:1; }
+}
+
+/* ---------- scoreboard readouts ---------- */
+.readouts{
+  display:flex; align-items:stretch; gap:clamp(14px,3vw,26px);
+  flex-shrink:0; min-width:0;
+}
+.readout{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+/* hairline groove between the cells, cut like the rest of the metal */
+.readout + .readout{
+  padding-left:clamp(14px,3vw,26px);
+  border-left:1px solid rgba(0,0,0,.55);
+  box-shadow:inset 1px 0 0 rgba(255,236,208,.06);
+}
+.readout-n{
+  font-family:var(--font-head); font-weight:700; line-height:1;
+  font-size:clamp(1.55rem, 1.1rem + 1.9vw, 2.3rem);
+  font-variant-numeric:tabular-nums; letter-spacing:.01em;
+  color:var(--parchment); text-shadow:0 2px 0 rgba(0,0,0,.6);
+  transition:color var(--dur-2) var(--ease-out), text-shadow var(--dur-2) var(--ease-out);
+}
+/* Caption tone is warm, not steel. --steel is a blue-grey and it was the one
+   cold thing on a plate of iron, ember and gilt — it read as a system chrome
+   label pasted onto the forge. Dim parchment is the same value, same job,
+   and it belongs to the palette. */
+.readout-k{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-nano); letter-spacing:var(--tr-micro); text-transform:uppercase;
+  color:var(--parchment-shadow); white-space:nowrap;
+}
+.readout.is-hot .readout-n{
+  color:var(--ember-bright);
+  text-shadow:0 2px 0 rgba(0,0,0,.6), 0 0 22px rgba(var(--rgb-ember-bright),.55);
+}
+.console[data-state="dark"] .readout-n{ color:var(--parchment-shadow); }
+
+/* ---------- status strip along the bottom of the console ---------- */
+.console .status-row{
+  margin-top:0; justify-content:space-between; gap:12px;
+  padding:10px clamp(16px,3vw,22px);
+  background:linear-gradient(180deg, rgba(0,0,0,.34), rgba(0,0,0,.16));
+  border-top:1px solid rgba(0,0,0,.6);
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.05);
+  color:var(--parchment-shadow);
+}
+.console .status-row #statusText{ flex:1; min-width:0; }
+.console[data-state="dark"] .pulse-dot{
+  background:var(--ember-dim); box-shadow:0 0 8px rgba(var(--rgb-ember),.4); animation:none;
+}
+
+
+/* ============================================================
+   2. ON THE AIR — live cards as an event
+   ============================================================ */
+.live-section .section-label{ transition:opacity var(--dur-2) var(--ease-out); }
+/* nothing is on the air — the banked panel carries its own heading,
+   so this banner would only be a label over an empty room */
+.live-section.is-quiet .section-label{ display:none; }
+
+/* The grid used to be capped at 920px inside an 1180px .wrap, so the on-air
+   section and the guild strip below it sat on two different spines. Same
+   spine now; the first (highest-viewer) stream takes the full width. */
+/* Explicit column counts rather than auto-fit: auto-fit at minmax(430px) fell
+   to a single 880px-wide column around tablet widths (three 16/9 players
+   stacked ≈ 3400px of page), and at 1180px a smaller min would have given
+   three-up, which reopens the odd-count hole. Two-up from 900, one below,
+   and the featured rule below is keyed to the same breakpoint. */
+.live-grid{
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(20px,3vw,30px);
+  max-width:none; margin-left:0; margin-right:0;
+  margin-bottom:clamp(40px,6vw,64px);
+}
+@media (min-width:900px){
+  .live-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+}
+
+/* A live card sits in its own pool of ember light. drop-shadow rather than
+   box-shadow so the halo survives the card's own overflow:hidden and never
+   fights the hover box-shadow ff.css already owns. */
+.live-card{
+  position:relative;
+  animation:liveHalo 3.8s ease-in-out infinite;
+}
+@keyframes liveHalo{
+  0%,100%{ filter:drop-shadow(0 0 16px rgba(var(--rgb-ember),.20)); }
+  50%    { filter:drop-shadow(0 0 30px rgba(var(--rgb-ember-bright),.36)); }
+}
+/* the rim-light itself: a hot 1px edge inside the card's radius */
+.live-card::after{
+  content:''; position:absolute; inset:0; z-index:5; pointer-events:none;
+  border-radius:inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--rgb-ember-bright),.42),
+    inset 0 0 60px -24px rgba(var(--rgb-ember-bright),.95);
+}
+
+/* player: a broadcast frame, not a bare rectangle */
+.player-wrap{ box-shadow:inset 0 0 0 1px rgba(0,0,0,.8); }
+.player-wrap::after{
+  content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.42) 0%, transparent 20%, transparent 66%, rgba(0,0,0,.52) 100%);
+}
+
+/* LIVE slate */
+.live-tag{
+  top:12px; left:12px; padding:5px 12px 5px 11px;
+  border-radius:var(--r-pill); letter-spacing:.18em;
+  background:linear-gradient(180deg, #ff4d63, #c4102c);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
+    0 0 0 1px rgba(255,120,140,.35),
+    0 4px 14px rgba(0,0,0,.55);
+  animation:tagBeacon 2.6s ease-in-out infinite;
+}
+@keyframes tagBeacon{
+  0%,100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 0 0 1px rgba(255,120,140,.35), 0 4px 14px rgba(0,0,0,.55); }
+  50%    { box-shadow:inset 0 1px 0 rgba(255,255,255,.6),  0 0 0 1px rgba(255,150,168,.6), 0 4px 14px rgba(0,0,0,.55), 0 0 26px rgba(255,64,96,.7); }
+}
+
+/* viewer count as a scoreboard readout, parked opposite the slate */
+.viewer-tag{
+  left:auto; right:12px; bottom:12px;
+  padding:5px 12px 5px 26px;
+  background:linear-gradient(180deg, rgba(12,9,7,.92), rgba(0,0,0,.94));
+  color:var(--gold-bright);
+  font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.07em;
+  box-shadow:inset 0 0 0 1px rgba(var(--rgb-gold),.32), 0 4px 12px rgba(0,0,0,.55);
+}
+/* a small gold play-mark, so the number reads as "being watched" */
+.viewer-tag::before{
+  content:''; position:absolute; left:11px; top:50%;
+  width:0; height:0; margin-top:-5px;
+  border-left:7px solid var(--gold-bright);
+  border-top:5px solid transparent; border-bottom:5px solid transparent;
+  filter:drop-shadow(0 0 5px rgba(var(--rgb-gold),.8));
+}
+
+/* meta shelf under the player */
+/* flex-start, not centre: against a three-line info block a centred avatar
+   floats level with the stream title instead of the name it belongs to.
+   ff.css already pins .live-card .live-link back to align-self:center. */
+.live-meta{
+  position:relative; align-items:flex-start; gap:14px;
+  padding:16px clamp(14px,2.4vw,18px) 18px;
+  background:linear-gradient(180deg, rgba(var(--rgb-ember),.08), rgba(var(--rgb-ember),0) 72%);
+}
+.live-meta::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,
+    transparent, rgba(var(--rgb-ember-bright),.55) 22%, rgba(var(--rgb-gold),.42) 62%, transparent);
+}
+.live-avatar{
+  width:50px; height:50px; border-color:var(--gold);
+  box-shadow:0 3px 10px rgba(0,0,0,.6), 0 0 0 4px rgba(var(--rgb-ember),.14);
+}
+/* The box art names the same game .live-game already names, and on a paired
+   card it was eating ~60px of a shelf the stream title badly needed. It only
+   earns its place on the featured card, where there is a column for it. */
+.boxart{ display:none; }
+.live-name{ font-size:1.08rem; color:var(--parchment-hi); letter-spacing:.02em; }
+.live-title{ margin-top:5px; }
+
+/* The current game, worn as a badge. inline-block (not inline-flex) with an
+   absolutely-placed dot: "Dungeons & Dragons" used to wrap inside a pill,
+   turning the badge into a lozenge with an orphaned dot floating beside two
+   centred lines. One line, ellipsised, always. */
+.live-game{
+  display:inline-block; position:relative; vertical-align:middle;
+  max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  margin-top:10px; padding:3px 11px 3px 23px;
+  border-radius:var(--r-pill);
+  color:var(--gold-bright); letter-spacing:.12em;
+  background:linear-gradient(180deg, rgba(var(--rgb-gold),.17), rgba(var(--rgb-gold),.05));
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.14), 0 0 0 1px rgba(var(--rgb-gold),.28);
+}
+.live-game::before{
+  content:''; position:absolute; left:10px; top:50%; margin-top:-2.5px;
+  width:5px; height:5px; border-radius:50%;
+  background:var(--gold-bright); box-shadow:0 0 7px rgba(var(--rgb-gold),.9);
+}
+.live-card .live-link{ align-self:center; padding:9px 17px; }
+
+/* ---------- the featured stream ---------- */
+/* Streams are sorted by viewers in the page's own sync(), so the first card is
+   the biggest room in the guild. With an odd live count the two-up grid left a
+   card-shaped hole dead centre; promoting the leader to full width fills it and
+   gives the page a climax. The player keeps 16/9 and the meta becomes a proper
+   column beside it, so the title finally has a measure.
+
+   :nth-last-child(odd) on the first card is "there is an odd number of cards".
+   Feature it only then: 1/3/5 live → featured + pairs, 2/4 live → straight
+   pairs. Either way the last row is always full and no hole is ever left. */
+@media (min-width:900px){
+  .live-card:first-child:nth-last-child(odd){
+    grid-column:1 / -1;
+    display:grid; grid-template-columns:minmax(0,1.62fr) minmax(288px,1fr);
+    align-items:stretch;
+  }
+  .live-card:first-child:nth-last-child(odd) .live-meta{
+    display:grid; align-content:center; justify-content:start;
+    grid-template-columns:auto auto;
+    grid-template-areas:
+      "avatar boxart"
+      "info   info"
+      "link   link";
+    gap:18px 16px;
+    padding:clamp(22px,2.6vw,34px);
+    background:
+      linear-gradient(180deg, rgba(var(--rgb-ember),.10), rgba(var(--rgb-ember),0) 62%),
+      var(--metal-plate);
+  }
+  /* the seam now runs down the left edge of the shelf, not across its top */
+  .live-card:first-child:nth-last-child(odd) .live-meta::before{
+    top:0; bottom:0; left:0; right:auto; width:2px; height:auto;
+    background:linear-gradient(180deg,
+      transparent, rgba(var(--rgb-ember-bright),.55) 22%, rgba(var(--rgb-gold),.42) 66%, transparent);
+  }
+  .live-card:first-child:nth-last-child(odd) .live-avatar{
+    grid-area:avatar; align-self:end; width:64px; height:64px;
+  }
+  .live-card:first-child:nth-last-child(odd) .boxart{
+    grid-area:boxart; display:block; align-self:end;
+    width:56px; height:78px;
+  }
+  .live-card:first-child:nth-last-child(odd) .live-info{ grid-area:info; }
+  .live-card:first-child:nth-last-child(odd) .live-name{ font-size:1.28rem; }
+  .live-card:first-child:nth-last-child(odd) .live-title{
+    font-size:var(--fs-body); -webkit-line-clamp:4; margin-top:7px;
+  }
+  .live-card:first-child:nth-last-child(odd) .live-link{
+    grid-area:link; justify-self:start; align-self:start;
+    padding:12px 26px; font-size:var(--fs-xs);
+  }
+  .live-card:first-child:nth-last-child(odd) .live-tag{ top:16px; left:16px; }
+  .live-card:first-child:nth-last-child(odd) .viewer-tag{ right:16px; bottom:16px; }
+}
+/* box art often arrives after the card mounts; keep the empty slot reading as
+   a machined recess rather than a broken-image chip until onerror fires */
+.boxart{
+  background:var(--metal-sunk);
+  border-color:rgba(var(--rgb-gold),.4);
+  box-shadow:0 4px 12px rgba(0,0,0,.6), inset 0 0 0 1px rgba(0,0,0,.5);
+}
+
+/* ---------- Great Hall button ---------- */
+/* inline-flex made <span id="hallN"> a flex item of its own, so at 390px the
+   label shattered into three fragments with a vertically-centred number
+   floating between them. One inline-block box, one inner label, text flows. */
+.hall-btn{
+  display:inline-block; text-align:center; line-height:1.35;
+  max-width:min(100%, 40ch);
+}
+.hall-label{ display:inline; }
+.hall-ico{
+  width:16px; height:16px; vertical-align:-3px; margin-right:9px;
+  color:#ffe6cc;
+  filter:drop-shadow(0 1px 0 rgba(80,22,3,.85));
+}
+
+
+/* ============================================================
+   3. BANKED — the empty state
+   Not an empty box. This is the page's whole headline whenever
+   nobody is broadcasting, so it is built like a headline.
+   ============================================================ */
+.empty-forge{
+  position:relative; overflow:hidden; isolation:isolate;
+  border:1px solid var(--iron-edge);
+  max-width:840px; margin:0 auto clamp(44px,6vw,64px);
+  padding:clamp(38px,5vw,54px) var(--sp-5) clamp(50px,6vw,66px);
+  background:
+    radial-gradient(150% 92% at 50% 114%, rgba(var(--rgb-ember),.32), transparent 58%),
+    linear-gradient(180deg, #1b1611 0%, #0d0a08 74%);
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.06), var(--el-3);
+}
+/* forged rail across the lid of the panel */
+.empty-forge::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:var(--rail-h); z-index:3;
+  /* the rail's lit edge lives at the band's bottom; flipped, it lights the lid */
+  background:var(--forged-rail); transform:scaleY(-1);
+}
+/* Planished iron — the same lit height field .hammered and .cta-band use, so
+   the largest surface on the page is a material instead of a flat wash.
+   Blended with screen rather than overlay: overlay is what ff.css uses, but
+   overlay against a #0d0a08 panel resolves to almost nothing. Screen lets the
+   lit crescents actually add light, masked so the tooth is strongest under the
+   lid and gone by the time it reaches the coals. */
+.empty-forge::after{
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  opacity:.085; mix-blend-mode:screen;
+  -webkit-mask-image:linear-gradient(180deg, #000, rgba(0,0,0,.45) 62%, transparent 94%);
+          mask-image:linear-gradient(180deg, #000, rgba(0,0,0,.45) 62%, transparent 94%);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='e' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='2' seed='9' stitchTiles='stitch' result='t'/%3E%3CfeDiffuseLighting in='t' lighting-color='%23ffcf9e' surfaceScale='2.2' diffuseConstant='1'%3E%3CfeDistantLight azimuth='215' elevation='57'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23e)'/%3E%3C/svg%3E");
+  background-size:320px 320px;
+}
+/* same reasoning as ::after — screen, not overlay, or the film disappears */
+.empty-forge .grain{ z-index:1; opacity:.16; mix-blend-mode:screen; }
+.empty-forge > :not(.coalbed):not(.grain){ position:relative; z-index:2; }
+
+/* the coal bed: five soft blooms breathing out of phase */
+/* Raised, tightened and un-blurred from the old bottom:-20px/132px/blur(11px),
+   which smeared into three faint smudges under ~180px of dead padding. It now
+   reads as a bed of banked coals along the floor of the panel. */
+.coalbed{
+  position:absolute; left:0; right:0; bottom:-10px; height:96px; z-index:1;
+  display:flex; align-items:flex-end; justify-content:center;
+  gap:clamp(5px,2.1vw,22px); pointer-events:none;
+}
+/* a bright core wrapped in a wide, soft bloom — one coal, two falloffs */
+.coalbed i{
+  display:block; width:clamp(54px,10.5vw,112px); height:56px; border-radius:50%;
+  background:
+    radial-gradient(ellipse at 50% 68%, rgba(255,222,182,.92), transparent 42%),
+    radial-gradient(ellipse at 50% 62%, rgba(255,140,66,.85), rgba(216,83,31,.40) 48%, transparent 76%);
+  filter:blur(8px);
+  animation:coalBreathe 7s ease-in-out infinite;
+}
+.coalbed i:nth-child(1){ animation-delay:-.4s;  opacity:.64; height:44px; }
+.coalbed i:nth-child(2){ animation-delay:-2.6s; opacity:.94; }
+.coalbed i:nth-child(3){ animation-delay:-1.1s; opacity:1;   height:68px; }
+.coalbed i:nth-child(4){ animation-delay:-3.9s; opacity:.9; }
+.coalbed i:nth-child(5){ animation-delay:-5.2s; opacity:.6;  height:44px; }
+@keyframes coalBreathe{
+  0%,100%{ transform:scaleY(.84); opacity:.46; }
+  50%    { transform:scaleY(1.08); opacity:1; }
+}
+
+.empty-forge .glyph{
+  font-size:1.9rem; color:var(--ember); margin-bottom:12px;
+  text-shadow:0 0 30px rgba(var(--rgb-ember-bright),.6);
+  animation:coalBreathe 7s ease-in-out infinite;
+}
+/* This is the page's actual h1-weight statement whenever the forge is cold —
+   at --fs-h2-sm it read as a card heading inside an 840px panel. */
+.banked-title{
+  font-family:var(--font-display); font-size:var(--fs-h1); line-height:1.06;
+  color:var(--parchment); letter-spacing:var(--tr-display);
+  text-shadow:0 2px 0 rgba(0,0,0,.7), 0 0 40px rgba(var(--rgb-ember),.3),
+              0 0 92px rgba(var(--rgb-ember),.16);
+}
+.empty-forge p{ margin-top:14px; font-size:var(--fs-lead); max-width:52ch; }
+
+/* ---------- next strike plaque ---------- */
+.next-plate{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:clamp(12px,3vw,24px); text-align:left; text-decoration:none;
+  max-width:520px; margin:clamp(18px,2.2vw,24px) auto 0;
+  padding:14px 16px 14px 18px;
+  border:1px solid rgba(var(--rgb-gold),.34); border-radius:var(--r-2);
+  background:linear-gradient(180deg, rgba(46,37,28,.92), rgba(23,18,14,.92));
+  box-shadow:var(--bevel-raised), var(--el-2);
+  transition:border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out),
+             transform var(--dur-1) var(--ease-out);
+}
+.next-plate:hover{
+  transform:translateY(-2px); border-color:var(--gold);
+  box-shadow:var(--bevel-raised), var(--el-3), var(--glow-gold);
+}
+.next-plate:active{ transform:translateY(0); box-shadow:var(--bevel-pressed); }
+.np-body{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.np-k{
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-nano); letter-spacing:var(--tr-eyebrow); text-transform:uppercase;
+  color:var(--gold);
+}
+.np-who{
+  font-family:var(--font-head); font-weight:600; font-size:1.02rem;
+  color:var(--parchment-hi); line-height:1.2;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.np-when{ font-size:var(--fs-sm); color:var(--parchment-2); line-height:1.35; }
+/* A countdown readout is information, not the action — it used to be the
+   hottest thing on the page (ember fill + ember glow) while the actual way
+   forward was a small underlined link. Gauge treatment: gilt on dark. */
+.np-in{
+  flex-shrink:0; white-space:nowrap; font-variant-numeric:tabular-nums;
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-micro); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold-bright);
+  background:linear-gradient(180deg, rgba(var(--rgb-gold),.15), rgba(var(--rgb-gold),.04));
+  padding:8px 14px; border-radius:var(--r-pill);
+  border:1px solid rgba(var(--rgb-gold),.45);
+  text-shadow:0 1px 0 rgba(0,0,0,.65);
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.13);
+}
+
+/* ...and the forward action gets the heat instead. Struck-metal button,
+   the same alloy as .cta-btn in ff.css, sitting over the coal bed. */
+.banked-link{
+  display:inline-flex; align-items:center; gap:11px;
+  margin-top:clamp(22px,2.8vw,30px);
+  font-family:var(--font-head); font-weight:600;
+  font-size:var(--fs-xs); letter-spacing:var(--tr-btn); text-transform:uppercase;
+  color:var(--on-ember); text-decoration:none;
+  background:var(--ember-fill);
+  border:1px solid rgba(var(--rgb-ember-bright),.75); border-radius:var(--r-pill);
+  padding:14px 30px;
+  text-shadow:0 1px 0 rgba(80,22,3,.85), 0 2px 5px rgba(50,12,0,.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255,214,170,.75),
+    inset 0 2px 3px -2px rgba(255,180,120,.5),
+    inset 0 -2px 0 rgba(0,0,0,.32),
+    var(--el-2), var(--glow-ember-sm);
+  transition:transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2) var(--ease-out),
+             filter var(--dur-2) var(--ease-out);
+}
+.banked-link::after{
+  content:''; width:6px; height:6px; flex-shrink:0;
+  border-right:2px solid currentColor; border-top:2px solid currentColor;
+  transform:rotate(45deg); opacity:.85;
+  transition:transform var(--dur-1) var(--ease-out);
+}
+.banked-link:hover{
+  transform:translateY(-2px); filter:saturate(1.06) brightness(1.03);
+  box-shadow:
+    inset 0 1px 0 rgba(255,226,190,.9),
+    inset 0 2px 4px -2px rgba(255,190,130,.6),
+    inset 0 -2px 0 rgba(0,0,0,.32),
+    var(--el-3), var(--glow-ember);
+}
+.banked-link:hover::after{ transform:rotate(45deg) translate(2px,-2px); }
+.banked-link:active{
+  transform:translateY(0);
+  box-shadow:inset 0 2px 5px rgba(70,18,2,.5), var(--el-1), var(--glow-ember-xs);
+}
+
+
+/* ============================================================
+   4. THE REST OF THE GUILD — asleep, not dead
+   29 tiles used to take a third of the page and printed "OFFLINE"
+   28 times. Compressed to a dense plate of avatars so the live /
+   banked panel above it stays the centre of gravity.
+   ============================================================ */
+.offline-strip-head{ position:relative; margin-bottom:clamp(16px,2.2vw,22px); }
+/* rails flanking the label, so the strip reads as a divider */
+.offline-strip-head::before,
+.offline-strip-head::after{
+  content:''; flex:1; max-width:180px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--iron-edge));
+}
+.offline-strip-head::after{ background:linear-gradient(90deg, var(--iron-edge), transparent); }
+
+/* 124px min gives 8 across an 1180px .wrap — the same four rows nine-across
+   would take, but with ~129px of inner width, which is what the longest
+   handle in the roster needs to stay on one line. */
+.offline-grid{ grid-template-columns:repeat(auto-fill, minmax(124px, 1fr)); gap:10px; }
+.offline-tile{
+  position:relative; overflow:hidden; padding:12px 5px 11px; gap:7px;
+  background:linear-gradient(180deg, rgba(46,37,28,.72), rgba(19,15,12,.9));
+}
+/* a banked coal under each sleeping member, lit on hover */
+.offline-tile::after{
+  content:''; position:absolute; left:50%; bottom:-14px;
+  width:70%; height:22px; transform:translateX(-50%);
+  background:radial-gradient(ellipse at 50% 50%, rgba(var(--rgb-ember),.55), transparent 70%);
+  filter:blur(7px); opacity:0;
+  transition:opacity var(--dur-2) var(--ease-out);
+  pointer-events:none;
+}
+.offline-tile:hover::after,
+.offline-tile:focus-visible::after{ opacity:1; }
+.offline-tile img{ width:40px; height:40px; opacity:.6; filter:grayscale(62%); }
+.offline-tile:hover img,
+.offline-tile:focus-visible img{ opacity:1; filter:grayscale(0%); }
+/* the tile clips (it holds a coal), so a 15-character handle has to wrap
+   rather than run off both edges — Thebrandymancan is the stress test */
+/* Thebrandymancan is the stress test: 15 characters of Cinzel, which needs
+   ~104px of inner width before it breaks mid-word. The tile spends 10px of
+   its ~122px column on padding, so the letter-spacing has to go to zero for
+   the longest handle to sit on one line. */
+.offline-tile .oname{
+  max-width:100%; line-height:1.2; overflow-wrap:anywhere;
+  font-size:var(--fs-nano); letter-spacing:0;
+}
+.offline-tile:hover .oname,
+.offline-tile:focus-visible .oname{ color:var(--parchment-hi); }
+
+/* "OFFLINE" under every one of 28 grey avatars, beneath a heading that
+   already says so, in a grid that is already the offline grid. The label only
+   carries information for the member who has no Twitch channel at all. */
+.offline-tile .otag{
+  font-size:var(--fs-nano); letter-spacing:var(--tr-micro); text-align:center;
+  line-height:1.2;
+}
+.offline-tile[href^="https://www.twitch.tv/"] .otag{ display:none; }
+
+
+/* ============================================================
+   5. NARROW SCREENS
+   ============================================================ */
+@media (max-width:640px){
+  /* the tally light stays a light — full-bleed red reads as an error banner */
+  .console-main{ flex-direction:column; align-items:center; gap:14px; }
+  .console-vent{ display:none; }
+  .lamp{ flex:0 0 auto; padding:8px 20px; }
+  .readouts{ gap:0; width:100%; }
+  .readout{ flex:1 1 0; min-width:0; align-items:center; text-align:center; }
+  /* the labels are nowrap, so the groove needs breathing room on both sides */
+  .readout + .readout{ padding-left:12px; }
+  .readout:first-child{ padding-right:12px; }
+
+  /* The dot is a status light and has to stay attached to the words it is
+     lighting; stacking the whole row left it floating alone above them like a
+     stray bullet. Only the button drops to its own line. */
+  .console .status-row{
+    flex-direction:row; flex-wrap:wrap; justify-content:center;
+    align-items:center; gap:8px 9px; text-align:center;
+  }
+  .console .status-row #statusText{ flex:0 1 auto; }
+  .console .status-row .refresh-btn{ flex:1 0 100%; margin-top:2px; }
+
+  /* avatar on one shelf, the copy under it, Watch as a full-width
+     tap target at the foot of the card */
+  .live-meta{ flex-wrap:wrap; }
+  .live-info{ flex:1 1 100%; order:3; }
+  .live-card .live-link{
+    order:4; flex:1 1 100%; align-self:stretch;
+    justify-content:center; text-align:center; margin-top:14px; padding:11px 18px;
+  }
+
+  .hall-btn{ padding:12px 20px; }
+
+  .empty-forge{ padding-left:var(--sp-4); padding-right:var(--sp-4); }
+  .banked-link{ padding:13px 22px; letter-spacing:.1em; }
+  .next-plate{ flex-direction:column; align-items:stretch; text-align:center; gap:12px; }
+  .np-body{ align-items:center; }
+  .np-in{ align-self:center; }
+
+  /* 29 tiles as a grid ate ~40% of the page at this width. Two rows on a
+     horizontal roll instead — the strip keeps its whole roster but stops
+     out-weighing the panel above it. Masked edges say "there is more". */
+  .offline-grid{
+    display:grid; grid-auto-flow:column;
+    grid-template-columns:none; grid-template-rows:repeat(2, auto);
+    grid-auto-columns:92px; gap:8px;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    padding-bottom:8px;
+    -webkit-mask-image:linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 26px), transparent);
+            mask-image:linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 26px), transparent);
+    scrollbar-width:thin; scrollbar-color:var(--iron-edge) transparent;
+  }
+  .offline-grid::-webkit-scrollbar{ height:5px; }
+  .offline-grid::-webkit-scrollbar-thumb{ background:var(--iron-edge); border-radius:99px; }
+  .offline-tile{ scroll-snap-align:start; padding:11px 5px 10px; gap:6px; }
+  .offline-tile img{ width:36px; height:36px; }
+  .offline-tile .oname{ letter-spacing:0; }
+  .offline-strip-head::before, .offline-strip-head::after{ max-width:52px; }
+}
+
+
+/* ============================================================
+   6. REDUCED MOTION
+   ff.css already flattens durations globally; this removes the
+   named loops outright and keeps every state legible without them.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  .hero-embers{ animation:none; opacity:.6; }
+  .live-card{ animation:none; filter:drop-shadow(0 0 22px rgba(var(--rgb-ember),.28)); }
+  .live-tag{ animation:none; }
+  .console[data-state="live"] .lamp{ animation:none; }
+  /* the vent keeps its heat, loses its breath */
+  .console[data-state="live"] .console-vent::after{ animation:none; opacity:.9; }
+  .coalbed i, .empty-forge .glyph{ animation:none; opacity:.9; transform:none; }
+  .next-plate:hover, .offline-tile:hover, .banked-link:hover{ transform:none; }
+  .banked-link:hover::after{ transform:rotate(45deg); }
+  .offline-grid{ scroll-snap-type:none; }
+}

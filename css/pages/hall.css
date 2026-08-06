@@ -1,0 +1,509 @@
+/* ============================================================
+   FORGE & FABLE — THE GREAT HALL (page layer)
+   Loads after ff.css. Everything here is either a mechanical fix
+   to the utility shell or the war-room chrome around it:
+     1  mechanics      [hidden] that actually hides, height plumbing
+     2  command rail   what this room is, how many fires are lit
+     3  the wall       a tile grid sized in JS to fill its box
+     4  the plate      nameplate + per-tile sound / focus controls
+     5  the chat rail  one panel, one piece of chrome
+     6  the cold forge the empty / summoning state
+     7  narrow         chat rides over the wall instead of under it
+     8  reduced motion
+   ============================================================ */
+
+/* ============================================================
+   1 — MECHANICS
+   ============================================================ */
+
+/* .hall-layout sets display:flex, which outranks the UA's
+   [hidden]{display:none} — so the renderer's layout.hidden = true was a
+   no-op and the empty chat panel sat under the "hall is empty" line.
+   Same story for anything else here the renderer toggles. */
+.hall-layout[hidden],
+.hall-status[hidden],
+.hall-next[hidden],
+.hall-tile[hidden],
+.hall-empty[hidden]{ display:none !important; }
+
+.hall-body{
+  background:
+    radial-gradient(120% 70% at 50% -8%, rgba(var(--rgb-ember),.055), transparent 62%),
+    var(--iron-0);
+}
+/* the rail is flush to the header; padding belongs to the panes below it */
+.hall-main{ padding:0; min-height:0; }
+
+/* A console fills the window and does not scroll. This is also what makes the
+   wall solvable: ff.css only gives the page min-height:100vh, so the grid's
+   box grew with its own tiles — the height the tile size is derived from
+   depended on the tile size, and the answer ran away to one giant column.
+   Pinning the shell to the viewport makes that height a fact.
+   (Narrow screens keep scrolling — see section 7.) */
+@media (min-width:901px){
+  .hall-body{ height:100vh; min-height:0; overflow:hidden; }
+}
+
+/* ============================================================
+   2 — COMMAND RAIL
+   ============================================================ */
+.hall-bar{
+  position:relative; z-index:2;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:10px clamp(14px, 2vw, 22px);
+  padding:9px clamp(12px, 2.2vw, 22px) 10px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,236,208,.022) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, rgba(33,26,20,.95), rgba(18,14,12,.97)),
+    var(--metal-rail);
+  border-bottom:1px solid var(--iron-edge);
+  box-shadow:0 1px 0 rgba(0,0,0,.65), 0 20px 34px -30px #000;
+}
+/* the gilt hairline the header uses, so the two rails read as one assembly */
+.hall-bar::after{
+  content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(var(--rgb-gold),.26) 14%,
+             rgba(var(--rgb-ember-bright),.48) 50%, rgba(var(--rgb-gold),.26) 86%, transparent);
+  opacity:.75;
+}
+
+.hall-bar-id{ display:flex; align-items:center; gap:12px; min-width:0; }
+.hall-crest{
+  width:30px; height:30px; flex-shrink:0;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.65)) drop-shadow(0 0 12px rgba(var(--rgb-ember),.22));
+}
+.hall-id-text{ min-width:0; }
+.hall-bar .eyebrow{
+  display:block; font-size:var(--fs-nano); letter-spacing:.3em;
+  text-indent:.3em; opacity:.9; line-height:1.4;
+}
+.hall-title{
+  font-family:var(--font-head); font-weight:700;
+  font-size:var(--fs-h3); letter-spacing:.045em; line-height:1.12;
+  color:var(--parchment-hi); text-shadow:0 2px 0 rgba(0,0,0,.55);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.hall-bar-meta{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+/* live readout — steel at zero, green and breathing when the hall has heat */
+.hall-count{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-head); font-weight:600; font-size:var(--fs-micro);
+  letter-spacing:.16em; text-transform:uppercase; color:var(--steel);
+  border:1px solid var(--iron-edge); border-radius:var(--r-pill);
+  padding:7px 15px; white-space:nowrap;
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.22));
+  box-shadow:var(--bevel-raised);
+  transition:color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out),
+             box-shadow var(--dur-2) var(--ease-out);
+}
+.hall-count b{ font-weight:700; color:var(--parchment-2); font-variant-numeric:tabular-nums; }
+.hall-dot{
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:var(--steel); box-shadow:inset 0 0 0 1px rgba(0,0,0,.4);
+}
+.hall-count.is-live{
+  color:var(--live); border-color:var(--live-dim);
+  background:linear-gradient(180deg, rgba(var(--rgb-live),.13), rgba(var(--rgb-live),.04));
+  box-shadow:inset 0 1px 0 rgba(var(--rgb-live),.2), 0 0 18px -6px rgba(var(--rgb-live),.55);
+}
+.hall-count.is-live b{ color:#dcffe8; }
+.hall-count.is-live .hall-dot{
+  background:var(--live); box-shadow:0 0 8px rgba(var(--rgb-live),.9);
+  animation:pulse 2s infinite;
+}
+
+/* struck-iron control. Pressed-out = on, sunk = off. */
+.hall-ctrl{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-head); font-weight:600; font-size:var(--fs-micro);
+  letter-spacing:.14em; text-transform:uppercase; color:var(--parchment-2);
+  background:var(--metal-raised); border:1px solid var(--iron-edge);
+  border-radius:var(--r-pill); padding:8px 16px; min-height:38px; cursor:pointer;
+  box-shadow:var(--bevel-raised), var(--el-1);
+  text-shadow:0 1px 0 rgba(0,0,0,.55);
+  transition:color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out),
+             box-shadow var(--dur-1) var(--ease-out), opacity var(--dur-1) var(--ease-out);
+}
+.hall-ctrl .ico{ width:14px; height:14px; flex-shrink:0; }
+.hall-ctrl:hover:not(:disabled){
+  border-color:rgba(var(--rgb-ember),.6); color:var(--parchment-hi);
+  box-shadow:var(--bevel-raised), var(--el-1), var(--glow-ember-xs);
+}
+.hall-ctrl:active:not(:disabled){ box-shadow:var(--bevel-pressed); }
+.hall-ctrl[aria-pressed="false"]{
+  background:var(--metal-sunk); color:var(--steel);
+  box-shadow:var(--bevel-pressed);
+}
+.hall-ctrl[aria-pressed="false"] .ico{ opacity:.6; }
+/* Nothing to collapse when nothing is live. The sunk bevel carries the "off",
+   so the label only needs to step back — at .4 it read as a render glitch. */
+.hall-ctrl:disabled{ opacity:.55; cursor:default; box-shadow:var(--bevel-pressed); }
+
+/* ============================================================
+   3 — THE WALL
+   The wall has one job: put as much video on the glass as the box allows.
+   The column count and the tile width are solved in the page's script
+   (largest 16:9 that fits both a column and its share of the height, over
+   every candidate column count) and arrive here as --cols / --tile-w. CSS
+   only has to lay out fixed-width columns and centre the block, which is
+   why there is no count table and no container query any more — the old
+   one never fired, and the wall sat in a pool of its own black.
+   ============================================================ */
+.hall-layout{
+  padding:clamp(10px, 1.5vw, 18px);
+  gap:clamp(10px, 1.2vw, 16px);
+  min-height:0;
+}
+/* the [data-count] selector is not decoration: ff.css still carries a count
+   table at that specificity, and a bare .hall-grid loses to it. */
+.hall-grid,
+.hall-grid[data-count]{
+  --gap:clamp(8px, .9vw, 14px);
+  gap:var(--gap);
+  /* before the solver's first pass: one honest full-width column */
+  grid-template-columns:repeat(var(--cols, 1), var(--tile-w, minmax(0,1fr)));
+  grid-auto-rows:auto;
+  justify-content:center; align-content:center;
+  min-height:0; overflow-x:hidden; overflow-y:auto;
+}
+
+.hall-tile{
+  /* the tile is video + plate now, so it can't be a bare 16:9 box */
+  aspect-ratio:auto; height:auto; min-height:0; width:100%;
+  display:flex; flex-direction:column;
+  border-radius:var(--r-3); border:1px solid #2d2419;
+  background:var(--metal-sunk);
+  box-shadow:var(--el-3), inset 0 1px 0 rgba(255,236,208,.07);
+  transition:border-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
+}
+/* the socket the player sits in: visible until the embed paints, and the
+   thing that stops a slow/blocked iframe reading as a broken hole */
+.hall-tile::before{
+  content:''; position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(78% 90% at 50% 0%, rgba(var(--rgb-ember),.09), transparent 62%),
+    repeating-linear-gradient(135deg, rgba(255,236,208,.02) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #0b0907, #050404);
+}
+.hall-tile iframe{
+  position:relative; z-index:1;
+  display:block; width:100%; height:auto; aspect-ratio:16/9; border:0; background:#000;
+}
+.hall-tile:hover{
+  border-color:rgba(var(--rgb-gold),.45);
+  box-shadow:var(--el-4), inset 0 1px 0 rgba(255,236,208,.1), var(--glow-gold);
+}
+.hall-tile:focus-within{ border-color:rgba(var(--rgb-ember-bright),.6); }
+/* the one tile with sound, and the one holding the wall */
+.hall-tile.is-hot{ border-color:rgba(var(--rgb-ember),.55); box-shadow:var(--el-3), var(--glow-ember-xs); }
+.hall-tile.is-focus{ border-color:rgba(var(--rgb-gold),.5); }
+
+/* ============================================================
+   4 — THE PLATE
+   The nameplate used to float at 10px/10px — exactly where the Twitch
+   player draws its own title and Follow button. It lives on a brass rail
+   under the glass now, where nothing can land on top of it, and that rail
+   is also the only sane home for the per-tile controls.
+   ============================================================ */
+.hall-tile-plate{
+  position:relative; z-index:2;
+  display:flex; align-items:center; gap:8px;
+  padding:5px 6px 5px 11px; min-height:34px;
+  background:linear-gradient(180deg, rgba(42,33,25,.97), rgba(17,13,11,.99));
+  border-top:1px solid rgba(var(--rgb-gold),.16);
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.06);
+}
+.hall-tile.is-hot .hall-tile-plate{
+  background:linear-gradient(180deg, rgba(60,36,22,.97), rgba(24,15,11,.99));
+  border-top-color:rgba(var(--rgb-ember),.45);
+}
+
+/* the nameplate itself: a plain, truncating line — inline-flex would have
+   put the text in an anonymous box where text-overflow never applies */
+.hall-tag{
+  position:relative; top:auto; left:auto;
+  display:block; flex:1 1 auto; min-width:0;
+  padding:0 0 0 15px; border-radius:0; border:0; background:none; box-shadow:none;
+  font-family:var(--font-head); font-weight:600; font-size:var(--fs-nano);
+  letter-spacing:.14em; text-transform:uppercase; color:var(--parchment-hi);
+  text-shadow:0 1px 0 rgba(0,0,0,.8);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.hall-tag::before{
+  content:''; position:absolute; left:0; top:50%; margin-top:-3.5px;
+  width:7px; height:7px; border-radius:50%;
+  background:var(--live); box-shadow:0 0 8px rgba(var(--rgb-live),.9);
+  animation:pulse 2s infinite;
+}
+
+.hall-tile-ctrls{ display:flex; gap:4px; flex:0 0 auto; }
+.hall-tile-btn{
+  display:inline-grid; place-items:center; width:28px; height:28px; padding:0;
+  border:1px solid var(--iron-edge); border-radius:var(--r-1);
+  background:var(--metal-raised); color:var(--parchment-2); cursor:pointer;
+  box-shadow:var(--bevel-raised);
+  transition:color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out),
+             background var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out);
+}
+.hall-tile-btn svg{ width:15px; height:15px; display:block; }
+.hall-tile-btn:hover{
+  color:var(--parchment-hi); border-color:rgba(var(--rgb-ember),.6);
+  box-shadow:var(--bevel-raised), var(--glow-ember-xs);
+}
+.hall-tile-btn[aria-pressed="true"]{
+  background:var(--ember-fill); color:var(--on-ember); border-color:var(--ember-bright);
+  box-shadow:inset 0 1px 0 rgba(255,226,196,.45), var(--glow-ember-xs);
+}
+/* one icon, two states */
+.hall-tile-btn .ico-on{ display:none; }
+.hall-tile-btn[aria-pressed="true"] .ico-on{ display:block; }
+.hall-tile-btn[aria-pressed="true"] .ico-off{ display:none; }
+
+/* ============================================================
+   5 — THE CHAT RAIL
+   Twitch's embed brings its own "Stream Chat" header, so ours is gone:
+   the channel picker is the panel's only chrome, and on a phone it also
+   carries the way out.
+   ============================================================ */
+.hall-chat{
+  width:clamp(296px, 23vw, 356px); gap:0; min-height:0;
+  background:var(--metal-plate);
+  border:1px solid var(--iron-edge); border-radius:var(--r-3); overflow:hidden;
+  box-shadow:var(--el-3), inset 0 1px 0 rgba(255,236,208,.06);
+}
+.hall-layout.chat-off .hall-chat{ display:none; }
+
+.hall-chat-bar{
+  display:flex; align-items:center; gap:8px; flex:0 0 auto;
+  padding:8px 10px;
+  background:linear-gradient(180deg, rgba(255,236,208,.045), transparent), var(--metal-rail);
+  border-bottom:1px solid rgba(0,0,0,.55);
+  box-shadow:inset 0 -1px 0 rgba(255,236,208,.05);
+}
+/* one channel is not a choice — on desktop the bar has nothing left to say */
+@media (min-width:901px){
+  .hall-chat-bar:not(:has(#chatTabs button + button)){ display:none; }
+}
+/* a single scrolling row, never three ragged ones */
+.hall-chat-tabs{
+  flex:1 1 auto; min-width:0;
+  flex-wrap:nowrap; gap:6px; max-height:none;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:none; scroll-snap-type:x proximity;
+  -webkit-mask-image:linear-gradient(90deg, #000 0 92%, transparent);
+          mask-image:linear-gradient(90deg, #000 0 92%, transparent);
+}
+.hall-chat-tabs::-webkit-scrollbar{ height:0; }
+.hall-chat-tabs button{
+  flex:0 0 auto; scroll-snap-align:start;
+  font-size:var(--fs-nano); padding:6px 12px; letter-spacing:.12em;
+}
+.hall-chat-close{
+  display:none; flex:0 0 auto; place-items:center; width:30px; height:30px; padding:0;
+  border:1px solid var(--iron-edge); border-radius:var(--r-1);
+  background:var(--metal-raised); color:var(--parchment-2); cursor:pointer;
+  box-shadow:var(--bevel-raised);
+}
+.hall-chat-close svg{ width:16px; height:16px; }
+.hall-chat-close:hover{ color:var(--parchment-hi); border-color:rgba(var(--rgb-ember),.6); }
+
+/* the frame is inside the panel now — it drops its own border and rounding
+   and keeps only the groove that sinks it into the plate */
+.hall-chat-frame{
+  border:0; border-radius:0; min-height:0;
+  background:
+    repeating-linear-gradient(135deg, rgba(255,236,208,.015) 0 2px, transparent 2px 8px),
+    linear-gradient(180deg, #0d0b09, #080706);
+  box-shadow:inset 0 6px 12px -10px #000;
+}
+
+.hall-scrim{ display:none; }
+
+/* ============================================================
+   6 — THE COLD FORGE (empty + summoning)
+   ============================================================ */
+/* The empty hall is a socket with nothing plugged into it, and it should look
+   like one: the same inset frame a tile sits in, at room scale. Emptiness
+   framed reads as deliberate; emptiness floating in a void reads as broken. */
+.hall-empty{
+  position:relative; flex:1; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:clamp(26px, 6vh, 60px) 22px clamp(34px, 7vh, 68px);
+  margin:clamp(10px, 1.5vw, 18px);
+  border:1px solid rgba(var(--rgb-gold),.13); border-radius:var(--r-4);
+  background:
+    radial-gradient(90% 70% at 50% 118%, rgba(var(--rgb-ember),.05), transparent 60%),
+    linear-gradient(180deg, rgba(255,236,208,.014), transparent 40%),
+    var(--metal-sunk);
+  box-shadow:inset 0 1px 0 rgba(255,236,208,.05), inset 0 30px 60px -50px #000, var(--el-2);
+}
+/* the last warmth in the room */
+.hall-empty::before{
+  content:''; position:absolute; left:50%; top:42%; transform:translate(-50%,-50%);
+  width:min(820px, 130vw); aspect-ratio:1; pointer-events:none;
+  background:radial-gradient(circle, rgba(var(--rgb-ember),.14), rgba(var(--rgb-ember),.045) 40%, transparent 68%);
+  animation:hall-breathe 7.5s var(--ease-out) infinite;
+}
+/* :not(.grain) — the grain layer owns position:absolute and must keep it */
+.hall-empty > :not(.grain){ position:relative; z-index:1; }
+.hall-empty > .grain{ z-index:0; opacity:.4; }
+
+.hall-mark{
+  width:clamp(126px, 19vh, 186px); height:auto;
+  filter:drop-shadow(0 14px 26px rgba(0,0,0,.65));
+}
+.hall-spark{ opacity:.85; animation:hall-spark 4.4s ease-in-out infinite; }
+.hall-spark.s2{ animation-duration:5.6s; animation-delay:-1.8s; }
+.hall-spark.s3{ animation-duration:6.4s; animation-delay:-3.4s; }
+
+.hall-empty-title{
+  margin-top:22px; font-size:var(--fs-h2); color:var(--parchment-hi);
+  letter-spacing:.04em; text-shadow:0 2px 0 rgba(0,0,0,.55), 0 0 40px rgba(var(--rgb-ember),.16);
+}
+/* Long sentences do not belong in tracked caps. The rail carries the
+   uppercase voice; this line is allowed to be read. */
+.hall-empty .hall-status{
+  padding:10px 0 0; max-width:54ch;
+  font-family:var(--font-body); font-weight:400; font-size:var(--fs-lead);
+  letter-spacing:0; text-transform:none; line-height:1.6; color:var(--parchment-2);
+}
+/* the useful half of the empty state: when the room fills up again */
+.hall-next{
+  margin:14px 0 2px; padding:8px 18px;
+  font-family:var(--font-head); font-weight:600; font-size:var(--fs-micro);
+  letter-spacing:.1em; text-transform:uppercase; color:var(--parchment-2);
+  border:1px solid var(--iron-edge); border-radius:var(--r-pill);
+  background:linear-gradient(180deg, rgba(255,236,208,.045), rgba(0,0,0,.22));
+  box-shadow:var(--bevel-raised);
+}
+.hall-next b{ color:var(--ember-bright); font-weight:700; letter-spacing:.06em; }
+/* the summoning voice: short, tracked, steel */
+.hall-empty.is-checking .hall-status{
+  font-family:var(--font-head); font-weight:600; font-size:var(--fs-xs);
+  letter-spacing:.16em; text-transform:uppercase; color:var(--steel);
+}
+
+/* a hairline with an ember running along it while we ask Twitch */
+.hall-scan{
+  position:relative; width:180px; height:1px; margin-top:20px; overflow:hidden;
+  background:linear-gradient(90deg, transparent, var(--iron-edge) 20%, var(--iron-edge) 80%, transparent);
+}
+.hall-scan::after{
+  content:''; position:absolute; top:0; left:0; width:64px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--ember-bright), transparent);
+  box-shadow:0 0 10px rgba(var(--rgb-ember),.8);
+  animation:hall-scan 1.9s var(--ease-out) infinite;
+}
+
+.hall-empty-actions{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:12px;
+  /* was 6px + the 18px the button dragged in on its own margin; now the row
+     states the whole distance itself. */
+  margin-top:24px;
+}
+/* ff.css gives .hall-btn a margin-top:18px for when it trails a block of copy.
+   Here it sits in a centred row beside a .live-link that has no such margin,
+   so the two pills were baseline-mismatched by 18px. The row owns its own
+   top spacing; the buttons inside it are peers. */
+.hall-empty-actions .hall-btn{ margin-top:0; }
+.hall-empty-actions .live-link{ align-self:center; }
+
+/* state swap — the wrapper carries .is-checking until the first answer lands */
+.hall-empty.is-checking .when-empty{ display:none; }
+.hall-empty:not(.is-checking) .when-checking{ display:none; }
+/* belt and braces if the renderer's hidden flag is ever the only signal */
+.hall-empty:has(> .hall-status[hidden]){ display:none; }
+
+@keyframes hall-breathe{
+  0%, 100%{ opacity:.62; transform:translate(-50%,-50%) scale(.97); }
+  50%     { opacity:1;   transform:translate(-50%,-50%) scale(1.04); }
+}
+@keyframes hall-spark{
+  0%      { opacity:0;   transform:translateY(6px); }
+  25%     { opacity:.9;  }
+  100%    { opacity:0;   transform:translateY(-16px); }
+}
+@keyframes hall-scan{
+  0%  { transform:translateX(-70px); }
+  100%{ transform:translateX(190px); }
+}
+
+/* ============================================================
+   7 — NARROW
+   Under 900px ff.css stacks the layout and forces one column, so the wall
+   becomes a scroll of honest 16:9 tiles. Chat cannot live at the bottom of
+   that scroll — you would never have chat and a stream on screen at once —
+   so it becomes a sheet that rides over the wall, closed until asked for.
+   ============================================================ */
+@media (max-width:900px){
+  .hall-grid{ grid-auto-rows:auto; overflow:visible; align-content:start; }
+  .hall-tile{ width:100%; }
+  /* thumb-sized controls once there is no cursor */
+  .hall-tile-plate{ min-height:44px; padding:6px 7px 6px 12px; }
+  .hall-tile-btn{ width:36px; height:36px; }
+  .hall-tile-btn svg{ width:17px; height:17px; }
+
+  .hall-chat{
+    position:fixed; left:0; right:0; bottom:0; top:auto; z-index:70;
+    /* leave a whole stream on screen above the sheet — the point of the
+       thing is watching and chatting at once */
+    width:auto; height:min(58vh, 470px);
+    border-radius:var(--r-4) var(--r-4) 0 0; border-bottom:0;
+    box-shadow:0 -20px 48px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,236,208,.08);
+    transform:translateY(102%);
+    transition:transform var(--dur-2) var(--ease-out);
+  }
+  /* .chat-off is "closed" here, not "removed" — the sheet slides, and stops
+     being reachable by tab while it is parked off-screen */
+  .hall-layout.chat-off .hall-chat{
+    display:flex; visibility:hidden;
+    transition:transform var(--dur-2) var(--ease-out), visibility 0s linear var(--dur-2);
+  }
+  .hall-layout:not(.chat-off) .hall-chat{ transform:none; }
+
+  .hall-chat::before{
+    content:''; position:absolute; left:50%; top:6px; transform:translateX(-50%);
+    width:40px; height:3px; border-radius:2px; background:rgba(var(--rgb-gold),.35);
+  }
+  .hall-chat-bar{ padding-top:14px; }
+  .hall-chat-close{ display:grid; }
+  .hall-chat-frame{ min-height:0; }
+
+  .hall-scrim{
+    display:block; position:fixed; inset:0; z-index:60;
+    background:rgba(6,5,4,.62); backdrop-filter:blur(1.5px);
+    opacity:0; pointer-events:none; transition:opacity var(--dur-2) var(--ease-out);
+  }
+  .hall-layout:not(.chat-off) .hall-scrim{ opacity:1; pointer-events:auto; }
+}
+@media (max-width:560px){
+  .hall-bar{ padding:8px 14px 9px; }
+  .hall-crest{ width:26px; height:26px; }
+  .hall-title{ font-size:1.02rem; }
+  /* two controls that belong together stay together — space-between threw
+     them to opposite ends of a 360px rail with nothing in between */
+  .hall-bar-meta{ width:100%; justify-content:flex-start; }
+  .hall-count, .hall-ctrl{ padding-left:13px; padding-right:13px; }
+  .hall-empty-actions{ width:100%; flex-direction:column; }
+  .hall-empty-actions .hall-btn{ justify-content:center; }
+  .hall-next{ font-size:var(--fs-nano); padding:8px 14px; }
+}
+
+/* ============================================================
+   8 — REDUCED MOTION — every ember here holds still, none of them vanish
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  .hall-empty::before, .hall-spark, .hall-scan::after,
+  .hall-count.is-live .hall-dot, .hall-tag::before{ animation:none !important; }
+  .hall-empty::before{ opacity:.8; transform:translate(-50%,-50%); }
+  .hall-spark{ opacity:.8; }
+  .hall-scan::after{ left:auto; right:0; width:100%; }
+  /* the live dots still have to read as live without the pulse */
+  .hall-count.is-live .hall-dot, .hall-tag::before{
+    box-shadow:0 0 0 3px rgba(var(--rgb-live),.22);
+  }
+  .hall-tile:hover{ box-shadow:var(--el-3), inset 0 1px 0 rgba(255,236,208,.07); }
+  .hall-chat, .hall-scrim{ transition:none !important; }
+}
